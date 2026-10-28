@@ -103,7 +103,7 @@
   <main>
     <div class="header-bar">
       <span class="vehicle-title" id="headerTitle">INICIO - GOLDEN DRAGON XML6606</span>
-      <span id="headerClock">09:41 | GPS CONECTADO</span>
+      <span id="headerClock">--:-- | GPS: conectando...</span>
     </div>
 
     <div class="tab-content">
@@ -416,10 +416,31 @@
         }
       }, (err) => {
         console.log("GPS error:", err.code, err.message);
+        // Mostrar mensaje claro según el tipo de error
+        let msg = "Error de GPS";
+        if (err.code === 1) {
+          msg = "⚠️ Permiso de ubicación denegado. Active la ubicación en los ajustes del navegador/WebView.";
+        } else if (err.code === 2) {
+          msg = "⚠️ GPS no disponible. Asegúrese de que la ubicación esté encendida.";
+        } else if (err.code === 3) {
+          msg = "⚠️ Tiempo de espera del GPS agotado. Intente de nuevo.";
+        }
+        document.getElementById('gpsCoordsText').innerText = msg;
       }, { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 });
     } else {
       document.getElementById('gpsCoordsText').innerText = "GPS no soportado en este navegador";
     }
+
+    // RELOJ EN TIEMPO REAL (se actualiza cada segundo)
+    function updateClock() {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mm = String(now.getMinutes()).padStart(2, '0');
+      const ss = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('headerClock').innerText = `${hh}:${mm}:${ss} | GPS: ${gpsInitialized ? 'CONECTADO' : 'esperando...'}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
   </script>
 </body>
 </html>
