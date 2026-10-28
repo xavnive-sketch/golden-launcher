@@ -341,18 +341,57 @@
       }
     }
 
-    // MAPA GPS
+    // MAPA GPS - UBICACIÓN EN TIEMPO REAL
     let map = L.map('leafletMap', { zoomControl: false }).setView([-2.1900, -79.8867], 13);
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 18 }).addTo(map);
 
+    // Marcador del vehículo (bus escolar 🚌) con pulso
+    const busIcon = L.divIcon({
+      className: '',
+      html: '<div style="font-size:28px; filter: drop-shadow(0 0 6px rgba(0,229,255,0.9));">🚌</div>',
+      iconSize: [28, 28],
+      iconAnchor: [14, 14]
+    });
+    const busMarker = L.marker([-2.1900, -79.8867], { icon: busIcon }).addTo(map);
+
+    // Círculo de precisión GPS
+    let accuracyCircle = null;
+
+    // Seguimiento en tiempo real
     if ("geolocation" in navigator) {
       navigator.geolocation.watchPosition((pos) => {
         let lat = pos.coords.latitude;
         let lng = pos.coords.longitude;
         let speed = Math.round((pos.coords.speed || 0) * 3.6);
+        let alt = Math.round(pos.coords.altitude || 0);
+        let acc = pos.coords.accuracy || 0;
+
+        // Actualizar textos del panel
         document.getElementById('gpsSpeed').innerText = speed;
         document.getElementById('gpsCoordsText').innerText = `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
-      });
+        document.getElementById('gpsElevation').innerText = alt + " m";
+
+        // Mover el marcador 🚌 y centrar el mapa en el vehículo (zoom 15 = calle)
+        busMarker.setLatLng([lat, lng]);
+        map.setView([lat, lng], 15);
+
+        // Círculo de precisión (se actualiza según accuracy del GPS)
+        if (accuracyCircle) {
+          accuracyCircle.setLatLng([lat, lng]).setRadius(acc);
+        } else {
+          accuracyCircle = L.circle([lat, lng], {
+            radius: acc,
+            color: '#00e5ff',
+            fillColor: '#00e5ff',
+            fillOpacity: 0.1,
+            weight: 1
+          }).addTo(map);
+        }
+      }, (err) => {
+        console.log("GPS error:", err.code, err.message);
+      }, { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 });
+    } else {
+      document.getElementById('gpsCoordsText').innerText = "GPS no soportado en este navegador";
     }
   </script>
 </body>
