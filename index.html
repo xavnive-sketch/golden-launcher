@@ -52,6 +52,9 @@
     .gauge-ticks { fill: none; stroke: rgba(255,255,255,0.15); stroke-width: 2; stroke-dasharray: 2 10; }
     .gauge-progress { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.2s ease; }
     .gauge-center { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+    .gauge-needle { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform-origin: 50px 50px; }
+    .gauge-hub { fill: #1a1a1a; stroke: rgba(255,255,255,0.3); stroke-width: 1; }
+    .gauge-num { fill: rgba(255,255,255,0.6); font-size: 7px; font-family: monospace; text-anchor: middle; }
 
     .dashboard-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(3, 1fr); gap: 12px; height: 100%; }
 
@@ -161,6 +164,20 @@
                 <circle class="gauge-track" cx="50" cy="50" r="42"></circle>
                 <circle class="gauge-ticks" cx="50" cy="50" r="36"></circle>
                 <circle class="gauge-progress" id="rpmCircle" cx="50" cy="50" r="42" stroke="#00ff88" stroke-dasharray="264" stroke-dashoffset="264"></circle>
+                <!-- Aguja roja estilo referencia -->
+                <g class="gauge-needle" id="rpmNeedle" style="transform: rotate(-90deg);">
+                  <line x1="50" y1="50" x2="50" y2="14" stroke="#ff3b30" stroke-width="2.5" stroke-linecap="round"></line>
+                </g>
+                <circle class="gauge-hub" cx="50" cy="50" r="4"></circle>
+                <!-- Números de escala -->
+                <text class="gauge-num" x="50" y="16">6</text>
+                <text class="gauge-num" x="76" y="24">4.5</text>
+                <text class="gauge-num" x="24" y="24">1.5</text>
+                <text class="gauge-num" x="85" y="50">5</text>
+                <text class="gauge-num" x="15" y="50">1</text>
+                <text class="gauge-num" x="76" y="78">2.5</text>
+                <text class="gauge-num" x="24" y="78">3.5</text>
+                <text class="gauge-num" x="50" y="88">0</text>
               </svg>
               <div class="gauge-center">
                 <div style="font-size: 2.2rem; font-weight: 900; color: var(--accent-green);" id="rpmVal">0</div>
@@ -191,6 +208,20 @@
                 <circle class="gauge-track" cx="50" cy="50" r="42"></circle>
                 <circle class="gauge-ticks" cx="50" cy="50" r="36"></circle>
                 <circle class="gauge-progress" id="speedCircle" cx="50" cy="50" r="42" stroke="#00e5ff" stroke-dasharray="264" stroke-dashoffset="264"></circle>
+                <!-- Aguja roja estilo referencia -->
+                <g class="gauge-needle" id="speedNeedle" style="transform: rotate(-90deg);">
+                  <line x1="50" y1="50" x2="50" y2="14" stroke="#ff3b30" stroke-width="2.5" stroke-linecap="round"></line>
+                </g>
+                <circle class="gauge-hub" cx="50" cy="50" r="4"></circle>
+                <!-- Números de escala -->
+                <text class="gauge-num" x="50" y="16">180</text>
+                <text class="gauge-num" x="76" y="24">135</text>
+                <text class="gauge-num" x="24" y="24">45</text>
+                <text class="gauge-num" x="85" y="50">150</text>
+                <text class="gauge-num" x="15" y="50">30</text>
+                <text class="gauge-num" x="76" y="78">75</text>
+                <text class="gauge-num" x="24" y="78">105</text>
+                <text class="gauge-num" x="50" y="88">0</text>
               </svg>
               <div class="gauge-center">
                 <div style="font-size: 2.2rem; font-weight: 900; color: #fff;" id="speedVal">0</div>
@@ -361,6 +392,9 @@
       document.getElementById('rpmCircle').style.strokeDashoffset = Math.max(0, rpmOffset);
       document.getElementById('rpmVal').innerText = rpm;
       document.getElementById('rpmTextSub').innerText = rpm + " RPM";
+      // Aguja del tacómetro: -90° a +90°
+      const rpmNeedle = document.getElementById('rpmNeedle');
+      if (rpmNeedle) rpmNeedle.style.transform = `rotate(${-90 + (rpm / 6000) * 180}deg)`;
 
       // Velocímetro (0-180 KM/H)
       let speedOffset = 264 - (speed / 180) * 264;
@@ -368,6 +402,9 @@
       document.getElementById('speedCircleMain').style.strokeDashoffset = Math.max(0, speedOffset);
       document.getElementById('speedVal').innerText = speed;
       document.getElementById('speedValMain').innerText = speed;
+      // Aguja del velocímetro: -90° a +90°
+      const speedNeedle = document.getElementById('speedNeedle');
+      if (speedNeedle) speedNeedle.style.transform = `rotate(${-90 + (speed / 180) * 180}deg)`;
 
       // Sensores ECU
       document.getElementById('coolantVal').innerText = coolant + " °C";
