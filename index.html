@@ -77,6 +77,16 @@
     .status-bar { grid-column: span 12; display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; background: rgba(0,0,0,0.4); border: 1px solid var(--card-border); border-radius: 8px; font-size: 0.65rem; color: var(--text-dim); }
     .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-green); display: inline-block; margin-right: 6px; animation: pulseGlow 2s infinite alternate; }
 
+    /* ESTILOS DEL NUEVO INICIO (estilo referencia con fondo paisaje) */
+    .inicio-layout { display: grid; grid-template-columns: 1.4fr 1fr; gap: 12px; height: 100%; position: relative; }
+    .inicio-hero { position: relative; border-radius: 12px; overflow: hidden; border: 1px solid var(--card-border); background: linear-gradient(180deg, rgba(10,14,20,0.85) 0%, rgba(10,14,20,0.6) 100%), url('https://images.unsplash.com/photo-1516849841032-87cbac4d88f7?q=80&w=1200&auto=format&fit=crop') center/cover no-repeat; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; }
+    .inicio-side { display: flex; flex-direction: column; gap: 10px; justify-content: center; }
+    .inicio-statusbar { grid-column: span 2; display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; background: rgba(0,0,0,0.4); border: 1px solid var(--card-border); border-radius: 8px; font-size: 0.65rem; color: var(--text-dim); }
+    .side-item { display: flex; align-items: center; gap: 10px; }
+    .side-icon { font-size: 1.3rem; }
+    .side-bar { flex: 1; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; }
+    .side-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s ease; }
+
     /* Animación del Arc Reactor Circular */
     .arc-reactor-container { display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; height: 180px; margin: 10px 0; }
     .arc-ring { position: absolute; border-radius: 50%; border: 2px dashed rgba(0,229,255,0.4); animation: spinClockwise 12s linear infinite; }
@@ -117,35 +127,78 @@
 
     <div class="tab-content">
       
-      <!-- INICIO -->
+      <!-- INICIO (estilo referencia: velocímetro central + tarjetas laterales + barra estado) -->
       <div id="inicio" class="tab-pane active">
-        <div class="dashboard-grid">
-          <div class="card" style="grid-column: span 3; grid-row: span 3; justify-content: center; align-items: center; text-align: center;">
-            <div class="gauge-wrapper" style="width: 210px; height: 210px;">
+        <div class="inicio-layout">
+          
+          <!-- HERO: velocímetro grande con fondo de paisaje -->
+          <div class="inicio-hero">
+            <div class="gauge-wrapper" style="width: 230px; height: 230px;">
               <svg class="gauge-svg" viewBox="0 0 100 100">
                 <circle class="gauge-track" cx="50" cy="50" r="42"></circle>
                 <circle class="gauge-ticks" cx="50" cy="50" r="36"></circle>
                 <circle class="gauge-progress" id="speedCircleMain" cx="50" cy="50" r="42" stroke="#00e5ff" stroke-dasharray="264" stroke-dashoffset="264"></circle>
               </svg>
               <div class="gauge-center">
-                <div style="font-size: 3.8rem; font-weight: 900; line-height: 1; color: #fff;" id="speedValMain">0</div>
-                <div style="font-size: 0.75rem; color: var(--text-dim); letter-spacing: 1px; margin-top: 2px;">KM/H</div>
-                <div style="font-size: 0.75rem; color: var(--accent-cyan); margin-top: 4px; font-weight: 800;" id="rpmTextSub">0 RPM</div>
+                <div style="font-size: 4.2rem; font-weight: 900; line-height: 1; color: #fff;" id="speedValMain">0</div>
+                <div style="font-size: 0.8rem; color: var(--text-dim); letter-spacing: 1px; margin-top: 2px;">KM/H</div>
+                <div style="font-size: 0.8rem; color: var(--accent-cyan); margin-top: 4px; font-weight: 800;" id="rpmTextSub">0 RPM</div>
+                <div style="font-size: 0.65rem; color: var(--text-dim); margin-top: 2px;">M/T · 3ª</div>
               </div>
             </div>
+            <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 10px;">GOLDEN DRAGON XML6606 · ESCOLAR</div>
+          </div>
 
-            <div style="margin-top: 15px; max-width: 280px;">
-              <img src="golden-dragon-6606-1024x576.jpg" alt="Golden Dragon Bus" style="width: 100%; height: auto; border-radius: 8px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.8));" onerror="this.src='https://via.placeholder.com/320x180/0f1219/00ff88?text=Golden+Dragon+XML6606'">
+          <!-- LATERAL: tarjetas de temperatura, autonomía, combustible, viaje -->
+          <div class="inicio-side">
+            <div class="card side-item">
+              <span class="side-icon">🌡️</span>
+              <div style="flex:1;">
+                <span class="metric-title">TEMPERATURA MOTOR</span>
+                <div class="metric-val" style="color: var(--accent-cyan);" id="coolantValMain">-- °C</div>
+                <div class="side-bar"><div class="side-bar-fill" id="coolantBarMain" style="width: 0%; background: var(--accent-cyan);"></div></div>
+              </div>
             </div>
-            <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 6px;">GOLDEN DRAGON ESCOLAR E INSTITUCIONAL</div>
+            <div class="card side-item">
+              <span class="side-icon">⛽</span>
+              <div style="flex:1;">
+                <span class="metric-title">AUTONOMÍA SEGURA</span>
+                <div class="metric-val" style="color: var(--accent-cyan);" id="autonomiaVal">-- km</div>
+              </div>
+            </div>
+            <div class="card side-item">
+              <span class="side-icon">⛽</span>
+              <div style="flex:1;">
+                <span class="metric-title">COMBUSTIBLE</span>
+                <div class="metric-val" style="color: var(--accent-cyan);">45%</div>
+                <div class="side-bar"><div class="side-bar-fill" style="width: 45%; background: var(--accent-cyan);"></div></div>
+              </div>
+            </div>
+            <div class="card side-item">
+              <span class="side-icon">🛣️</span>
+              <div style="flex:1;">
+                <span class="metric-title">VIAJE ACTUAL</span>
+                <div class="metric-val" style="color: var(--accent-cyan);">124.7 km</div>
+                <div style="font-size: 0.7rem; color: var(--text-dim);">Tiempo: 01:45 h</div>
+              </div>
+            </div>
+            <div class="card side-item">
+              <span class="side-icon">🔋</span>
+              <div style="flex:1;">
+                <span class="metric-title">VOLTAJE BATERÍA</span>
+                <div class="metric-val" style="color: var(--accent-cyan);" id="voltValMain">-- V</div>
+              </div>
+            </div>
           </div>
 
-          <div class="card" style="grid-column: span 1; grid-row: span 3; justify-content: space-around;">
-            <div><span class="metric-title">TEMPERATURA MOTOR</span><div class="metric-val" style="color: var(--accent-cyan);" id="coolantValMain">-- °C</div></div>
-            <div><span class="metric-title">AUTONOMÍA SEGURA</span><div class="metric-val" style="color: var(--accent-cyan);" id="autonomiaVal">-- km</div></div>
-            <div><span class="metric-title">VOLTAJE BATERÍA</span><div class="metric-val" style="color: var(--accent-cyan);" id="voltValMain">-- V</div></div>
-            <div><span class="metric-title">ALTITUD GPS</span><div class="metric-val" id="gpsAlt">124 m</div></div>
+          <!-- BARRA INFERIOR DE ESTADO -->
+          <div class="inicio-statusbar">
+            <span><span class="status-dot"></span>GPS 4 satélites</span>
+            <span id="gpsCoordsBar">--°--'--" N - --°--'--" W</span>
+            <span><span class="status-dot"></span>OBD-II: NO</span>
+            <span id="gpsAltBar">ALTITUD: -- m</span>
           </div>
+
         </div>
       </div>
 
@@ -372,6 +425,8 @@
       // Sensores ECU
       document.getElementById('coolantVal').innerText = coolant + " °C";
       document.getElementById('coolantValMain').innerText = coolant + " °C";
+      const coolantBarMain = document.getElementById('coolantBarMain');
+      if (coolantBarMain) coolantBarMain.style.width = (coolant / 130) * 100 + "%";
       document.getElementById('voltVal').innerText = volt + " V";
       document.getElementById('voltValMain').innerText = volt + " V";
       document.getElementById('engineLoadVal').innerText = load + " %";
@@ -522,6 +577,12 @@
         // Actualizar barra de estado del tablero (altitud)
         const statusAlt = document.getElementById('statusAltitude');
         if (statusAlt) statusAlt.innerText = `ALTITUD: ${alt} m`;
+
+        // Actualizar barra de estado del INICIO (coordenadas DMS + altitud)
+        const gpsCoordsBar = document.getElementById('gpsCoordsBar');
+        if (gpsCoordsBar) gpsCoordsBar.innerText = `${lat.toFixed(4)}°, ${lng.toFixed(4)}°`;
+        const gpsAltBar = document.getElementById('gpsAltBar');
+        if (gpsAltBar) gpsAltBar.innerText = `ALTITUD: ${alt} m`;
 
         // Si el mapa ya existe, mover el marcador y centrar
         if (map && busMarker) {
