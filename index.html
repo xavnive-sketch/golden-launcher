@@ -489,8 +489,8 @@
       statusEl.style.color = "var(--accent-cyan)";
       log.innerHTML += `<br><span style="color:var(--accent-cyan);">[J.A.R.V.I.S.]: Abriendo Telegram para vincular con @${MY_TELEGRAM}...</span>`;
       log.scrollTop = log.scrollHeight;
-      // Abrir el chat con el bot en Telegram
-      window.open(`https://t.me/${BOT_USERNAME}`, '_blank');
+      // Abrir el chat con el bot en Telegram (compatible con WebView Android)
+      abrirTelegram(`https://t.me/${BOT_USERNAME}`);
     }
 
     function sendJarvisMsg() {
@@ -503,9 +503,23 @@
       log.innerHTML += `<br><span style="color:var(--accent-cyan);">[J.A.R.V.I.S.]: Enviando a Telegram...</span>`;
       log.scrollTop = log.scrollHeight;
 
-      // Enviar por Telegram con texto pre-escrito (deep link)
-      window.open(`https://t.me/${BOT_USERNAME}?text=${encodeURIComponent(txt)}`, '_blank');
+      // Enviar por Telegram con texto pre-escrito (deep link, compatible con WebView)
+      abrirTelegram(`https://t.me/${BOT_USERNAME}?text=${encodeURIComponent(txt)}`);
       input.value = '';
+    }
+
+    // Abrir URL de Telegram compatible con WebView Android (Geyser)
+    function abrirTelegram(url) {
+      // 1) Intentar con intent:// (abre la app nativa de Telegram)
+      if (navigator.userAgent.includes('Android')) {
+        const intentUrl = `intent://t.me/${BOT_USERNAME}${url.includes('text=') ? '?text=' + url.split('text=')[1] : ''}#Intent;scheme=https;package=org.telegram.messenger;S.browser_fallback_url=${encodeURIComponent('https://t.me/' + BOT_USERNAME)};end`;
+        try {
+          window.location.href = intentUrl;
+          return;
+        } catch(e) { /* fallback */ }
+      }
+      // 2) Fallback: window.location.href directo
+      try { window.location.href = url; } catch(e) { window.open(url, '_blank'); }
     }
 
     function startVoice() {
