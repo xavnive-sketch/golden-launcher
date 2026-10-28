@@ -242,13 +242,12 @@
 
             <div style="width: 100%;">
               <label class="metric-title">ESTADO ENLACE</label>
-              <div style="font-size: 0.8rem; font-weight: bold; color: var(--accent-cyan); margin-bottom: 10px;" id="wsStatus">LISTO (ESPERANDO ENTRADA)</div>
+              <div style="font-size: 0.8rem; font-weight: bold; color: var(--accent-cyan); margin-bottom: 10px;" id="wsStatus">LISTO (VÍA TELEGRAM)</div>
               
               <div style="display: flex; gap: 6px;">
-                <input type="text" class="cfg-input" id="wsHost" value="192.168.1.50" style="margin-bottom:0;">
-                <input type="text" class="cfg-input" id="wsPort" value="8080" style="width: 60px; margin-bottom:0;">
+                <input type="text" class="cfg-input" id="wsHost" value="@Xanipabot" style="margin-bottom:0; flex:1;" readonly>
               </div>
-              <button class="btn-action" style="width: 100%; margin-top: 8px;" onclick="connectJarvisWS()">VINCULAR</button>
+              <button class="btn-action" style="width: 100%; margin-top: 8px;" onclick="connectJarvisWS()">VINCULAR CON TELEGRAM</button>
             </div>
           </div>
         </div>
@@ -296,39 +295,21 @@
       updateOBDMetrics(simRpm, simSpeed, 89, simVolt, 38, 24);
     }, 800);
 
-    // J.A.R.V.I.S. WEBSOCKET & CONSOLA
-    let jarvisSocket = null;
+    // ==========================================
+    // J.A.R.V.I.S. VÍA TELEGRAM (bot @Xanipabot)
+    // ==========================================
+    const BOT_USERNAME = 'Xanipabot';
+    const MY_TELEGRAM = 'xanipa17';
 
     function connectJarvisWS() {
-      const host = document.getElementById('wsHost').value;
-      const port = document.getElementById('wsPort').value;
-      const wsUrl = `ws://${host}:${port}`;
       const log = document.getElementById('termLog');
-
-      log.innerHTML += `<br>[J.A.R.V.I.S.]: Conectando al protocolo ${wsUrl}...`;
-
-      try {
-        jarvisSocket = new WebSocket(wsUrl);
-
-        jarvisSocket.onopen = () => {
-          document.getElementById('wsStatus').innerText = "ENLACE ACTIVO";
-          document.getElementById('wsStatus').style.color = "var(--accent-green)";
-          log.innerHTML += `<br><span style="color:var(--accent-green);">[J.A.R.V.I.S.]: Enlace neuronal establecido con éxito.</span>`;
-        };
-
-        jarvisSocket.onmessage = (event) => {
-          log.innerHTML += `<br><span style="color:var(--accent-cyan);">[J.A.R.V.I.S.]:</span> ${event.data}`;
-          log.scrollTop = log.scrollHeight;
-        };
-
-        jarvisSocket.onclose = () => {
-          document.getElementById('wsStatus').innerText = "DESCONECTADO";
-          document.getElementById('wsStatus').style.color = "var(--accent-red)";
-          log.innerHTML += `<br>[J.A.R.V.I.S.]: Conexión finalizada.`;
-        };
-      } catch(e) {
-        log.innerHTML += `<br>[ERROR]: Fallo en la red de comunicación.`;
-      }
+      const statusEl = document.getElementById('wsStatus');
+      statusEl.innerText = "ENLACE VÍA TELEGRAM";
+      statusEl.style.color = "var(--accent-green)";
+      log.innerHTML += `<br><span style="color:var(--accent-green);">[J.A.R.V.I.S.]: Abriendo Telegram para vincular con @${MY_TELEGRAM}...</span>`;
+      log.scrollTop = log.scrollHeight;
+      // Abrir el chat con el bot en Telegram
+      window.open(`https://t.me/${BOT_USERNAME}`, '_blank');
     }
 
     function sendJarvisMsg() {
@@ -338,15 +319,11 @@
 
       const txt = input.value;
       log.innerHTML += `<br><span style="color:#fff;">> ${txt}</span>`;
+      log.innerHTML += `<br><span style="color:var(--accent-cyan);">[J.A.R.V.I.S.]: Enviando a Telegram...</span>`;
+      log.scrollTop = log.scrollHeight;
 
-      if(jarvisSocket && jarvisSocket.readyState === WebSocket.OPEN) {
-        jarvisSocket.send(JSON.stringify({ action: "command", query: txt }));
-      } else {
-        setTimeout(() => {
-          log.innerHTML += `<br>[J.A.R.V.I.S.]: Procesando instrucción local '${txt}'. Sistemas operando de forma óptima.`;
-          log.scrollTop = log.scrollHeight;
-        }, 300);
-      }
+      // Enviar por Telegram con texto pre-escrito (deep link)
+      window.open(`https://t.me/${BOT_USERNAME}?text=${encodeURIComponent(txt)}`, '_blank');
       input.value = '';
     }
 
@@ -365,7 +342,7 @@
     }
 
     // MAPA GPS
-    let map = L.map('leafletMap', { zoomControl: false }).setView([-31.2408, -64.5386], 13);
+    let map = L.map('leafletMap', { zoomControl: false }).setView([-2.1900, -79.8867], 13);
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 18 }).addTo(map);
 
     if ("geolocation" in navigator) {
