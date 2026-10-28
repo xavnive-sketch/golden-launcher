@@ -3,792 +3,236 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MACHINE OUTDOORS - Golden Dragon XML6606</title>
+  <title>MACHINE OUTDOORS - Golden Dragon Cockpit</title>
   
-  <!-- Leaflet CSS for Dark Topographic Map -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap');
 
     :root {
-      --bg-dark: #07090d;
-      --card-bg: rgba(13, 17, 23, 0.88);
-      --card-border: rgba(255, 255, 255, 0.07);
-      --card-border-glow: rgba(0, 255, 136, 0.15);
-      
+      --bg: #07090c;
+      --card-bg: rgba(15, 18, 25, 0.92);
+      --card-border: rgba(255, 255, 255, 0.08);
       --accent-green: #00ff88;
-      --accent-green-glow: rgba(0, 255, 136, 0.4);
       --accent-cyan: #00e5ff;
-      --accent-yellow: #ffb703;
+      --accent-yellow: #f1c40f;
       --accent-red: #ff3366;
-      
       --text-main: #f0f6fc;
-      --text-muted: #6e7681;
-      --text-dim: #8b949e;
+      --text-dim: #6e7681;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Inter', -apple-system, sans-serif;
-      user-select: none;
-      -webkit-user-select: none;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; user-select: none; }
+    body { background: var(--bg); color: var(--text-main); height: 100vh; display: flex; overflow: hidden; }
 
-    body {
-      background: var(--bg-dark);
-      color: var(--text-main);
-      height: 100vh;
-      width: 100vw;
-      display: flex;
-      overflow: hidden;
-      background-image: 
-        radial-gradient(circle at 50% 50%, rgba(18, 26, 36, 0.5) 0%, #05070a 100%),
-        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
-      background-size: 100% 100%, 30px 30px, 30px 30px;
-    }
+    aside { width: 220px; background: #05070a; border-right: 1px solid var(--card-border); display: flex; flex-direction: column; padding: 25px 16px; justify-content: space-between; z-index: 1000; }
+    .logo { font-size: 1rem; font-weight: 900; letter-spacing: 3px; color: #fff; margin-bottom: 25px; }
+    .logo span { display: block; font-size: 0.55rem; color: var(--text-dim); letter-spacing: 2px; font-weight: 400; margin-top: 2px; }
+    
+    .menu { display: flex; flex-direction: column; gap: 4px; }
+    .menu-btn { background: transparent; border: none; color: var(--text-dim); padding: 12px; border-radius: 8px; text-align: left; font-size: 0.75rem; font-weight: 700; cursor: pointer; letter-spacing: 1.5px; display: flex; align-items: center; gap: 12px; transition: all 0.2s; }
+    .menu-btn:hover { color: #fff; background: rgba(255,255,255,0.03); }
+    .menu-btn.active { color: var(--accent-green); background: rgba(0,255,136,0.06); border-left: 3px solid var(--accent-green); }
 
-    /* ================= SIDEBAR (EXACT MACHINE STYLE) ================= */
-    aside {
-      width: 210px;
-      min-width: 210px;
-      background: rgba(7, 9, 13, 0.95);
-      border-right: 1px solid var(--card-border);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 22px 14px;
-      z-index: 1000;
-    }
+    main { flex: 1; padding: 18px; display: flex; flex-direction: column; position: relative; background: #07090c; }
+    .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+    .vehicle-title { font-weight: 700; color: #fff; letter-spacing: 1px; }
 
-    .brand-logo {
-      margin-bottom: 25px;
-      padding-left: 6px;
-    }
-    .brand-logo h1 {
-      font-size: 1.05rem;
-      font-weight: 900;
-      letter-spacing: 3px;
-      color: #fff;
-      line-height: 1;
-    }
-    .brand-logo span {
-      display: block;
-      font-size: 0.55rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      letter-spacing: 2px;
-      margin-top: 4px;
-    }
+    .tab-content { flex: 1; position: relative; }
+    .tab-pane { display: none; height: 100%; width: 100%; position: absolute; top:0; left:0; }
+    .tab-pane.active { display: block; }
 
-    .nav-menu {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 18px; backdrop-filter: blur(10px); box-shadow: 0 8px 32px rgba(0,0,0,0.5); display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; }
+    .metric-title { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+    .metric-val { font-size: 1.8rem; font-weight: 800; color: #fff; margin-top: 4px; letter-spacing: -0.5px; }
 
-    .nav-item {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      padding: 11px 14px;
-      border-radius: 8px;
-      text-align: left;
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+    .gauge-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; width: 190px; height: 190px; margin: 0 auto; }
+    .gauge-svg { transform: rotate(-90deg); width: 190px; height: 190px; }
+    .gauge-track { fill: none; stroke: rgba(255,255,255,0.04); stroke-width: 6; }
+    .gauge-ticks { fill: none; stroke: rgba(255,255,255,0.15); stroke-width: 2; stroke-dasharray: 2 10; }
+    .gauge-progress { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.2s ease; }
+    .gauge-center { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
 
-    .nav-item svg {
-      width: 16px;
-      height: 16px;
-      fill: currentColor;
-    }
+    .dashboard-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(3, 1fr); gap: 12px; height: 100%; }
 
-    .nav-item:hover {
-      color: #fff;
-      background: rgba(255, 255, 255, 0.03);
-    }
+    #mapView { height: 100%; width: 100%; border-radius: 12px; border: 1px solid var(--card-border); position: relative; overflow: hidden; }
+    #leafletMap { height: 100%; width: 100%; background: #000; filter: brightness(0.75) contrast(1.2) hue-rotate(130deg); }
+    .map-overlay-right { position: absolute; right: 20px; top: 20px; bottom: 20px; width: 220px; z-index: 800; display: flex; flex-direction: column; gap: 12px; pointer-events: none; }
+    .map-overlay-right .card { pointer-events: auto; }
+    .route-card { position: absolute; left: 20px; top: 20px; width: 280px; z-index: 800; }
 
-    .nav-item.active {
-      color: var(--accent-green);
-      background: rgba(0, 255, 136, 0.07);
-      box-shadow: inset 3px 0 0 var(--accent-green);
-    }
-
-    .sidebar-footer {
-      padding-left: 6px;
-      border-top: 1px solid var(--card-border);
-      padding-top: 15px;
-      font-size: 0.65rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
-
-    .sidebar-footer strong {
-      color: var(--text-main);
-      display: block;
-      font-size: 0.72rem;
-    }
-
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      color: var(--accent-green);
-      font-weight: 700;
-      margin-top: 4px;
-      font-size: 0.65rem;
-    }
-    .status-dot {
-      width: 6px;
-      height: 6px;
-      background: var(--accent-green);
-      border-radius: 50%;
-      box-shadow: 0 0 8px var(--accent-green);
-    }
-
-    /* ================= MAIN CONTENT CONTAINER ================= */
-    main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 16px 20px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .top-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      font-weight: 600;
-    }
-
-    .top-header .title {
-      color: var(--text-main);
-      font-weight: 800;
-    }
-
-    .tab-viewport {
-      flex: 1;
-      position: relative;
-      width: 100%;
-      height: 100%;
-    }
-
-    .tab-page {
-      display: none;
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
-
-    .tab-page.active {
-      display: block;
-    }
-
-    /* ================= MACHINE ACRYLIC CARDS ================= */
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 16px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      position: relative;
-    }
-
-    .card-title {
-      font-size: 0.65rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .card-value {
-      font-size: 1.75rem;
-      font-weight: 800;
-      color: #fff;
-      letter-spacing: -0.5px;
-      margin-top: 4px;
-    }
-
-    .card-unit {
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      margin-left: 3px;
-    }
-
-    /* ================= TAB 1: INICIO (PHOTO 3 REPLICA) ================= */
-    .inicio-grid {
-      display: grid;
-      grid-template-columns: 1fr 260px;
-      gap: 14px;
-      height: 100%;
-    }
-
-    .inicio-main-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      position: relative;
-      background: radial-gradient(circle at center, rgba(18, 25, 36, 0.7) 0%, rgba(10, 13, 18, 0.9) 100%);
-    }
-
-    .bus-image-wrapper {
-      margin-top: 15px;
-      max-width: 320px;
-      position: relative;
-    }
-
-    .bus-image-wrapper img {
-      width: 100%;
-      height: auto;
-      filter: drop-shadow(0 15px 25px rgba(0,0,0,0.9));
-      border-radius: 8px;
-    }
-
-    .bus-caption {
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      color: var(--text-dim);
-      margin-top: 8px;
-    }
-
-    .inicio-side-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    /* ================= TAB 2: TABLERO GENERAL (PHOTO 5 REPLICA) ================= */
-    .tablero-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: auto auto auto;
-      gap: 12px;
-      height: 100%;
-    }
-
-    .gauges-row {
-      grid-column: span 4;
-      display: grid;
-      grid-template-columns: 280px 1fr 1fr 280px;
-      gap: 12px;
-    }
-
-    .telemetry-row {
-      grid-column: span 4;
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
-    }
-
-    .bottom-status-bar {
-      grid-column: span 4;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 12px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.75rem;
-    }
-
-    /* ================= VECTOR GAUGE SVG STYLING ================= */
-    .gauge-box {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-
-    .gauge-svg {
-      width: 220px;
-      height: 220px;
-      overflow: visible;
-    }
-
-    .gauge-center-content {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .gauge-val-big {
-      font-size: 2.8rem;
-      font-weight: 900;
-      line-height: 1;
-      letter-spacing: -1px;
-      color: #fff;
-    }
-
-    .gauge-subtext {
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 1px;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    /* Progress bar micro-indicator */
-    .progress-bar-bg {
-      width: 100%;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 2px;
-      overflow: hidden;
-      margin-top: 8px;
-    }
-
-    .progress-bar-fill {
-      height: 100%;
-      background: var(--accent-green);
-      box-shadow: 0 0 10px var(--accent-green);
-    }
-
-    /* ================= TAB 3: AUTONOMÍA (PHOTO 2 REPLICA) ================= */
-    .autonomia-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      grid-template-rows: repeat(2, 1fr);
-      gap: 12px;
-      height: 100%;
-    }
-
-    .chart-container-card {
-      grid-column: span 2;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      height: 220px;
-    }
-
-    .area-chart-svg {
-      width: 100%;
-      height: 120px;
-    }
-
-    /* ================= TAB 4: MAPA TOPOGRÁFICO (PHOTOS 1 & 4) ================= */
-    #mapView {
-      width: 100%;
-      height: 100%;
-      border-radius: 12px;
-      border: 1px solid var(--card-border);
-      position: relative;
-      overflow: hidden;
-    }
-
-    #leafletMap {
-      width: 100%;
-      height: 100%;
-      background: #000;
-      filter: brightness(0.8) contrast(1.25) hue-rotate(135deg) saturate(1.2);
-    }
-
-    .map-route-card {
-      position: absolute;
-      left: 20px;
-      top: 20px;
-      width: 290px;
-      z-index: 800;
-      background: rgba(9, 12, 17, 0.92);
-      border: 1px solid var(--card-border);
-      backdrop-filter: blur(20px);
-    }
-
-    .map-telemetry-stack {
-      position: absolute;
-      right: 20px;
-      top: 20px;
-      bottom: 20px;
-      width: 230px;
-      z-index: 800;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      pointer-events: none;
-    }
-
-    .map-telemetry-stack .card {
-      pointer-events: auto;
-      background: rgba(9, 12, 17, 0.92);
-    }
-
-    /* Elevation Profile SVG Mini-Chart */
-    .elevation-svg {
-      width: 100%;
-      height: 40px;
-      margin-top: 6px;
-    }
-
-    /* ================= TAB 5: HERMES AGENT TERMINAL ================= */
-    .terminal-card {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      background: #040608;
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 18px;
-    }
-
-    .terminal-body {
-      flex: 1;
-      background: #000;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 8px;
-      padding: 16px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.82rem;
-      color: var(--accent-green);
-      overflow-y: auto;
-      line-height: 1.6;
-      margin: 12px 0;
-    }
-
-    .terminal-input {
-      background: #0d1117;
-      border: 1px solid var(--card-border);
-      border-radius: 8px;
-      color: #fff;
-      padding: 12px 16px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.85rem;
-      outline: none;
-      width: 100%;
-      transition: border-color 0.2s;
-    }
-
-    .terminal-input:focus {
-      border-color: var(--accent-green);
-    }
+    /* Estilos del Agente Hermes */
+    .hermes-panel { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; height: 100%; }
+    .terminal-window { background: #000; border: 1px solid var(--card-border); border-radius: 10px; padding: 15px; font-family: monospace; color: var(--accent-green); overflow-y: auto; font-size: 0.85rem; line-height: 1.6; height: calc(100% - 60px); }
+    .cfg-input { background: #0d1117; border: 1px solid var(--card-border); color: #fff; padding: 8px 12px; border-radius: 6px; width: 100%; margin-bottom: 10px; outline: none; font-size: 0.8rem; }
+    .btn-action { background: var(--accent-green); border: none; color: #000; font-weight: 800; padding: 10px; border-radius: 6px; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; }
   </style>
 </head>
 <body>
 
-  <!-- ================= SIDEBAR (MACHINE OUTDOORS) ================= -->
   <aside>
     <div>
-      <div class="brand-logo">
-        <h1>MACHINE</h1>
-        <span>OUTDOORS</span>
+      <div class="logo">MACHINE <span>OUTDOORS</span></div>
+      <div class="menu">
+        <button class="menu-btn active" onclick="setTab('inicio')">INICIO</button>
+        <button class="menu-btn" onclick="setTab('tablero')">TABLERO</button>
+        <button class="menu-btn" onclick="setTab('autonomia')">AUTONOMÍA</button>
+        <button class="menu-btn" onclick="setTab('mapa')">MAPA</button>
+        <button class="menu-btn" onclick="setTab('hermes')" style="color: var(--accent-green);">HERMES AGENT</button>
+        <button class="menu-btn" onclick="setTab('diagnostico')">DIAGNÓSTICO</button>
       </div>
-
-      <nav class="nav-menu">
-        <button class="nav-item active" onclick="switchTab('inicio', 'INICIO - GOLDEN DRAGON XML6606')">
-          <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-          INICIO
-        </button>
-        <button class="nav-item" onclick="switchTab('tablero', 'TABLERO GENERAL')">
-          <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8v-10h-8v10zm0-18v6h8V3h-8z"/></svg>
-          TABLERO
-        </button>
-        <button class="nav-item" onclick="switchTab('autonomia', 'AUTONOMÍA & CONSUMO')">
-          <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
-          AUTONOMÍA
-        </button>
-        <button class="nav-item" onclick="switchTab('mapa', 'MAPA TOPOGRÁFICO')">
-          <svg viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
-          MAPA
-        </button>
-        <button class="nav-item" style="color: var(--accent-green);" onclick="switchTab('hermes', 'HERMES AGENT AI')">
-          <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
-          HERMES AGENT
-        </button>
-        <button class="nav-item" onclick="switchTab('diagnostico', 'DIAGNÓSTICO OBD-II')">
-          <svg viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.6C.4 7 1 10 3 12c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1 0-1.3z"/></svg>
-          DIAGNÓSTICO
-        </button>
-      </nav>
     </div>
-
-    <div class="sidebar-footer">
-      <strong>GOLDEN DRAGON</strong>
-      XML6606 ESCOLAR
-      <div class="status-badge">
-        <div class="status-dot"></div> CONECTADO OBD-II
-      </div>
+    <div style="font-size: 0.65rem; color: var(--text-dim); line-height: 1.5;">
+      <strong style="color: #fff;">GOLDEN DRAGON</strong><br>
+      XML6606 · MANUAL<br>
+      <span id="obdStatus" style="color: var(--accent-yellow);">● CONECTANDO OBD-II</span>
     </div>
   </aside>
 
-  <!-- ================= MAIN VIEWPORT ================= -->
   <main>
-    <div class="top-header">
-      <span class="title" id="pageTitle">INICIO - GOLDEN DRAGON XML6606</span>
-      <span id="liveClock">09:41 | GPS 4 SÁTELITES | OBD-II ACTIVE</span>
+    <div class="header-bar">
+      <span class="vehicle-title" id="headerTitle">INICIO - GOLDEN DRAGON XML6606</span>
+      <span id="headerClock">09:41 | GPS CONECTADO</span>
     </div>
 
-    <div class="tab-viewport">
-
-      <!-- ================= TAB 1: INICIO (PHOTO 3 EXACT) ================= -->
-      <div id="inicio" class="tab-page active">
-        <div class="inicio-grid">
-          
-          <div class="card inicio-main-card">
-            <!-- Central Huge Speed Gauge -->
-            <div class="gauge-box">
-              <svg class="gauge-svg" viewBox="0 0 200 200">
-                <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="8" stroke-dasharray="377 126" stroke-dashoffset="-63"/>
-                <circle cx="100" cy="100" r="80" fill="none" stroke="var(--accent-green)" stroke-width="8" stroke-dasharray="377 126" stroke-dashoffset="60" stroke-linecap="round"/>
-                <!-- Ticks -->
-                <circle cx="100" cy="100" r="72" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2" stroke-dasharray="2 8"/>
+    <div class="tab-content">
+      
+      <!-- INICIO -->
+      <div id="inicio" class="tab-pane active">
+        <div class="dashboard-grid">
+          <div class="card" style="grid-column: span 3; grid-row: span 3; justify-content: center; align-items: center; text-align: center;">
+            <div class="gauge-wrapper" style="width: 210px; height: 210px;">
+              <svg class="gauge-svg" viewBox="0 0 100 100">
+                <circle class="gauge-track" cx="50" cy="50" r="42"></circle>
+                <circle class="gauge-ticks" cx="50" cy="50" r="36"></circle>
+                <circle class="gauge-progress" id="speedCircleMain" cx="50" cy="50" r="42" stroke="#00ff88" stroke-dasharray="264" stroke-dashoffset="264"></circle>
               </svg>
-
-              <div class="gauge-center-content">
-                <div class="gauge-val-big" style="font-size: 4.2rem;">72</div>
-                <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">km/h</div>
-                <div style="font-size: 0.8rem; font-weight: 800; color: var(--accent-green); margin-top: 6px;">M/T 3° &nbsp;|&nbsp; 3250 RPM</div>
+              <div class="gauge-center">
+                <div style="font-size: 3.8rem; font-weight: 900; line-height: 1; color: #fff;" id="speedValMain">0</div>
+                <div style="font-size: 0.75rem; color: var(--text-dim); letter-spacing: 1px; margin-top: 2px;">KM/H</div>
+                <div style="font-size: 0.75rem; color: var(--accent-green); margin-top: 4px; font-weight: 800;" id="rpmTextSub">0 RPM</div>
               </div>
             </div>
 
-            <!-- Bus Image -->
-            <div class="bus-image-wrapper">
-              <img src="golden-dragon-6606-1024x576.jpg" alt="Golden Dragon XML6606" onerror="this.src='https://placehold.co/400x220/0d1117/00ff88?text=Golden+Dragon+XML6606'">
+            <div style="margin-top: 15px; max-width: 280px;">
+              <img src="golden-dragon-6606-1024x576.jpg" alt="Golden Dragon Bus" style="width: 100%; height: auto; border-radius: 8px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.8));" onerror="this.src='https://via.placeholder.com/320x180/0f1219/00ff88?text=Golden+Dragon+XML6606'">
             </div>
-            <div class="bus-caption">GOLDEN DRAGON XML6606 ESCOLAR E INSTITUCIONAL</div>
+            <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 6px;">GOLDEN DRAGON ESCOLAR E INSTITUCIONAL</div>
           </div>
 
-          <!-- Right Status Stack -->
-          <div class="inicio-side-stack">
-            <div class="card">
-              <span class="card-title">TEMPERATURA</span>
-              <div class="card-value" style="color: var(--accent-green);">89 <span class="card-unit">°C</span></div>
-              <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 45%;"></div></div>
-            </div>
-
-            <div class="card">
-              <span class="card-title">AUTONOMÍA SEGURA</span>
-              <div class="card-value">320 <span class="card-unit">km</span></div>
-              <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 65%;"></div></div>
-            </div>
-
-            <div class="card">
-              <span class="card-title">COMBUSTIBLE</span>
-              <div class="card-value" style="color: var(--accent-yellow);">43 <span class="card-unit">%</span></div>
-              <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 43%; background: var(--accent-yellow);"></div></div>
-            </div>
-
-            <div class="card">
-              <span class="card-title">ELEVACIÓN GPS</span>
-              <div class="card-value">124.7 <span class="card-unit">m</span></div>
-            </div>
+          <div class="card" style="grid-column: span 1; grid-row: span 3; justify-content: space-around;">
+            <div><span class="metric-title">TEMPERATURA MOTOR</span><div class="metric-val" style="color: var(--accent-green);" id="coolantValMain">-- °C</div></div>
+            <div><span class="metric-title">AUTONOMÍA SEGURA</span><div class="metric-val">320 km</div></div>
+            <div><span class="metric-title">VOLTAJE BATERÍA</span><div class="metric-val" style="color: var(--accent-yellow);" id="voltValMain">-- V</div></div>
+            <div><span class="metric-title">ALTITUD GPS</span><div class="metric-val" id="gpsAlt">124 m</div></div>
           </div>
-
         </div>
       </div>
 
-      <!-- ================= TAB 2: TABLERO GENERAL (PHOTO 5 EXACT) ================= -->
-      <div id="tablero" class="tab-page">
-        <div class="tablero-grid">
+      <!-- TABLERO -->
+      <div id="tablero" class="tab-pane">
+        <div class="dashboard-grid">
           
-          <div class="gauges-row">
-            <!-- Tachometer Gauge -->
-            <div class="card gauge-box">
-              <span class="card-title" style="position: absolute; top: 15px; left: 15px;">TACÓMETRO</span>
-              <svg class="gauge-svg" viewBox="0 0 200 200">
-                <circle cx="100" cy="100" r="75" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8" stroke-dasharray="353 118" stroke-dashoffset="-59"/>
-                <circle cx="100" cy="100" r="75" fill="none" stroke="var(--accent-green)" stroke-width="8" stroke-dasharray="353 118" stroke-dashoffset="100" stroke-linecap="round"/>
+          <div class="card" style="grid-column: span 1; grid-row: span 2; align-items: center; justify-content: center;">
+            <span class="metric-title" style="margin-bottom: 5px;">TACÓMETRO</span>
+            <div class="gauge-wrapper">
+              <svg class="gauge-svg" viewBox="0 0 100 100">
+                <circle class="gauge-track" cx="50" cy="50" r="42"></circle>
+                <circle class="gauge-ticks" cx="50" cy="50" r="36"></circle>
+                <circle class="gauge-progress" id="rpmCircle" cx="50" cy="50" r="42" stroke="#00ff88" stroke-dasharray="264" stroke-dashoffset="264"></circle>
               </svg>
-              <div class="gauge-center-content">
-                <div class="gauge-val-big" style="color: var(--accent-green); font-size: 2.2rem;">2350</div>
-                <div class="gauge-subtext">RPM</div>
-              </div>
-            </div>
-
-            <!-- Upper Center Cards -->
-            <div class="card">
-              <span class="card-title">TEMP. REFRIGERANTE</span>
-              <div class="card-value">92 <span class="card-unit">°C</span></div>
-              <span style="font-size: 0.68rem; color: var(--accent-green); font-weight: 700;">NORMAL</span>
-            </div>
-
-            <div class="card">
-              <span class="card-title">TEMP. ACEITE</span>
-              <div class="card-value">88 <span class="card-unit">°C</span></div>
-              <span style="font-size: 0.68rem; color: var(--accent-green); font-weight: 700;">ÓPTIMO</span>
-            </div>
-
-            <!-- Speedometer Gauge -->
-            <div class="card gauge-box">
-              <span class="card-title" style="position: absolute; top: 15px; left: 15px;">VELOCÍMETRO</span>
-              <svg class="gauge-svg" viewBox="0 0 200 200">
-                <circle cx="100" cy="100" r="75" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8" stroke-dasharray="353 118" stroke-dashoffset="-59"/>
-                <circle cx="100" cy="100" r="75" fill="none" stroke="var(--accent-cyan)" stroke-width="8" stroke-dasharray="353 118" stroke-dashoffset="140" stroke-linecap="round"/>
-              </svg>
-              <div class="gauge-center-content">
-                <div class="gauge-val-big" style="font-size: 2.2rem;">72</div>
-                <div class="gauge-subtext">KM/H</div>
+              <div class="gauge-center">
+                <div style="font-size: 1.5rem; font-weight: 900; color: var(--accent-green);" id="rpmVal">0</div>
+                <div style="font-size: 0.65rem; color: var(--text-dim);">RPM</div>
               </div>
             </div>
           </div>
 
-          <!-- Telemetry Row -->
-          <div class="telemetry-row">
-            <div class="card">
-              <span class="card-title">VOLT. BATERÍA</span>
-              <div class="card-value" style="font-size: 1.4rem;">13.8 <span class="card-unit">V</span></div>
-            </div>
-            <div class="card">
-              <span class="card-title">CARGA MOTOR</span>
-              <div class="card-value" style="font-size: 1.4rem;">38 <span class="card-unit">%</span></div>
-            </div>
-            <div class="card">
-              <span class="card-title">PRESIÓN MÚLTIPLE</span>
-              <div class="card-value" style="font-size: 1.4rem;">38 <span class="card-unit">kPa</span></div>
-            </div>
-            <div class="card">
-              <span class="card-title">ACELERADOR</span>
-              <div class="card-value" style="font-size: 1.4rem;">23 <span class="card-unit">%</span></div>
-            </div>
-            <div class="card">
-              <span class="card-title">ECO INSTANTÁNEA</span>
-              <div class="card-value" style="font-size: 1.4rem; color: var(--accent-green);">9.3 <span class="card-unit">km/L</span></div>
+          <div class="card" style="grid-column: span 1; grid-row: span 2; align-items: center; justify-content: center;">
+            <span class="metric-title" style="margin-bottom: 5px;">VELOCÍMETRO</span>
+            <div class="gauge-wrapper">
+              <svg class="gauge-svg" viewBox="0 0 100 100">
+                <circle class="gauge-track" cx="50" cy="50" r="42"></circle>
+                <circle class="gauge-ticks" cx="50" cy="50" r="36"></circle>
+                <circle class="gauge-progress" id="speedCircle" cx="50" cy="50" r="42" stroke="#00e5ff" stroke-dasharray="264" stroke-dashoffset="264"></circle>
+              </svg>
+              <div class="gauge-center">
+                <div style="font-size: 1.5rem; font-weight: 900; color: #fff;" id="speedVal">0</div>
+                <div style="font-size: 0.65rem; color: var(--text-dim);">KM/H</div>
+              </div>
             </div>
           </div>
 
-          <!-- Bottom Status Bar -->
-          <div class="bottom-status-bar">
-            <div><span class="card-title">COMBUSTIBLE:</span> <strong style="color: #fff; margin-left: 5px;">45%</strong></div>
-            <div><span class="card-title">RANGO TOTAL:</span> <strong style="color: #fff; margin-left: 5px;">210 km</strong></div>
-            <div><span class="card-title">ODÓMETRO:</span> <strong style="color: #fff; margin-left: 5px;">124,532 km</strong></div>
-            <div><span class="card-title">HORAS MOTOR:</span> <strong style="color: #fff; margin-left: 5px;">125.4 h</strong></div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- ================= TAB 3: AUTONOMÍA (PHOTO 2 EXACT) ================= -->
-      <div id="autonomia" class="tab-page">
-        <div class="autonomia-grid">
+          <div class="card" style="grid-column: span 1; grid-row: span 1;"><span class="metric-title">TEMP. REFRIGERANTE</span><div class="metric-val" style="font-size: 1.2rem;" id="coolantVal">-- °C</div></div>
+          <div class="card" style="grid-column: span 1; grid-row: span 1;"><span class="metric-title">CARGA MOTOR</span><div class="metric-val" style="font-size: 1.2rem;" id="engineLoadVal">-- %</div></div>
+          <div class="card" style="grid-column: span 1; grid-row: span 1;"><span class="metric-title">VOLT. BATERÍA</span><div class="metric-val" style="font-size: 1.2rem;" id="voltVal">-- V</div></div>
+          <div class="card" style="grid-column: span 1; grid-row: span 1;"><span class="metric-title">ACELERADOR</span><div class="metric-val" style="font-size: 1.2rem;" id="throttleVal">-- %</div></div>
           
-          <div class="card chart-container-card">
-            <div>
-              <span class="card-title">ALCANCE ESTIMADO CON COMBUSTIBLE ACTUAL</span>
-              <div class="card-value" style="font-size: 3rem; color: var(--accent-green);">286 <span class="card-unit" style="font-size: 1.2rem; color: #fff;">km</span></div>
-            </div>
-
-            <!-- Glowing Area Line Chart -->
-            <svg class="area-chart-svg" viewBox="0 0 500 120" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#00ff88" stop-opacity="0.4"/>
-                  <stop offset="100%" stop-color="#00ff88" stop-opacity="0.0"/>
-                </linearGradient>
-              </defs>
-              <path d="M0,20 Q120,35 250,60 T500,100 L500,120 L0,120 Z" fill="url(#chartGrad)" />
-              <path d="M0,20 Q120,35 250,60 T500,100" fill="none" stroke="#00ff88" stroke-width="3" />
-            </svg>
+          <div class="card" style="grid-column: span 2; grid-row: span 1;"><span class="metric-title">MODO DE DATOS OBD-II</span><div class="metric-val" style="font-size: 1rem; color: var(--accent-cyan);" id="obdModeLabel">SIMULACIÓN DEMO ACTIVA</div></div>
+          
+          <div class="card" style="grid-column: span 4; grid-row: span 1; flex-direction: row; align-items: center; justify-content: space-around;">
+            <div><span class="metric-title">COMBUSTIBLE:</span> <strong style="color: #fff;">45%</strong></div>
+            <div><span class="metric-title">RANGO TOTAL:</span> <strong style="color: #fff;">210 km</strong></div>
+            <div><span class="metric-title">ODÓMETRO:</span> <strong style="color: #fff;">124,532 km</strong></div>
+            <div><span class="metric-title">HORAS MOTOR:</span> <strong style="color: #fff;">125.4 h</strong></div>
           </div>
-
-          <div class="card"><span class="card-title">COMBUSTIBLE RESTANTE</span><div class="card-value">22.4 <span class="card-unit">L</span></div></div>
-          <div class="card"><span class="card-title">ÚLTIMA CARGA</span><div class="card-value">18.6 <span class="card-unit">L</span></div></div>
-          <div class="card"><span class="card-title">CONSUMO PROMEDIO</span><div class="card-value" style="color: var(--accent-cyan);">9.2 <span class="card-unit">km/L</span></div></div>
-          <div class="card"><span class="card-title">TANQUE LLENO EST.</span><div class="card-value">~420 <span class="card-unit">km</span></div></div>
-
         </div>
       </div>
 
-      <!-- ================= TAB 4: MAPA TOPOGRÁFICO (PHOTOS 1 & 4) ================= -->
-      <div id="mapa" class="tab-page">
+      <!-- MAPA -->
+      <div id="mapa" class="tab-pane">
         <div id="mapView">
           <div id="leafletMap"></div>
 
-          <!-- Destination Overlay Card -->
-          <div class="card map-route-card">
-            <span class="card-title">DESTINO</span>
-            <div style="font-size: 1.15rem; font-weight: 800; color: #fff; margin: 4px 0;">Mirador El Cóndor</div>
-            <span style="font-size: 0.7rem; color: var(--text-muted);">Parque Nacional Quebrada del Condorito</span>
-            <div style="display: flex; justify-content: space-between; margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--card-border);">
-              <div><span class="card-title">DISTANCIA</span><div style="font-weight: 800; font-size: 1rem; color: #fff;">36.7 km</div></div>
-              <div><span class="card-title">TIEMPO EST.</span><div style="font-weight: 800; font-size: 1rem; color: #fff;">52 min</div></div>
-            </div>
+          <div class="card route-card">
+            <span class="metric-title">DESTINO RUTA ESCOLAR</span>
+            <div style="font-weight: 800; font-size: 1.1rem; color: #fff; margin: 4px 0;">Colegio / Destino Principal</div>
+            <span style="font-size: 0.7rem; color: var(--text-dim);" id="gpsCoordsText">Conectando antena GPS...</span>
           </div>
 
-          <!-- Right Floating Telemetries -->
-          <div class="map-telemetry-stack">
+          <div class="map-overlay-right">
             <div class="card" style="text-align: center;">
-              <span class="card-title">VELOCIDAD ACTUAL</span>
-              <div class="card-value" style="font-size: 2.8rem; margin: 2px 0;">72</div>
-              <span class="card-title" style="color: var(--accent-green);">km/h</span>
+              <span class="metric-title">VELOCIDAD GPS</span>
+              <div style="font-size: 2.5rem; font-weight: 900; color: #fff; margin: 5px 0;" id="gpsSpeed">0</div>
+              <span class="metric-title" style="color: var(--accent-green);">km/h</span>
             </div>
-
             <div class="card">
-              <span class="card-title">CONSUMO PROMEDIO</span>
-              <div class="card-value" style="font-size: 1.3rem;">9.2 <span class="card-unit">km/L</span></div>
-            </div>
-
-            <div class="card">
-              <span class="card-title">AUTONOMÍA SEGURA</span>
-              <div class="card-value" style="font-size: 1.3rem;">320 <span class="card-unit">km</span></div>
-            </div>
-
-            <div class="card">
-              <span class="card-title">ELEVACIÓN</span>
-              <div class="card-value" style="font-size: 1.3rem;">1560 <span class="card-unit">m</span></div>
-              <svg class="elevation-svg" viewBox="0 0 100 30">
-                <path d="M0,25 Q30,10 60,18 T100,5" fill="none" stroke="#00ff88" stroke-width="2"/>
-              </svg>
+              <span class="metric-title">ELEVACIÓN</span>
+              <div class="metric-val" style="font-size: 1.2rem;" id="gpsElevation">124 m</div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ================= TAB 5: HERMES AGENT ================= -->
-      <div id="hermes" class="tab-page">
-        <div class="terminal-card">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span class="card-title" style="color: var(--accent-green);">HERMES AGENT AI - WEBSOCKET BRIDGE</span>
-            <span style="font-size: 0.7rem; color: var(--text-muted); font-family: monospace;">ws://192.168.1.45:8080</span>
+      <!-- HERMES AGENT CONFIGURABLE -->
+      <div id="hermes" class="tab-pane">
+        <div class="hermes-panel">
+          <div class="card">
+            <span class="metric-title" style="color: var(--accent-green);">CONSOLA HERMES AGENT (WEBSOCKET LIVE)</span>
+            <div class="terminal-window" id="termLog">
+              [SISTEMA]: Inicializado panel de Hermes...<br>
+              [WEBSOCKET]: Ingrese la IP de su servidor Hermes a la derecha para conectar.
+            </div>
+            <div style="display: flex; gap: 8px; margin-top: 10px;">
+              <input type="text" style="flex:1; background: #0d1117; border: 1px solid var(--card-border); color: #fff; padding: 10px; border-radius: 6px; outline: none;" id="hermesInput" placeholder="Escribe un comando a Hermes..." onkeypress="if(event.key==='Enter') sendHermesMsg()">
+              <button class="btn-action" onclick="startVoice()">🎙️ Voz</button>
+            </div>
           </div>
 
-          <div class="terminal-body" id="termLog">
-            [SYSTEM]: Hermes Neural Agent bridge initialized...<br>
-            [OBD-II]: CAN bus link connected on Golden Dragon XML6606 ECU.<br>
-            [HERMES]: Listening for voice or text commands...
-          </div>
+          <div class="card">
+            <span class="metric-title">AJUSTES CONEXIÓN HERMES</span>
+            <div style="margin-top: 15px;">
+              <label class="metric-title">IP / SERVIDOR WEBSOCKET</label>
+              <input type="text" class="cfg-input" id="wsHost" value="192.168.1.50">
 
-          <input type="text" class="terminal-input" placeholder="Type a command for Hermes Agent (e.g., 'check engine status')..." onkeypress="if(event.key==='Enter') sendCmd(this)">
-        </div>
-      </div>
+              <label class="metric-title">PUERTO DE COMUNICACIÓN</label>
+              <input type="text" class="cfg-input" id="wsPort" value="8080">
 
-      <!-- ================= TAB 6: DIAGNÓSTICO ================= -->
-      <div id="diagnostico" class="tab-page">
-        <div class="card" style="height: 100%;">
-          <span class="card-title">DIAGNÓSTICO OBD-II DTC</span>
-          <div style="background: rgba(0, 255, 136, 0.08); border: 1px solid var(--accent-green); padding: 16px; border-radius: 8px; color: var(--accent-green); font-size: 0.85rem; font-weight: 700; margin-top: 15px;">
-            ✓ NO DTC CODES FOUND — ECU OPERATING AT OPTIMAL PARAMETERS
+              <label class="metric-title">ESTADO WEBSOCKET</label>
+              <div style="font-size: 0.8rem; font-weight: bold; color: var(--accent-red); margin-bottom: 15px;" id="wsStatus">DESCONECTADO</div>
+
+              <button class="btn-action" style="width: 100%;" onclick="connectHermesWS()">CONECTAR CON HERMES</button>
+            </div>
           </div>
         </div>
       </div>
@@ -796,62 +240,142 @@
     </div>
   </main>
 
-  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    // Tab switching logic
-    function switchTab(tabId, pageTitleText) {
-      document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-
+    function setTab(tabId) {
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
       document.getElementById(tabId).classList.add('active');
       event.currentTarget.classList.add('active');
-      document.getElementById('pageTitle').innerText = pageTitleText;
+      if (tabId === 'mapa') setTimeout(() => map.invalidateSize(), 200);
+    }
 
-      if (tabId === 'mapa') {
-        setTimeout(() => map.invalidateSize(), 200);
+    // ==========================================
+    // MOTOR DE ACTUALIZACIÓN DE TELEMETRÍA (OBD-II)
+    // ==========================================
+    let currentRpm = 0;
+    let currentSpeed = 0;
+    let isOBDConnected = false;
+
+    function updateOBDMetrics(rpm, speed, coolant, volt, load, throttle) {
+      // Tacómetro (0-6000 RPM) -> Max offset 264
+      let rpmOffset = 264 - (rpm / 6000) * 264;
+      document.getElementById('rpmCircle').style.strokeDashoffset = Math.max(0, rpmOffset);
+      document.getElementById('rpmVal').innerText = rpm;
+      document.getElementById('rpmTextSub').innerText = rpm + " RPM";
+
+      // Velocímetro (0-180 KM/H)
+      let speedOffset = 264 - (speed / 180) * 264;
+      document.getElementById('speedCircle').style.strokeDashoffset = Math.max(0, speedOffset);
+      document.getElementById('speedCircleMain').style.strokeDashoffset = Math.max(0, speedOffset);
+      document.getElementById('speedVal').innerText = speed;
+      document.getElementById('speedValMain').innerText = speed;
+
+      // Sensores ECU
+      document.getElementById('coolantVal').innerText = coolant + " °C";
+      document.getElementById('coolantValMain').innerText = coolant + " °C";
+      document.getElementById('voltVal').innerText = volt + " V";
+      document.getElementById('voltValMain').innerText = volt + " V";
+      document.getElementById('engineLoadVal').innerText = load + " %";
+      document.getElementById('throttleVal').innerText = throttle + " %";
+    }
+
+    // Modo Demostración / Simulación dinámica si no hay cable OBD físico
+    setInterval(() => {
+      if(!isOBDConnected) {
+        let simRpm = Math.floor(1800 + Math.random() * 800);
+        let simSpeed = Math.floor(65 + Math.random() * 15);
+        let simVolt = (13.6 + Math.random() * 0.4).toFixed(1);
+        updateOBDMetrics(simRpm, simSpeed, 89, simVolt, 38, 24);
+      }
+    }, 800);
+
+    // ==========================================
+    // AGENTE HERMES - WEBSOCKET REAL
+    // ==========================================
+    let hermesSocket = null;
+
+    function connectHermesWS() {
+      const host = document.getElementById('wsHost').value;
+      const port = document.getElementById('wsPort').value;
+      const wsUrl = `ws://${host}:${port}`;
+      const log = document.getElementById('termLog');
+
+      log.innerHTML += `<br>[HERMES]: Intentando conectar a ${wsUrl}...`;
+
+      try {
+        hermesSocket = new WebSocket(wsUrl);
+
+        hermesSocket.onopen = () => {
+          document.getElementById('wsStatus').innerText = "CONECTADO";
+          document.getElementById('wsStatus').style.color = "var(--accent-green)";
+          log.innerHTML += `<br><span style="color:var(--accent-green);">[HERMES]: Conexión establecida exitosamente.</span>`;
+        };
+
+        hermesSocket.onmessage = (event) => {
+          log.innerHTML += `<br><span style="color:var(--accent-cyan);">[HERMES]:</span> ${event.data}`;
+          log.scrollTop = log.scrollHeight;
+        };
+
+        hermesSocket.onclose = () => {
+          document.getElementById('wsStatus').innerText = "DESCONECTADO";
+          document.getElementById('wsStatus').style.color = "var(--accent-red)";
+          log.innerHTML += `<br>[HERMES]: Conexión cerrada.`;
+        };
+      } catch(e) {
+        log.innerHTML += `<br>[ERROR]: No se pudo iniciar el socket local.`;
       }
     }
 
-    // Live clock update
-    setInterval(() => {
-      const now = new Date();
-      document.getElementById('liveClock').innerText = `${now.toLocaleTimeString()} | GPS 4 SÁTELITES | OBD-II ACTIVE`;
-    }, 1000);
-
-    // Leaflet dark map initialization
-    const map = L.map('leafletMap', { zoomControl: false }).setView([-31.2408, -64.5386], 12);
-
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-      maxZoom: 18,
-      attribution: 'ArcGIS'
-    }).addTo(map);
-
-    // Route polyline glowing
-    const routeCoords = [
-      [-31.2800, -64.5100],
-      [-31.2650, -64.5200],
-      [-31.2500, -64.5250],
-      [-31.2400, -64.5400],
-      [-31.2200, -64.5500],
-      [-31.2000, -64.5600]
-    ];
-
-    L.polyline(routeCoords, { color: '#00ff88', weight: 8, opacity: 0.35 }).addTo(map);
-    L.polyline(routeCoords, { color: '#00ff88', weight: 3, opacity: 0.9 }).addTo(map);
-
-    // Hermes agent input logger
-    function sendCmd(input) {
-      if(!input.value.trim()) return;
+    function sendHermesMsg() {
+      const input = document.getElementById('hermesInput');
       const log = document.getElementById('termLog');
-      log.innerHTML += `<br><span style="color:#fff;">> ${input.value}</span>`;
-      const val = input.value;
+      if(!input.value.trim()) return;
+
+      const txt = input.value;
+      log.innerHTML += `<br><span style="color:#fff;">> ${txt}</span>`;
+
+      if(hermesSocket && hermesSocket.readyState === WebSocket.OPEN) {
+        hermesSocket.send(JSON.stringify({ action: "command", query: txt }));
+      } else {
+        setTimeout(() => {
+          log.innerHTML += `<br>[HERMES]: (Modo Local) Instrucción '${txt}' registrada.`;
+          log.scrollTop = log.scrollHeight;
+        }, 300);
+      }
       input.value = '';
-      setTimeout(() => {
-        log.innerHTML += `<br>[HERMES]: Command '${val}' processed cleanly. Golden Dragon ECU telemetry nominal.`;
-        log.scrollTop = log.scrollHeight;
-      }, 400);
+    }
+
+    // Reconocimiento de Voz
+    function startVoice() {
+      if ('webkitSpeechRecognition' in window) {
+        const rec = new webkitSpeechRecognition();
+        rec.lang = 'es-ES';
+        rec.start();
+        rec.onresult = (e) => {
+          document.getElementById('hermesInput').value = e.results[0][0].transcript;
+          sendHermesMsg();
+        };
+      } else {
+        alert("El navegador de la radio no soporta entrada de voz por API.");
+      }
+    }
+
+    // ==========================================
+    // MAPA CON GPS
+    // ==========================================
+    let map = L.map('leafletMap', { zoomControl: false }).setView([-31.2408, -64.5386], 13);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 18 }).addTo(map);
+
+    if ("geolocation" in navigator) {
+      navigator.geolocation.watchPosition((pos) => {
+        let lat = pos.coords.latitude;
+        let lng = pos.coords.longitude;
+        let speed = Math.round((pos.coords.speed || 0) * 3.6);
+        document.getElementById('gpsSpeed').innerText = speed;
+        document.getElementById('gpsCoordsText').innerText = `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
+      });
     }
   </script>
 </body>
