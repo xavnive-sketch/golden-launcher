@@ -68,6 +68,15 @@
     .btn-action { background: var(--accent-cyan); border: none; color: #000; font-weight: 800; padding: 10px; border-radius: 6px; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; transition: 0.2s; }
     .btn-action:hover { background: #fff; box-shadow: 0 0 12px var(--accent-cyan); }
 
+    /* ESTILOS DEL TABLERO GENERAL (replica del diseño de referencia) */
+    .tablero-grid { display: grid; grid-template-columns: repeat(12, 1fr); grid-template-rows: auto auto auto auto; gap: 10px; height: 100%; }
+    .gauge-big { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .bar-row { display: flex; flex-direction: column; gap: 4px; }
+    .bar-track { width: 100%; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s ease; }
+    .status-bar { grid-column: span 12; display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; background: rgba(0,0,0,0.4); border: 1px solid var(--card-border); border-radius: 8px; font-size: 0.65rem; color: var(--text-dim); }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-green); display: inline-block; margin-right: 6px; animation: pulseGlow 2s infinite alternate; }
+
     /* Animación del Arc Reactor Circular */
     .arc-reactor-container { display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; height: 180px; margin: 10px 0; }
     .arc-ring { position: absolute; border-radius: 50%; border: 2px dashed rgba(0,229,255,0.4); animation: spinClockwise 12s linear infinite; }
@@ -140,12 +149,13 @@
         </div>
       </div>
 
-      <!-- TABLERO -->
+      <!-- TABLERO GENERAL (replica del diseño de referencia) -->
       <div id="tablero" class="tab-pane">
-        <div class="dashboard-grid">
+        <div class="tablero-grid">
           
-          <div class="card" style="grid-column: span 1; grid-row: span 2; align-items: center; justify-content: center;">
-            <span class="metric-title" style="margin-bottom: 5px;">TACÓMETRO</span>
+          <!-- FILA SUPERIOR: Tacómetro | Temperaturas | Velocímetro -->
+          <div class="card gauge-big" style="grid-column: span 4; grid-row: span 2;">
+            <span class="metric-title" style="margin-bottom: 8px;">TACÓMETRO</span>
             <div class="gauge-wrapper">
               <svg class="gauge-svg" viewBox="0 0 100 100">
                 <circle class="gauge-track" cx="50" cy="50" r="42"></circle>
@@ -153,14 +163,29 @@
                 <circle class="gauge-progress" id="rpmCircle" cx="50" cy="50" r="42" stroke="#00ff88" stroke-dasharray="264" stroke-dashoffset="264"></circle>
               </svg>
               <div class="gauge-center">
-                <div style="font-size: 1.5rem; font-weight: 900; color: var(--accent-green);" id="rpmVal">0</div>
-                <div style="font-size: 0.65rem; color: var(--text-dim);">RPM</div>
+                <div style="font-size: 2.2rem; font-weight: 900; color: var(--accent-green);" id="rpmVal">0</div>
+                <div style="font-size: 0.7rem; color: var(--text-dim);">RPM</div>
               </div>
             </div>
           </div>
 
-          <div class="card" style="grid-column: span 1; grid-row: span 2; align-items: center; justify-content: center;">
-            <span class="metric-title" style="margin-bottom: 5px;">VELOCÍMETRO</span>
+          <div class="card" style="grid-column: span 4; grid-row: span 1;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; height: 100%;">
+              <div>
+                <span class="metric-title">TEMP REFRIGERANTE</span>
+                <div class="metric-val" style="font-size: 1.6rem; color: var(--accent-green);" id="coolantVal">-- °C</div>
+                <div class="bar-track"><div class="bar-fill" id="coolantBar" style="width: 0%; background: var(--accent-green);"></div></div>
+              </div>
+              <div>
+                <span class="metric-title">TEMP ACEITE</span>
+                <div class="metric-val" style="font-size: 1.6rem; color: var(--accent-yellow);" id="oilTempVal">-- °C</div>
+                <div class="bar-track"><div class="bar-fill" id="oilTempBar" style="width: 0%; background: var(--accent-yellow);"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card gauge-big" style="grid-column: span 4; grid-row: span 2;">
+            <span class="metric-title" style="margin-bottom: 8px;">VELOCÍMETRO</span>
             <div class="gauge-wrapper">
               <svg class="gauge-svg" viewBox="0 0 100 100">
                 <circle class="gauge-track" cx="50" cy="50" r="42"></circle>
@@ -168,25 +193,83 @@
                 <circle class="gauge-progress" id="speedCircle" cx="50" cy="50" r="42" stroke="#00e5ff" stroke-dasharray="264" stroke-dashoffset="264"></circle>
               </svg>
               <div class="gauge-center">
-                <div style="font-size: 1.5rem; font-weight: 900; color: #fff;" id="speedVal">0</div>
-                <div style="font-size: 0.65rem; color: var(--text-dim);">KM/H</div>
+                <div style="font-size: 2.2rem; font-weight: 900; color: #fff;" id="speedVal">0</div>
+                <div style="font-size: 0.7rem; color: var(--text-dim);">KM/H</div>
               </div>
             </div>
           </div>
 
-          <div class="card" style="grid-column: span 1; grid-row: span 1;"><span class="metric-title">TEMP. REFRIGERANTE</span><div class="metric-val" style="font-size: 1.2rem;" id="coolantVal">-- °C</div></div>
-          <div class="card" style="grid-column: span 1; grid-row: span 1;"><span class="metric-title">CARGA MOTOR</span><div class="metric-val" style="font-size: 1.2rem;" id="engineLoadVal">-- %</div></div>
-          <div class="card" style="grid-column: span 1; grid-row: span 1;"><span class="metric-title">VOLT. BATERÍA</span><div class="metric-val" style="font-size: 1.2rem;" id="voltVal">-- V</div></div>
-          <div class="card" style="grid-column: span 1; grid-row: span 1;"><span class="metric-title">ACELERADOR</span><div class="metric-val" style="font-size: 1.2rem;" id="throttleVal">-- %</div></div>
-          
-          <div class="card" style="grid-column: span 2; grid-row: span 1;"><span class="metric-title">MODO DE DATOS OBD-II</span><div class="metric-val" style="font-size: 1rem; color: var(--accent-cyan);">SIMULACIÓN DEMO ACTIVA</div></div>
-          
-          <div class="card" style="grid-column: span 4; grid-row: span 1; flex-direction: row; align-items: center; justify-content: space-around;">
-            <div><span class="metric-title">COMBUSTIBLE:</span> <strong style="color: #fff;">45%</strong></div>
-            <div><span class="metric-title">RANGO TOTAL:</span> <strong style="color: #fff;">210 km</strong></div>
-            <div><span class="metric-title">ODÓMETRO:</span> <strong style="color: #fff;">124,532 km</strong></div>
-            <div><span class="metric-title">HORAS MOTOR:</span> <strong style="color: #fff;">125.4 h</strong></div>
+          <div class="card" style="grid-column: span 4; grid-row: span 1;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; height: 100%;">
+              <div>
+                <span class="metric-title">VOLTAJE BATERÍA</span>
+                <div class="metric-val" style="font-size: 1.6rem; color: var(--accent-yellow);" id="voltVal">-- V</div>
+              </div>
+              <div>
+                <span class="metric-title">CARGA MOTOR</span>
+                <div class="metric-val" style="font-size: 1.6rem; color: var(--accent-cyan);" id="engineLoadVal">-- %</div>
+                <div class="bar-track"><div class="bar-fill" id="loadBar" style="width: 0%; background: var(--accent-cyan);"></div></div>
+              </div>
+            </div>
           </div>
+
+          <!-- FILA CENTRAL: 5 tarjetas con barras -->
+          <div class="card" style="grid-column: span 2;">
+            <span class="metric-title">PRESIÓN MÚLTIPLE</span>
+            <div class="metric-val" style="font-size: 1.1rem;" id="mapPressureVal">-- kPa</div>
+            <div class="bar-track"><div class="bar-fill" id="mapPressureBar" style="width: 0%; background: var(--accent-green);"></div></div>
+          </div>
+          <div class="card" style="grid-column: span 2;">
+            <span class="metric-title">ACELERADOR</span>
+            <div class="metric-val" style="font-size: 1.1rem;" id="throttleVal">-- %</div>
+            <div class="bar-track"><div class="bar-fill" id="throttleBar" style="width: 0%; background: var(--accent-cyan);"></div></div>
+          </div>
+          <div class="card" style="grid-column: span 3;">
+            <span class="metric-title">ECONOMÍA INSTANTÁNEA</span>
+            <div class="metric-val" style="font-size: 1.1rem;" id="fuelEconomyVal">-- km/L</div>
+            <div class="bar-track"><div class="bar-fill" id="fuelEconomyBar" style="width: 0%; background: var(--accent-green);"></div></div>
+          </div>
+          <div class="card" style="grid-column: span 2;">
+            <span class="metric-title">STFT</span>
+            <div class="metric-val" style="font-size: 1.1rem; color: var(--accent-green);" id="stftVal">-- %</div>
+            <div class="bar-track"><div class="bar-fill" id="stftBar" style="width: 0%; background: var(--accent-green);"></div></div>
+          </div>
+          <div class="card" style="grid-column: span 3;">
+            <span class="metric-title">LTFT</span>
+            <div class="metric-val" style="font-size: 1.1rem; color: var(--accent-yellow);" id="ltftVal">-- %</div>
+            <div class="bar-track"><div class="bar-fill" id="ltftBar" style="width: 0%; background: var(--accent-yellow);"></div></div>
+          </div>
+
+          <!-- FILA INFERIOR: resumen -->
+          <div class="card" style="grid-column: span 2; flex-direction: row; align-items: center; justify-content: space-between;">
+            <div><span class="metric-title">COMBUSTIBLE</span><div style="font-size: 1.4rem; font-weight: 800; color: #fff;">45%</div></div>
+            <div style="text-align: right;"><span class="metric-title">RANGO</span><div style="font-size: 0.9rem; color: var(--text-dim);">273 km</div></div>
+          </div>
+          <div class="card" style="grid-column: span 2; align-items: center; justify-content: center;">
+            <span class="metric-title">TIEMPO TOTAL</span>
+            <div class="metric-val" style="font-size: 1.4rem;">210 h</div>
+          </div>
+          <div class="card" style="grid-column: span 2; align-items: center; justify-content: center;">
+            <span class="metric-title">ODÓMETRO</span>
+            <div class="metric-val" style="font-size: 1.4rem;">124,532 km</div>
+          </div>
+          <div class="card" style="grid-column: span 2; align-items: center; justify-content: center;">
+            <span class="metric-title">HORAS MOTOR</span>
+            <div class="metric-val" style="font-size: 1.4rem;">125.4 h</div>
+          </div>
+          <div class="card" style="grid-column: span 4; align-items: center; justify-content: center;">
+            <span class="metric-title">VEHÍCULO</span>
+            <div style="font-size: 1.1rem; font-weight: 800; color: var(--accent-cyan);">GOLDEN DRAGON XML6606</div>
+          </div>
+
+          <!-- BARRA DE ESTADO INFERIOR -->
+          <div class="status-bar">
+            <span id="statusUpdateTime">ACTUALIZADO --:--:--</span>
+            <span><span class="status-dot"></span>CONECTADO</span>
+            <span>SISTEMA OK</span>
+            <span id="statusAltitude">ALTITUD: -- m</span>
+          </div>
+
         </div>
       </div>
 
@@ -272,31 +355,61 @@
     }
 
     // TELEMETRÍA OBD-II
-    function updateOBDMetrics(rpm, speed, coolant, volt, load, throttle) {
+    function updateOBDMetrics(rpm, speed, coolant, volt, load, throttle, oilTemp, mapPressure, fuelEconomy, stft, ltft) {
+      // Tacómetro (0-6000 RPM) -> Max offset 264
       let rpmOffset = 264 - (rpm / 6000) * 264;
       document.getElementById('rpmCircle').style.strokeDashoffset = Math.max(0, rpmOffset);
       document.getElementById('rpmVal').innerText = rpm;
       document.getElementById('rpmTextSub').innerText = rpm + " RPM";
 
+      // Velocímetro (0-180 KM/H)
       let speedOffset = 264 - (speed / 180) * 264;
       document.getElementById('speedCircle').style.strokeDashoffset = Math.max(0, speedOffset);
       document.getElementById('speedCircleMain').style.strokeDashoffset = Math.max(0, speedOffset);
       document.getElementById('speedVal').innerText = speed;
       document.getElementById('speedValMain').innerText = speed;
 
+      // Sensores ECU
       document.getElementById('coolantVal').innerText = coolant + " °C";
       document.getElementById('coolantValMain').innerText = coolant + " °C";
       document.getElementById('voltVal').innerText = volt + " V";
       document.getElementById('voltValMain').innerText = volt + " V";
       document.getElementById('engineLoadVal').innerText = load + " %";
       document.getElementById('throttleVal').innerText = throttle + " %";
+
+      // Nuevas métricas (si existen en el DOM)
+      const setText = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
+      const setBar = (id, pct) => { const el = document.getElementById(id); if (el) el.style.width = Math.min(100, Math.max(0, pct)) + "%"; };
+      const setColor = (id, color) => { const el = document.getElementById(id); if (el) el.style.background = color; };
+
+      setText('oilTempVal', oilTemp + " °C");
+      setText('mapPressureVal', mapPressure + " kPa");
+      setText('fuelEconomyVal', fuelEconomy + " km/L");
+      setText('stftVal', stft + " %");
+      setText('ltftVal', ltft + " %");
+
+      // Barras de progreso
+      setBar('coolantBar', (coolant / 130) * 100);
+      setBar('oilTempBar', (oilTemp / 130) * 100);
+      setBar('loadBar', load);
+      setBar('mapPressureBar', (mapPressure / 255) * 100);
+      setBar('throttleBar', throttle);
+      setBar('fuelEconomyBar', (fuelEconomy / 20) * 100);
+      setBar('stftBar', (stft + 25) * 2);
+      setBar('ltftBar', (ltft + 25) * 2);
     }
 
     setInterval(() => {
       let simRpm = Math.floor(1800 + Math.random() * 800);
       let simSpeed = Math.floor(65 + Math.random() * 15);
       let simVolt = (13.6 + Math.random() * 0.4).toFixed(1);
-      updateOBDMetrics(simRpm, simSpeed, 89, simVolt, 38, 24);
+      let simOil = Math.floor(85 + Math.random() * 8);
+      let simMap = Math.floor(30 + Math.random() * 15);
+      let simEconomy = (8.5 + Math.random() * 3).toFixed(1);
+      let simStft = (-2 + Math.random() * 3).toFixed(1);
+      let simLtft = (1.5 + Math.random() * 2).toFixed(1);
+      // Actualizar tablero principal + tablero general con todas las métricas
+      updateOBDMetrics(simRpm, simSpeed, 89, simVolt, 38, 24, simOil, simMap, simEconomy, simStft, simLtft);
     }, 800);
 
     // ==========================================
@@ -397,6 +510,10 @@
         document.getElementById('gpsCoordsText').innerText = `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
         document.getElementById('gpsElevation').innerText = alt + " m";
 
+        // Actualizar barra de estado del tablero (altitud)
+        const statusAlt = document.getElementById('statusAltitude');
+        if (statusAlt) statusAlt.innerText = `ALTITUD: ${alt} m`;
+
         // Si el mapa ya existe, mover el marcador y centrar
         if (map && busMarker) {
           busMarker.setLatLng([lat, lng]);
@@ -439,6 +556,10 @@
       const mm = String(now.getMinutes()).padStart(2, '0');
       const ss = String(now.getSeconds()).padStart(2, '0');
       document.getElementById('headerClock').innerText = `${hh}:${mm}:${ss} | GPS: ${gpsInitialized ? 'CONECTADO' : 'esperando...'}`;
+
+      // Actualizar barra de estado del tablero
+      const updateTime = document.getElementById('statusUpdateTime');
+      if (updateTime) updateTime.innerText = `ACTUALIZADO ${hh}:${mm}:${ss}`;
     }
     setInterval(updateClock, 1000);
     updateClock();
