@@ -199,6 +199,7 @@
             <span class="metric-title">DESTINO RUTA ESCOLAR</span>
             <div style="font-weight: 800; font-size: 1.1rem; color: #fff; margin: 4px 0;">Colegio / Destino Principal</div>
             <span style="font-size: 0.7rem; color: var(--text-dim);" id="gpsCoordsText">Conectando antena GPS...</span>
+            <button class="btn-action" style="margin-top: 10px; font-size: 0.65rem; padding: 8px;" onclick="abrirEnNavegador()">🌐 ABRIR EN NAVEGADOR</button>
           </div>
 
           <div class="map-overlay-right">
@@ -441,6 +442,21 @@
     }
     setInterval(updateClock, 1000);
     updateClock();
+
+    // Abrir el dashboard en un navegador externo (Chrome/Firefox)
+    // Necesario si el WebView de la APK no otorga permisos de ubicación
+    function abrirEnNavegador() {
+      const url = 'https://xavnive-sketch.github.io/golden-launcher/';
+      // Intentar con Android intent
+      if (typeof window.AndroidBridge !== 'undefined' && window.AndroidBridge.openBrowser) {
+        window.AndroidBridge.openBrowser(url);
+      } else if (navigator.userAgent.includes('Android')) {
+        // Usar Intent de Android para abrir en Chrome
+        window.location.href = `intent://${url.replace('https://','')}#Intent;scheme=https;action=android.intent.action.VIEW;end`;
+      } else {
+        window.open(url, '_blank');
+      }
+    }
   </script>
 </body>
 </html>
