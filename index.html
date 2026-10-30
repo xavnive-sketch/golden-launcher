@@ -764,11 +764,11 @@
             // Si abrimos mapa, lazy-init (crear al abrir para evitar el bug de Leaflet con display:none)
             if (n === 'mapa') setTimeout(() => {
                 if (!mapFull && window.L && document.getElementById('route-map-full')) {
-                    const cur = [-2.1900, -79.8800], start = [-2.1850, -79.8900], end = [-2.2000, -79.8700];
+                    const cur = currentPos, start = [-2.1850, -79.8900], end = [-2.2000, -79.8700];
                     mapFull = L.map('route-map-full', { center: cur, zoom: 13, zoomControl: false, attributionControl: false });
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapFull);
                     const bd = L.divIcon({ html: '<div style="background:#00f0ff; width:16px; height:16px; border-radius:50%; border:2px solid #010610; box-shadow:0 0 12px #00f0ff;"></div>', iconSize: [16,16] });
-                    L.marker(cur, { icon: bd }).addTo(mapFull);
+                    busMarkerFull = L.marker(cur, { icon: bd }).addTo(mapFull);
                     L.polyline([start, cur, end], { color: '#00f0ff', weight: 3, dashArray: '4, 8' }).addTo(mapFull);
                     mapFull.fitBounds(L.latLngBounds([start, end]), { padding: [15,15] });
                 }
@@ -859,8 +859,11 @@
         // Leaflet Satellite GPS Map Setup
         let map;
         let mapFull;
+        let busMarker = null;        // marcador del bus en mapa tablero
+        let busMarkerFull = null;    // marcador del bus en mapa página
+        let currentPos = [-2.1900, -79.8800];  // posición real (se actualiza con GPS)
+
         function initMap() {
-            const currentPos = [-2.1900, -79.8800];
             const startPos = [-2.1850, -79.8900];
             const endPos = [-2.2000, -79.8700];
 
@@ -873,12 +876,12 @@
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-            // Bus Location Marker
+            // Bus Location Marker (mutable: se actualiza con GPS)
             const busDiv = L.divIcon({
                 html: `<div style="background:#00f0ff; width:14px; height:14px; border-radius:50%; border:2px solid #010610; box-shadow:0 0 10px #00f0ff;"></div>`,
                 iconSize: [14, 14]
             });
-            L.marker(currentPos, { icon: busDiv }).addTo(map);
+            busMarker = L.marker(currentPos, { icon: busDiv }).addTo(map);
             L.marker(startPos).addTo(map);
             L.marker(endPos).addTo(map);
 
@@ -891,6 +894,59 @@
             map.fitBounds(route.getBounds(), { padding: [15, 15] });
         }
         window.addEventListener('load', initMap);
+
+        // ==================== GPS EN TIEMPO REAL ====================
+        // Intenta obtener la posición real del dispositivo (navegador con permisos).
+        // Si el navegador no da permiso (WebView Geyser sin onGeolocationPermissionsShowPrompt),
+        // mantiene la posición fija actual y no rompe nada.
+        function updateGPSText(lat, lon, speed, acc) {
+            // Recuadro de coords en el mapa del tablero
+            const coordBox = document.querySelector('#route-map ~ div');
+            const latEl = document.querySelector('#route-map ~ div .text-dash-cyan');
+            if (latEl) latEl.textContent = `Lat: ${lat.toFixed(4)} &nbsp; Lon: ${lon.toFixed(4)}`;
+            const speedEl = document.getElementById('map-speed');
+            if (speedEl) speedEl.textContent = `${speed} km/h`;
+            // GPS en diagnóstico
+            const gpsDiag = document.querySelector('#page-diagnostico .font-orbitron');
+            // Actualizar todos los elementos con clase que muestren GPS
+            const gpsStatus = document.querySelectorAll('.text-dash-cyan.font-semibold');
+            gpsStatus.forEach(el => { if (el.textContent.includes('GPS')) el.textContent = '● GPS en vivo'; });
+            // Indicador "UBICACIÓN EN TIEMPO REAL" ya está activo
+        }
+
+        function startGPS() {
+            if (!('geolocation' in navigator)) {
+                console.log('[GPS] Geolocalización no disponible en este navegador — posición fija');
+                return;
+            }
+            navigator.geolocation.watchPosition(
+                (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    const acc = pos.coords.accuracy;
+                    const spd = pos.coords.speed !== null ? (pos.coords.speed * 3.6).toFixed(1) : '0.0';
+                    currentPos = [lat, lon];
+                    // Actualizar marcador en el mapa del tablero
+                    if (busMarker && map) {
+                        busMarker.setLatLng([lat, lon]);
+                        map.panTo([lat, lon]);
+                    }
+                    // Actualizar marcador en el mapa de la página (si existe)
+                    if (busMarkerFull && mapFull) {
+                        busMarkerFull.setLatLng([lat, lon]);
+                    }
+                    updateGPSText(lat, lon, spd, acc);
+                    console.log(`[GPS] Posición real: ${lat.toFixed(5)}, ${lon.toFixed(5)} (precisión ${acc.toFixed(1)}m)`);
+                },
+                (err) => {
+                    console.log(`[GPS] Sin permiso/error (${err.code}): ${err.message} — posición fija`);
+                    // Mantener posición por defecto; no romper
+                },
+                { enableHighAccuracy: true, maximumAge: 2000, timeout: 15000 }
+            );
+        }
+        // Iniciar GPS cuando cargue (con pequeño delay para que Leaflet esté listo)
+        window.addEventListener('load', () => setTimeout(startGPS, 1500));
 
         // JARVIS Dynamic AI Assistant
         function askJarvis(type) {
