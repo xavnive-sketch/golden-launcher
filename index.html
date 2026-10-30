@@ -206,35 +206,35 @@
         <!-- ===== LEFT SIDEBAR MENU (2 COLS) ===== -->
         <aside class="col-span-2 cyber-panel p-2 flex flex-col justify-between">
             <nav class="space-y-1">
-                <button onclick="selectNav(this)" class="nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg bg-dash-cyan/20 border border-dash-cyan text-dash-cyan font-bold font-orbitron shadow-[0_0_10px_rgba(0,240,255,0.2)]">
+                <button onclick="setPage('inicio')" data-page="inicio" class="nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg bg-dash-cyan/20 border border-dash-cyan text-dash-cyan font-bold font-orbitron shadow-[0_0_10px_rgba(0,240,255,0.2)]">
                     <i data-lucide="home" class="w-4 h-4"></i>
                     <span>Inicio</span>
                 </button>
-                <button onclick="selectNav(this)" class="nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
+                <button onclick="setPage('tablero')" data-page="tablero" class="nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
                     <i data-lucide="gauge" class="w-4 h-4"></i>
                     <span>Tablero</span>
                 </button>
-                <button onclick="selectNav(this)" class="nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
+                <button onclick="setPage('mapa')" data-page="mapa" class="nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
                     <i data-lucide="map" class="w-4 h-4"></i>
                     <span>Mapa</span>
                 </button>
-                <button onclick="selectNav(this)" class="nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
+                <button onclick="setPage('autonomia')" data-page="autonomia" class="nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
                     <i data-lucide="battery-full" class="w-4 h-4"></i>
                     <span>Autonomía</span>
                 </button>
-                <button onclick="selectNav(this)" class="nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
+                <button onclick="setPage('registro')" data-page="registro" class="nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
                     <i data-lucide="clipboard-list" class="w-4 h-4"></i>
                     <span>Registro</span>
                 </button>
-                <button onclick="selectNav(this)" class="nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
+                <button onclick="setPage('diagnostico')" data-page="diagnostico" class="nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
                     <i data-lucide="activity" class="w-4 h-4"></i>
                     <span>Diagnóstico</span>
                 </button>
-                <button onclick="selectNav(this)" class="nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
+                <button onclick="setPage('jarvis')" data-page="jarvis" class="nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
                     <i data-lucide="bot" class="w-4 h-4"></i>
                     <span>J.A.R.V.I.S.</span>
                 </button>
-                <button onclick="selectNav(this)" class="nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
+                <button onclick="setPage('ajustes')" data-page="ajustes" class="nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
                     <i data-lucide="settings" class="w-4 h-4"></i>
                     <span>Ajustes</span>
                 </button>
@@ -742,21 +742,27 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Navigation Sidebar Toggle
+        // Navigation Sidebar Toggle (patrón de versiones anteriores: data-page + setPage)
         function selectNav(btn) {
+            // Mantener compatibilidad: si se llama con un botón, usar su data-page
+            setPage(btn.dataset.page || btn.querySelector('span')?.textContent.trim().toLowerCase());
+        }
+        function setPage(n) {
+            // Resaltar botón activo
             document.querySelectorAll('.nav-btn').forEach(b => {
-                b.className = "nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold";
+                const active = b.dataset.page === n;
+                b.className = active
+                    ? "nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg bg-dash-cyan/20 border border-dash-cyan text-dash-cyan font-bold font-orbitron shadow-[0_0_10px_rgba(0,240,255,0.2)]"
+                    : "nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold";
             });
-            btn.className = "nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg bg-dash-cyan/20 border border-dash-cyan text-dash-cyan font-bold font-orbitron shadow-[0_0_10px_rgba(0,240,255,0.2)]";
-            // Mostrar/ocultar TODAS las páginas según el botón pulsado
-            const label = btn.querySelector('span')?.textContent.trim().toLowerCase();
+            // Mostrar/ocultar TODAS las páginas según data-page
             const pages = ['inicio', 'tablero', 'mapa', 'autonomia', 'registro', 'diagnostico', 'jarvis', 'ajustes'];
             pages.forEach(p => {
                 const el = document.getElementById('page-' + p);
-                if (el) el.classList.toggle('hidden', label !== p);
+                if (el) el.classList.toggle('hidden', p !== n);
             });
-            // Si abrimos mapa o ajustes, invalidar tamaño del mapa
-            if (label === 'mapa') setTimeout(() => {
+            // Si abrimos mapa, lazy-init (crear al abrir para evitar el bug de Leaflet con display:none)
+            if (n === 'mapa') setTimeout(() => {
                 if (!mapFull && window.L && document.getElementById('route-map-full')) {
                     const cur = [-2.1900, -79.8800], start = [-2.1850, -79.8900], end = [-2.2000, -79.8700];
                     mapFull = L.map('route-map-full', { center: cur, zoom: 13, zoomControl: false, attributionControl: false });
