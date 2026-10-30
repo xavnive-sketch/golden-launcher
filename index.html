@@ -263,7 +263,8 @@
         </aside>
 
         <!-- ===== CENTER & RIGHT MAIN DISPLAY GRID (10 COLS) ===== -->
-        <main class="col-span-10 grid grid-cols-10 gap-2 h-full">
+        <main class="col-span-10 grid grid-cols-10 gap-2 h-full" id="page-inicio">
+            <!-- ===== PÁGINA INICIO (dashboard principal) ===== -->
 
             <!-- UPPER COCKPIT: GAUGES, BUS PHOTO & VEHICLE STATUS (10 COLS GRID) -->
             <section class="col-span-10 grid grid-cols-10 gap-2 h-[55%]">
@@ -548,10 +549,10 @@
             </section>
 
         </main>
-    </div>
+    
 
     <!-- ==================== PÁGINA: REGISTRO ==================== -->
-    <div id="page-registro" class="hidden cyber-panel p-2 h-full flex flex-col">
+    <div id="page-registro" class="hidden col-span-10 cyber-panel p-2 h-full flex flex-col">
         <div class="grid grid-cols-12 gap-2 flex-grow h-full">
             <!-- Lista -->
             <div class="col-span-7 cyber-panel p-2 flex flex-col overflow-y-auto">
@@ -608,7 +609,7 @@
     </div>
 
     <!-- ==================== PÁGINA: AJUSTES ==================== -->
-    <div id="page-ajustes" class="hidden cyber-panel p-2 h-full">
+    <div id="page-ajustes" class="hidden col-span-10 cyber-panel p-2 h-full">
         <div class="grid grid-cols-2 gap-2 h-full">
             <div class="cyber-panel p-2 flex flex-col">
                 <h2 class="font-orbitron font-bold text-white text-xs tracking-wider mb-2 pb-1 border-b border-dash-border">HERMES AGENT</h2>
@@ -637,6 +638,63 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- ==================== PÁGINA: TABLERO ==================== -->
+    <div id="page-tablero" class="hidden col-span-10 cyber-panel p-2 h-full">
+        <h2 class="font-orbitron font-bold text-white text-xs tracking-wider mb-2 pb-1 border-b border-dash-border">TABLERO OBD-II</h2>
+        <div class="grid grid-cols-5 gap-2 text-center">
+            <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="text-[9px] text-dash-muted">RPM</div><div id="t-rpm" class="font-orbitron font-bold text-white text-lg">--</div></div>
+            <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="text-[9px] text-dash-muted">VELOCIDAD</div><div id="t-speed" class="font-orbitron font-bold text-white text-lg">--</div></div>
+            <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="text-[9px] text-dash-muted">TEMP MOTOR</div><div id="t-temp" class="font-orbitron font-bold text-white text-lg">--</div></div>
+            <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="text-[9px] text-dash-muted">VOLTAJE</div><div id="t-volts" class="font-orbitron font-bold text-white text-lg">--</div></div>
+            <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="text-[9px] text-dash-muted">CARGA</div><div id="t-load" class="font-orbitron font-bold text-white text-lg">--</div></div>
+        </div>
+        <div class="mt-3 text-[10px] text-dash-muted bg-dash-panel border border-dash-border p-2 rounded">
+            📡 Sin OBD-II conectado no hay datos reales. Los valores se mostrarán al integrar el adaptador ELM327.
+        </div>
+    </div>
+
+    <!-- ==================== PÁGINA: MAPA ==================== -->
+    <div id="page-mapa" class="hidden col-span-10 cyber-panel p-2 h-full">
+        <h2 class="font-orbitron font-bold text-white text-xs tracking-wider mb-2 pb-1 border-b border-dash-border">UBICACIÓN EN TIEMPO REAL</h2>
+        <div id="route-map-full" class="w-full h-[calc(100%-50px)] rounded-lg overflow-hidden border border-dash-border dark-sat-tiles"></div>
+    </div>
+
+    <!-- ==================== PÁGINA: AUTONOMÍA ==================== -->
+    <div id="page-autonomia" class="hidden col-span-10 cyber-panel p-2 h-full">
+        <h2 class="font-orbitron font-bold text-white text-xs tracking-wider mb-2 pb-1 border-b border-dash-border">AUTONOMÍA</h2>
+        <div class="grid grid-cols-4 gap-2 text-center">
+            <div class="bg-dash-panel border border-dash-border p-3 rounded"><div class="text-[9px] text-dash-muted">COMBUSTIBLE</div><div class="font-orbitron font-bold text-white text-xl">--%</div></div>
+            <div class="bg-dash-panel border border-dash-border p-3 rounded"><div class="text-[9px] text-dash-muted">ALCANCE</div><div class="font-orbitron font-bold text-white text-xl">-- km</div></div>
+            <div class="bg-dash-panel border border-dash-border p-3 rounded"><div class="text-[9px] text-dash-muted">CONSUMO</div><div class="font-orbitron font-bold text-white text-xl">-- km/L</div></div>
+            <div class="bg-dash-panel border border-dash-border p-3 rounded"><div class="text-[9px] text-dash-muted">TIPO</div><div class="font-orbitron font-bold text-white text-xl">DIESEL</div></div>
+        </div>
+        <div class="mt-3 text-[10px] text-dash-muted bg-dash-panel border border-dash-border p-2 rounded">Requiere nivel real de combustible / OBD-II.</div>
+    </div>
+
+    <!-- ==================== PÁGINA: DIAGNÓSTICO ==================== -->
+    <div id="page-diagnostico" class="hidden col-span-10 cyber-panel p-2 h-full">
+        <h2 class="font-orbitron font-bold text-white text-xs tracking-wider mb-2 pb-1 border-b border-dash-border">DIAGNÓSTICO</h2>
+        <div class="grid grid-cols-4 gap-2 text-center">
+            <div class="bg-dash-panel border border-dash-border p-3 rounded"><div class="text-[9px] text-dash-muted">OBD-II</div><div class="font-orbitron font-bold text-white text-lg">No conectado</div></div>
+            <div class="bg-dash-panel border border-dash-border p-3 rounded"><div class="text-[9px] text-dash-muted">DTC</div><div class="font-orbitron font-bold text-white text-lg">--</div></div>
+            <div class="bg-dash-panel border border-dash-border p-3 rounded"><div class="text-[9px] text-dash-muted">GPS</div><div class="font-orbitron font-bold text-white text-lg">Pendiente</div></div>
+            <div class="bg-dash-panel border border-dash-border p-3 rounded"><div class="text-[9px] text-dash-muted">UI</div><div class="font-orbitron font-bold text-green text-lg">OK</div></div>
+        </div>
+        <div class="mt-3 text-[10px] text-dash-muted bg-dash-panel border border-dash-border p-2 rounded">Sin OBD-II no se leen códigos de avería. No se inventan datos.</div>
+    </div>
+
+    <!-- ==================== PÁGINA: J.A.R.V.I.S. (consola completa) ==================== -->
+    <div id="page-jarvis" class="hidden col-span-10 cyber-panel p-2 h-full">
+        <h2 class="font-orbitron font-black text-dash-cyan text-xs tracking-widest text-glow mb-2 pb-1 border-b border-dash-border">J.A.R.V.I.S.</h2>
+        <div id="jarvis-console" class="bg-dash-bg border border-dash-border rounded p-2 h-[calc(100%-90px)] overflow-y-auto text-[11px] font-mono text-dash-cyan">[SISTEMA] Asistente listo.\n[J.A.R.V.I.S.] Configura Hermes en Ajustes para respuestas reales.</div>
+        <div class="flex gap-1.5 mt-2">
+            <input id="jarvis-input" placeholder="Comando…" class="flex-1 bg-dash-bg border border-dash-border rounded p-2 text-white text-[11px]">
+            <button onclick="sendJarvis()" class="px-3 py-1.5 bg-dash-cyan/10 hover:bg-dash-cyan/20 border border-dash-cyan/60 text-dash-cyan font-bold text-xs rounded">ENVIAR</button>
+        </div>
+    </div>
+
     </div>
 
     <!-- ==================== 3. BOTTOM SYSTEM FOOTER ==================== -->
@@ -690,12 +748,26 @@
                 b.className = "nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold";
             });
             btn.className = "nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg bg-dash-cyan/20 border border-dash-cyan text-dash-cyan font-bold font-orbitron shadow-[0_0_10px_rgba(0,240,255,0.2)]";
-            // Mostrar/ocultar páginas (Registro y Ajustes tienen su propia página)
-            const label = btn.querySelector('span')?.textContent.trim();
-            const reg = document.getElementById('page-registro');
-            const ajus = document.getElementById('page-ajustes');
-            if (reg) reg.classList.toggle('hidden', label !== 'Registro');
-            if (ajus) ajus.classList.toggle('hidden', label !== 'Ajustes');
+            // Mostrar/ocultar TODAS las páginas según el botón pulsado
+            const label = btn.querySelector('span')?.textContent.trim().toLowerCase();
+            const pages = ['inicio', 'tablero', 'mapa', 'autonomia', 'registro', 'diagnostico', 'jarvis', 'ajustes'];
+            pages.forEach(p => {
+                const el = document.getElementById('page-' + p);
+                if (el) el.classList.toggle('hidden', label !== p);
+            });
+            // Si abrimos mapa o ajustes, invalidar tamaño del mapa
+            if (label === 'mapa') setTimeout(() => {
+                if (!mapFull && window.L && document.getElementById('route-map-full')) {
+                    const cur = [-2.1900, -79.8800], start = [-2.1850, -79.8900], end = [-2.2000, -79.8700];
+                    mapFull = L.map('route-map-full', { center: cur, zoom: 13, zoomControl: false, attributionControl: false });
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapFull);
+                    const bd = L.divIcon({ html: '<div style="background:#00f0ff; width:16px; height:16px; border-radius:50%; border:2px solid #010610; box-shadow:0 0 12px #00f0ff;"></div>', iconSize: [16,16] });
+                    L.marker(cur, { icon: bd }).addTo(mapFull);
+                    L.polyline([start, cur, end], { color: '#00f0ff', weight: 3, dashArray: '4, 8' }).addTo(mapFull);
+                    mapFull.fitBounds(L.latLngBounds([start, end]), { padding: [15,15] });
+                }
+                if (mapFull) mapFull.invalidateSize();
+            }, 120);
         }
 
         // ==========================================
@@ -780,6 +852,7 @@
 
         // Leaflet Satellite GPS Map Setup
         let map;
+        let mapFull;
         function initMap() {
             const currentPos = [-2.1900, -79.8800];
             const startPos = [-2.1850, -79.8900];
@@ -878,6 +951,23 @@
             }
             lucide.createIcons();
         }
+
+        // ==========================================
+        // J.A.R.V.I.S. CONSOLA (envío de comandos)
+        // ==========================================
+        function sendJarvis() {
+            const inp = document.getElementById('jarvis-input');
+            const console = document.getElementById('jarvis-console');
+            const q = inp.value.trim();
+            if (!q) return;
+            console.textContent += '\n[TÚ] ' + q;
+            inp.value = '';
+            callHermes(q).then(resp => {
+                console.textContent += '\n[J.A.R.V.I.S.] ' + resp;
+                console.scrollTop = console.scrollHeight;
+            });
+        }
+        document.getElementById('jarvis-input')?.addEventListener('keydown', e => { if (e.key === 'Enter') sendJarvis(); });
 
         // ==========================================
         // AJUSTES HERMES
