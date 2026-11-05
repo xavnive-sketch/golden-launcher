@@ -4,6 +4,8 @@
    - Las ruedas giran y la carrocería vibra según la velocidad (#val-speed); el motor muestra #val-temp */
 (function () {
   const THREE_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+  const GLTF_SRC = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js';
+  const GLB_URL = 'assets/autoline_bus.glb';
 
   function boot() {
     const img = document.querySelector('img[alt="Bus Golden Dragon"]');
@@ -226,6 +228,7 @@
       bodyMat.needsUpdate = true;
       edgeMat.opacity = on ? 0.95 : 0.4;
       ov.style.display = on ? 'block' : 'none';
+      if (usingGLB) applyHolo(on);
     }
 
     // Giro con el dedo / mouse + toque corto para cambiar de modo
@@ -248,6 +251,60 @@
     window.addEventListener('resize', resize);
     if (window.ResizeObserver) new ResizeObserver(resize).observe(box);
 
+    // ---- Modelo real (GLB) · Autoline ----
+    let usingGLB = false, glbMats = [];
+    function applyHolo(on) {
+      glbMats.forEach((e) => { e.mesh.material = on ? e.holo : e.orig; });
+    }
+    function loadRealModel() {
+      const fail = (why) => console.warn('[bus3d] modelo GLB no disponible (' + why + '); se usa el procedural');
+      if (!T.GLTFLoader) {
+        const s2 = document.createElement('script');
+        s2.src = GLTF_SRC;
+        s2.onload = fetchModel; s2.onerror = () => fail('loader');
+        document.head.appendChild(s2);
+      } else fetchModel();
+      function fetchModel() {
+        if (!T.GLTFLoader) return fail('loader');
+        new T.GLTFLoader().load(GLB_URL, (gltf) => {
+          const root = gltf.scene;
+          root.updateMatrixWorld(true);
+          const b3 = new T.Box3().setFromObject(root);
+          const size = new T.Vector3(); b3.getSize(size);
+          const center = new T.Vector3(); b3.getCenter(center);
+          const LEN = 6.0;
+          const s = LEN / Math.max(size.x, size.z, 0.001);
+          root.position.sub(center);
+          if (size.z > size.x) root.rotation.y = Math.PI / 2;
+          const g = new T.Group(); g.add(root);
+          g.scale.setScalar(s);
+          g.position.y = (size.y / 2) * s + 0.04;
+          bus.children.slice().forEach((c) => { if (c !== scan && c !== shadow && c !== beacon) bus.remove(c); });
+          bus.add(g);
+          usingGLB = true;
+          g.traverse((o) => {
+            if (o.isMesh) {
+              const m = o.material;
+              // el GLB viene con metallic=1 (negro sin entorno): darle el envMap del dashboard y pintura legible
+              m.envMap = env; m.envMapIntensity = 0.8;
+              m.metalness = 0.25; m.roughness = 0.55;
+              m.needsUpdate = true;
+              const holo = new T.MeshStandardMaterial({ color: 0x16a6c9, transparent: true, opacity: 0.35, emissive: 0x063a52, metalness: 0.3, roughness: 0.4, side: T.DoubleSide });
+              glbMats.push({ mesh: o, orig: m, holo });
+            }
+          });
+          const roofY = size.y * s;
+          spots[0].p.set(2.4, roofY * 0.45, 0);
+          spots[1].p.set(-2.0, roofY - 0.15, 0);
+          spots[2].p.set(0.9, 0.45, 0.75);
+          spots[3].p.set(-0.3, roofY * 0.6, 0.75);
+          beacon.position.set(-2.0, roofY + 0.08, 0);
+          console.log('[bus3d] modelo GLB cargado ·', size.x.toFixed(2) + 'x' + size.y.toFixed(2) + 'x' + size.z.toFixed(2), '· escala ' + s.toFixed(3));
+        }, undefined, () => fail('glb'));
+      }
+    }
+    loadRealModel();
+
     bus.rotation.y = -0.7;
     const v = new T.Vector3();
     let last = performance.now(), lastTxt = 0;
@@ -259,7 +316,7 @@
       const el = document.getElementById('val-speed');
       const kmh = el ? parseFloat(el.textContent) : NaN;
       const sp = isNaN(kmh) ? 25 : kmh;
-      wheels.forEach((w) => { w.rotation.z -= sp * 0.12 * dt; });
+      if (!usingGLB) wheels.forEach((w) => { w.rotation.z -= sp * 0.12 * dt; });
       bus.position.y = 0.012 * Math.sin(now / 90) * Math.min(sp / 80, 1); // vibración leve al rodar
       scan.position.y = 0.4 + ((now / 2600) % 1) * 2.2;
       scan.material.opacity = 0.26 * (1 - Math.abs(scan.position.y - 1.5) / 1.4);
