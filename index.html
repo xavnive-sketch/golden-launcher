@@ -524,18 +524,64 @@
         </div>
     </div>
 
-    <!-- ==================== PÁGINA: TABLERO ==================== -->
-    <div id="page-tablero" class="hidden col-span-10 cyber-panel p-2 h-full">
-        <h2 class="font-orbitron font-bold text-white text-xs tracking-wider mb-2 pb-1 border-b border-dash-border">TABLERO OBD-II</h2>
-        <div class="grid grid-cols-5 gap-2 text-center">
-            <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="text-[9px] text-dash-muted">RPM</div><div id="t-rpm" class="font-orbitron font-bold text-white text-lg">--</div></div>
-            <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="text-[9px] text-dash-muted">VELOCIDAD</div><div id="t-speed" class="font-orbitron font-bold text-white text-lg">--</div></div>
-            <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="text-[9px] text-dash-muted">TEMP MOTOR</div><div id="t-temp" class="font-orbitron font-bold text-white text-lg">--</div></div>
-            <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="text-[9px] text-dash-muted">VOLTAJE</div><div id="t-volts" class="font-orbitron font-bold text-white text-lg">--</div></div>
-            <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="text-[9px] text-dash-muted">CARGA</div><div id="t-load" class="font-orbitron font-bold text-white text-lg">--</div></div>
+    <!-- ==================== PÁGINA: TABLERO (TABLERO GENERAL) ==================== -->
+    <div id="page-tablero" class="hidden col-span-10 cyber-panel p-2 h-full flex flex-col">
+        <div class="flex items-center justify-between mb-2 pb-1 border-b border-dash-border">
+            <h2 class="font-orbitron font-bold text-white text-xs tracking-wider">TABLERO GENERAL</h2>
+            <span class="text-[9px] text-dash-cyan font-semibold">ÚLT. ACTUALIZACIÓN <span id="t-upd">--:--:--</span> · TRANSMISIÓN MANUAL</span>
         </div>
-        <div class="mt-3 text-[10px] text-dash-muted bg-dash-panel border border-dash-border p-2 rounded">
-            📡 Sin OBD-II conectado no hay datos reales. Los valores se mostrarán al integrar el adaptador ELM327.
+        <div class="grid grid-cols-3 gap-2 mb-2">
+            <div class="bg-dash-panel border border-dash-border p-2 rounded flex flex-col items-center justify-center">
+                <svg class="w-32 h-32" viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="50" stroke="#0a1a2e" stroke-width="7" fill="none"/>
+                    <circle id="tab-gauge-rpm" cx="60" cy="60" r="50" stroke="#00f0ff" stroke-width="7" fill="none" stroke-dasharray="314" stroke-dashoffset="235" stroke-linecap="round"/>
+                    <circle cx="60" cy="60" r="44" stroke="#092038" stroke-width="2" fill="none"/>
+                </svg>
+                <div class="absolute text-center">
+                    <div id="t-rpm" class="font-orbitron font-black text-white text-xl">--</div>
+                    <div class="text-[9px] text-dash-muted font-bold">RPM</div>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <div class="bg-dash-panel border border-dash-border p-2 rounded flex flex-col items-center justify-center gap-1">
+                    <i data-lucide="thermometer" class="w-4 h-4 text-dash-cyan"></i>
+                    <div class="text-[8px] text-dash-muted font-bold uppercase">Temp Refrigerante</div>
+                    <div id="t-temp" class="font-orbitron font-bold text-white text-lg">--</div>
+                </div>
+                <div class="bg-dash-panel border border-dash-border p-2 rounded flex flex-col items-center justify-center gap-1">
+                    <i data-lucide="flame" class="w-4 h-4 text-dash-cyan"></i>
+                    <div class="text-[8px] text-dash-muted font-bold uppercase">Temp Aceite</div>
+                    <div id="t-oil" class="font-orbitron font-bold text-white text-lg">--</div>
+                </div>
+            </div>
+            <div class="bg-dash-panel border border-dash-border p-2 rounded flex flex-col items-center justify-center">
+                <svg class="w-32 h-32" viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="50" stroke="#0a1a2e" stroke-width="7" fill="none"/>
+                    <circle id="tab-gauge-speed" cx="60" cy="60" r="50" stroke="#00f0ff" stroke-width="7" fill="none" stroke-dasharray="314" stroke-dashoffset="230" stroke-linecap="round"/>
+                    <circle cx="60" cy="60" r="44" stroke="#092038" stroke-width="2" fill="none"/>
+                </svg>
+                <div class="absolute text-center">
+                    <div id="t-speed" class="font-orbitron font-black text-white text-xl">--</div>
+                    <div class="text-[9px] text-dash-muted font-bold">km/h</div>
+                </div>
+            </div>
+        </div>
+        <div class="grid grid-cols-5 gap-2 mb-2">
+            <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="flex items-center gap-1 text-[8px] text-dash-muted font-bold uppercase"><i data-lucide="gauge" class="w-3 h-3 text-dash-cyan"></i> Presión Múltiple</div><div id="t-map" class="font-orbitron font-bold text-white text-base">-- kPa</div></div>
+            <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="flex items-center gap-1 text-[8px] text-dash-muted font-bold uppercase"><i data-lucide="move-horizontal" class="w-3 h-3 text-dash-cyan"></i> Pos. Acelerador</div><div id="t-throttle" class="font-orbitron font-bold text-white text-base">--%</div></div>
+            <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="flex items-center gap-1 text-[8px] text-dash-muted font-bold uppercase"><i data-lucide="fuel" class="w-3 h-3 text-dash-cyan"></i> Econ. Instantánea</div><div id="t-econ" class="font-orbitron font-bold text-white text-base">-- km/L</div></div>
+            <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="flex items-center gap-1 text-[8px] text-dash-muted font-bold uppercase"><i data-lucide="percent" class="w-3 h-3 text-dash-cyan"></i> STFT</div><div id="t-stft" class="font-orbitron font-bold text-white text-base">--%</div></div>
+            <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="flex items-center gap-1 text-[8px] text-dash-muted font-bold uppercase"><i data-lucide="percent" class="w-3 h-3 text-dash-cyan"></i> LTFT</div><div id="t-ltft" class="font-orbitron font-bold text-white text-base">--%</div></div>
+        </div>
+        <div class="grid grid-cols-5 gap-2">
+            <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="flex items-center gap-1 text-[8px] text-dash-muted font-bold uppercase"><i data-lucide="fuel" class="w-3 h-3 text-dash-cyan"></i> Combustible</div><div id="t-fuel" class="font-orbitron font-bold text-white text-base">--%</div><div class="text-[8px] text-dash-muted">Rango: -- km</div></div>
+            <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="flex items-center gap-1 text-[8px] text-dash-muted font-bold uppercase"><i data-lucide="wind" class="w-3 h-3 text-dash-cyan"></i> Turbo Boost</div><div id="t-boost" class="font-orbitron font-bold text-white text-base">-- kPa</div></div>
+            <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="flex items-center gap-1 text-[8px] text-dash-muted font-bold uppercase"><i data-lucide="milestone" class="w-3 h-3 text-dash-cyan"></i> Odómetro</div><div id="t-odo" class="font-orbitron font-bold text-white text-base">-- km</div></div>
+            <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="flex items-center gap-1 text-[8px] text-dash-muted font-bold uppercase"><i data-lucide="timer" class="w-3 h-3 text-dash-cyan"></i> Tiempo Total</div><div id="t-rtime" class="font-orbitron font-bold text-white text-base">-- h</div></div>
+            <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="flex items-center gap-1 text-[8px] text-dash-muted font-bold uppercase"><i data-lucide="gauge" class="w-3 h-3 text-dash-cyan"></i> Velocidad</div><div id="t-vmax" class="font-orbitron font-bold text-white text-base">-- km/h</div><div class="text-[8px] text-dash-muted">Promedio: -- km/h</div></div>
+        </div>
+        <div class="mt-2 text-[10px] text-dash-muted bg-dash-panel border border-dash-border p-2 rounded">
+            📡 Valores OBD-II. Se alimentarán al integrar el adaptador ELM327.
         </div>
     </div>
 
