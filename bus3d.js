@@ -33,11 +33,11 @@
     box.insertBefore(canvas, box.firstChild);
 
     const renderer = new T.WebGLRenderer({ canvas, antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 3));
     const scene = new T.Scene();
     const camera = new T.PerspectiveCamera(32, 1, 0.1, 100);
-    camera.position.set(0, 2.9, 9.4);
-    camera.lookAt(0, 1.15, 0);
+    camera.position.set(0, 2.7, 7.6);
+    camera.lookAt(0, 1.1, 0);
 
     scene.add(new T.AmbientLight(0x9cc4ff, 0.6));
     const sun = new T.DirectionalLight(0xffffff, 1.0); sun.position.set(5, 8, 6); scene.add(sun);
