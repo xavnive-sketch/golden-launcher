@@ -319,12 +319,14 @@
 
     bus.rotation.y = -0.7;
     const v = new T.Vector3();
-    let last = performance.now(), lastTxt = 0;
+    let last = performance.now(), lastTxt = 0, smoothDt = 0.016;
     function frame(now) {
       requestAnimationFrame(frame);
-      const dt = Math.min((now - last) / 1000, 0.05); last = now;
+      const rawDt = Math.min((now - last) / 1000, 0.05); last = now;
+      smoothDt = smoothDt * 0.85 + rawDt * 0.15; // dt suavizado: elimina tirones por frames irregulares
+      const dt = smoothDt;
       if (box.offsetParent === null) return; // página oculta: no gastar batería
-      if (!drag) { bus.rotation.y += vel + 0.3 * dt; vel *= 0.94; }
+      if (!drag) { bus.rotation.y += vel + 0.35 * smoothDt; vel *= 0.94; }
       const el = document.getElementById('val-speed');
       const kmh = el ? parseFloat(el.textContent) : NaN;
       const sp = isNaN(kmh) ? 25 : kmh;
