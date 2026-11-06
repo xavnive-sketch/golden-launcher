@@ -32,8 +32,8 @@
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 3));
     const scene = new T.Scene();
     const camera = new T.PerspectiveCamera(32, 1, 0.1, 100);
-    camera.position.set(0, 2.0, 4.6);
-    camera.lookAt(0, 1.0, 0);
+    camera.position.set(0, 2.6, 7.5);
+    camera.lookAt(0, 1.3, 0);
 
     scene.add(new T.AmbientLight(0x9cc4ff, 0.6));
     const sun = new T.DirectionalLight(0xffffff, 1.0); sun.position.set(5, 8, 6); scene.add(sun);
@@ -298,6 +298,20 @@
           spots[3].p.set(-0.3, roofY * 0.6, 0.75);
           beacon.position.set(-2.0, roofY + 0.08, 0);
           console.log('[bus3d] modelo GLB cargado ·', size.x.toFixed(2) + 'x' + size.y.toFixed(2) + 'x' + size.z.toFixed(2), '· escala ' + s.toFixed(3));
+          // Encuadrar el bus COMPLETO en el viewport (se vea entero en cualquier pantalla)
+          requestAnimationFrame(() => {
+            const bb = new T.Box3().setFromObject(bus);
+            const bs = bb.getSize(new T.Vector3());
+            const bc = bb.getCenter(new T.Vector3());
+            const r0 = box.getBoundingClientRect();
+            const aspect = Math.max(r0.width, 10) / Math.max(r0.height, 10);
+            const fov = camera.fov * Math.PI / 180;
+            const dist = Math.max(bs.y / 2 / Math.tan(fov / 2), bs.x / 2 / (Math.tan(fov / 2) * aspect)) * 1.3;
+            camera.position.set(0, bc.y + bs.y * 0.25, bc.z + dist);
+            camera.lookAt(bc.x, bc.y, bc.z);
+            camera.updateProjectionMatrix();
+            console.log('[bus3d] encuadre: dist ' + dist.toFixed(2) + ' · bus ' + bs.x.toFixed(1) + 'x' + bs.y.toFixed(1) + 'x' + bs.z.toFixed(1));
+          });
         }, undefined, () => fail('glb'));
       }
     }
