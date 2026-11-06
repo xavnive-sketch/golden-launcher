@@ -36,8 +36,8 @@
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     const scene = new T.Scene();
     const camera = new T.PerspectiveCamera(32, 1, 0.1, 100);
-    camera.position.set(0, 2.8, 8.6);
-    camera.lookAt(0, 1.1, 0);
+    camera.position.set(0, 3.0, 10.4);
+    camera.lookAt(0, 1.2, 0);
 
     scene.add(new T.AmbientLight(0x9cc4ff, 0.6));
     const sun = new T.DirectionalLight(0xffffff, 1.0); sun.position.set(5, 8, 6); scene.add(sun);
@@ -237,7 +237,7 @@
     canvas.addEventListener('pointermove', (e) => { if (!drag) return; const dx = e.clientX - lastX; lastX = e.clientX; vel = dx * 0.012; bus.rotation.y += vel; });
     canvas.addEventListener('pointerup', (e) => {
       drag = false; canvas.style.cursor = 'grab';
-      if (Math.abs(e.clientX - downX) < 6 && performance.now() - downT < 350) { vel = 0; }
+      if (Math.abs(e.clientX - downX) < 6 && performance.now() - downT < 350) { vel = 0; setHolo(!holo); }
     });
     canvas.addEventListener('pointercancel', () => { drag = false; canvas.style.cursor = 'grab'; });
 
@@ -303,7 +303,6 @@
         }, undefined, () => fail('glb'));
       }
     }
-    window.toggleHolo = () => setHolo(!holo);
     loadRealModel();
 
     bus.rotation.y = -0.7;
