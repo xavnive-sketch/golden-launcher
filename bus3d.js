@@ -8,18 +8,17 @@
   const GLB_URL = 'assets/autoline_bus.glb';
 
   function boot() {
-    const img = document.querySelector('img[alt="Bus Golden Dragon"]');
-    const box = (img && img.parentElement) || document.querySelector('div.relative.w-full.h-28');
+    const box = document.querySelector('.bus-3d-box') || document.querySelector('div.relative.w-full');
     if (!box) return;
-    if (window.THREE) return build(box, img);
+    if (window.THREE) return build(box);
     const s = document.createElement('script');
     s.src = THREE_SRC;
-    s.onload = () => build(box, img);
+    s.onload = () => build(box);
     s.onerror = () => console.warn('[bus3d] no se pudo cargar three.js (¿sin internet?)');
     document.head.appendChild(s);
   }
 
-  function build(box, img) {
+  function build(box) {
     const T = THREE;
     const CY = 0x00f0ff, AM = 0xffb700;
     const XF = 2.1, XR = -1.57, WR = 0.38; // eje delantero, eje trasero, radio de rueda
@@ -27,9 +26,6 @@
 
     const canvas = document.createElement('canvas');
     canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:grab;z-index:5';
-    box.style.height = '150px';
-    box.style.backgroundImage = 'radial-gradient(ellipse at 50% 90%, rgba(0,240,255,.25), rgba(2,10,20,.96) 70%)';
-    if (img) img.remove();
     box.insertBefore(canvas, box.firstChild);
 
     const renderer = new T.WebGLRenderer({ canvas, antialias: true, alpha: true });
@@ -64,6 +60,7 @@
 
     const bus = new T.Group();
     scene.add(bus);
+    bus.visible = false; // ocultar el modelo procedural antiguo; el GLB real lo mostrará al cargar
 
     // Perfil lateral (frente hacia +x). Los arcos de rueda están cortados en el perfil.
     const s = new T.Shape();
@@ -281,6 +278,7 @@
           g.position.y = (size.y / 2) * s + 0.04;
           bus.children.slice().forEach((c) => { if (c !== scan && c !== shadow && c !== beacon) bus.remove(c); });
           bus.add(g);
+          bus.visible = true; // modelo real cargado: mostrar
           usingGLB = true;
           g.traverse((o) => {
             if (o.isMesh) {
