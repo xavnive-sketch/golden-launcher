@@ -36,7 +36,7 @@
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 3));
     const scene = new T.Scene();
     const camera = new T.PerspectiveCamera(32, 1, 0.1, 100);
-    camera.position.set(0, 2.3, 5.8);
+    camera.position.set(0, 2.1, 5.0);
     camera.lookAt(0, 1.0, 0);
 
     scene.add(new T.AmbientLight(0x9cc4ff, 0.6));
@@ -188,8 +188,8 @@
     // Haz de escaneo holográfico y sombra
     const scan = boxM(6.2, 0.02, 2.2, new T.MeshBasicMaterial({ color: CY, transparent: true, opacity: 0.2, depthWrite: false }));
     bus.add(scan);
-    const shadow = new T.Mesh(new T.CircleGeometry(3.2, 32), new T.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.35, depthWrite: false }));
-    shadow.rotation.x = -Math.PI / 2; shadow.scale.y = 0.42; shadow.position.y = 0.012; bus.add(shadow);
+    const shadow = new T.Mesh(new T.CircleGeometry(3.2, 32), new T.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.16, depthWrite: false }));
+    shadow.rotation.x = -Math.PI / 2; shadow.scale.y = 0.5; shadow.position.y = 0.012; bus.add(shadow);
 
     // Suelo
     const grid = new T.GridHelper(12, 12, CY, 0x0d4a6e);
