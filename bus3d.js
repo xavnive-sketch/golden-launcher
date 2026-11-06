@@ -36,8 +36,8 @@
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 3));
     const scene = new T.Scene();
     const camera = new T.PerspectiveCamera(32, 1, 0.1, 100);
-    camera.position.set(0, 2.7, 7.6);
-    camera.lookAt(0, 1.1, 0);
+    camera.position.set(0, 2.5, 6.8);
+    camera.lookAt(0, 1.05, 0);
 
     scene.add(new T.AmbientLight(0x9cc4ff, 0.6));
     const sun = new T.DirectionalLight(0xffffff, 1.0); sun.position.set(5, 8, 6); scene.add(sun);
