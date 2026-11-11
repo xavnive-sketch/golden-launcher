@@ -1,7 +1,8 @@
 /* bus3d.js v3 · Modelo 3D de la furgoneta Golden Dragon XML6609 (familia X5) para el dashboard
    Proporciones de la familia X5 / Higer H5C: ~6.0 m largo · ~2.0 m ancho · ~2.6 m techo alto · entre ejes 3.67 m
    - Arrastra para girar · TOCA el vehículo para alternar REALISTA <-> HOLOGRAMA (con etiquetas en vivo)
-   - Las ruedas giran y la carrocería vibra según la velocidad real (window.dashSpeed, de OBD-II o GPS); el motor muestra #val-temp */
+   - Las ruedas giran y la carrocería vibra según la velocidad real (window.dashSpeed, de OBD-II o GPS); el motor muestra #m-temp
+   - Vidrios polarizados (shader) y luces encendidas (faros, haz, pilotos) en MODO NOCHE */
 (function () {
   const THREE_SRC = 'vendor/three.min.js';      // three.js r128 (local, funciona sin internet)
   const GLTF_SRC = 'vendor/GLTFLoader.js';
@@ -201,7 +202,7 @@
     ov.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:15;overflow:hidden;display:none';
     box.appendChild(ov);
     const spots = [
-      { p: new T.Vector3(2.6, 1.1, 0), txt: () => 'MOTOR ' + ((document.getElementById('val-temp') || {}).textContent || 'OK') },
+      { p: new T.Vector3(2.6, 1.1, 0), txt: () => 'MOTOR ' + ((document.getElementById('m-temp') || {}).textContent || 'OK') },
       { p: new T.Vector3(-2.2, 2.76, 0), txt: () => 'GPS · ' + ((document.getElementById('net-type') || {}).textContent || '--') },
       { p: new T.Vector3(XF, WR, 1.0), txt: () => 'FRENOS · ABS' },
       { p: new T.Vector3(-0.2, 2.0, 1.0), txt: () => '18 PAX' }
@@ -248,6 +249,88 @@
     window.addEventListener('resize', resize);
     if (window.ResizeObserver) new ResizeObserver(resize).observe(box);
 
+    // ---- Vidrios polarizados ----
+    // La textura del GLB es un atlas de escaneo (los vidrios no están separados), así que se
+    // oscurece en el shader: zona de ventanas (franja de altura) + píxeles grises/poco saturados.
+    // La carrocería amarilla queda intacta porque es muy saturada.
+    const glassU = { uGlassLo: { value: 1.42 }, uGlassHi: { value: 2.36 }, uNight: { value: 0 }, uBusInv: { value: new T.Matrix4() } };
+    function tintGlass(m) {
+      m.onBeforeCompile = (sh) => {
+        Object.assign(sh.uniforms, glassU);
+        sh.vertexShader = sh.vertexShader
+          .replace('#include <common>', '#include <common>\nuniform mat4 uBusInv;\nvarying vec3 vBusPos;')
+          .replace('#include <project_vertex>', '#include <project_vertex>\nvBusPos = (uBusInv * modelMatrix * vec4(transformed, 1.0)).xyz;');
+        sh.fragmentShader = sh.fragmentShader
+          .replace('#include <common>', '#include <common>\nuniform float uGlassLo, uGlassHi, uNight;\nvarying vec3 vBusPos;')
+          .replace('#include <map_fragment>', [
+            '#include <map_fragment>',
+            'float gMx = max(diffuseColor.r, max(diffuseColor.g, diffuseColor.b));',
+            'float gMn = min(diffuseColor.r, min(diffuseColor.g, diffuseColor.b));',
+            'float gSat = (gMx - gMn) / max(gMx, 0.001);',
+            'float glassMask = smoothstep(uGlassLo - 0.04, uGlassLo + 0.04, vBusPos.y) * (1.0 - smoothstep(uGlassHi - 0.04, uGlassHi + 0.04, vBusPos.y)) * (1.0 - smoothstep(0.22, 0.38, gSat));',
+            'diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.012, 0.016, 0.022), glassMask * 0.94);',
+            // Modo noche: encender las luces reales del modelo (pilotos rojos atrás, faros adelante)
+            'float tailMask = (1.0 - smoothstep(0.14, 0.28, max(diffuseColor.g, diffuseColor.b) / max(diffuseColor.r, 0.001))) * smoothstep(0.03, 0.06, diffuseColor.r) * smoothstep(2.55, 2.75, vBusPos.x) * step(0.5, vBusPos.y) * step(vBusPos.y, 1.7);',
+            'float headMask = (1.0 - smoothstep(-2.85, -2.7, vBusPos.x)) * smoothstep(0.3, 0.5, gMn) * step(0.75, vBusPos.y) * step(vBusPos.y, 1.2);'
+          ].join('\n'))
+          .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance += uNight * (vec3(1.0, 0.06, 0.03) * tailMask * 6.0 + vec3(1.0, 0.97, 0.9) * headMask * 1.6);')
+          .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = mix(roughnessFactor, 0.38, glassMask);');
+      };
+    }
+
+    // ---- Luces (se encienden en MODO NOCHE) ----
+    // Frente del modelo hacia -x. Faros blancos con haz y luz en el piso; pilotos rojos atrás.
+    const lights = new T.Group(); lights.visible = false;
+    const lightMats = [];
+    let lightLevel = 0;
+    function glowTexture(inner) {
+      const c = document.createElement('canvas'); c.width = c.height = 128;
+      const x = c.getContext('2d'), g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+      g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(inner, 'rgba(255,255,255,0.55)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = g; x.fillRect(0, 0, 128, 128);
+      return new T.CanvasTexture(c);
+    }
+    function buildNightLights(H) {
+      const glowT = glowTexture(0.25), poolT = glowTexture(0.5);
+      // Haz que se desvanece a lo largo (v=1 junto al faro, v=0 en la punta lejana)
+      const bc = document.createElement('canvas'); bc.width = 4; bc.height = 128;
+      const bx = bc.getContext('2d'), bg = bx.createLinearGradient(0, 0, 0, 128);
+      bg.addColorStop(0, 'rgba(255,255,255,1)'); bg.addColorStop(0.5, 'rgba(255,255,255,0.35)'); bg.addColorStop(1, 'rgba(255,255,255,0)');
+      bx.fillStyle = bg; bx.fillRect(0, 0, 4, 128);
+      const beamT = new T.CanvasTexture(bc);
+      const mat = (color, base, map) => {
+        const m = new T.MeshBasicMaterial({ color, map, transparent: true, opacity: 0, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide });
+        lightMats.push([m, base]); return m;
+      };
+      const sprite = (color, base, size, x, y, z) => {
+        const m = new T.SpriteMaterial({ color, map: glowT, transparent: true, opacity: 0, blending: T.AdditiveBlending, depthWrite: false });
+        lightMats.push([m, base]);
+        const sp = new T.Sprite(m); sp.scale.set(size, size, 1); sp.position.set(x, y, z); lights.add(sp);
+      };
+      const FX = -3.0, HY = H * 0.42, HZ = 0.68;       // faros (medidos sobre el modelo)
+      const RX = 2.97, TY = H * 0.47, TZ = 0.76;       // pilotos traseros
+      [HZ, -HZ].forEach((z) => {
+        sprite(0xeaf6ff, 1.0, 0.55, FX - 0.04, HY, z);
+        sprite(0xffb700, 0.7, 0.22, FX - 0.03, HY - 0.16, z * 1.05);          // direccional ámbar
+        const beam = new T.Mesh(new T.ConeGeometry(0.6, 3.0, 24, 1, true), mat(0xd8ecff, 0.3, beamT));
+        beam.rotation.z = -Math.PI / 2; beam.position.set(FX - 1.5, HY - 0.1, z * 1.15); lights.add(beam);
+        sprite(0xff2a2a, 0.95, 0.34, RX + 0.03, TY, Math.sign(z) * TZ);
+        sprite(0xff2a2a, 0.55, 0.26, RX + 0.03, TY + 0.24, Math.sign(z) * TZ);
+      });
+      const pool = new T.Mesh(new T.PlaneGeometry(4.2, 2.8), mat(0xdcefff, 0.5, poolT));
+      pool.rotation.x = -Math.PI / 2; pool.position.set(FX - 2.1, 0.03, 0); lights.add(pool);
+      const redPool = new T.Mesh(new T.PlaneGeometry(1.4, 2.4), mat(0xff2020, 0.35, poolT));
+      redPool.rotation.x = -Math.PI / 2; redPool.position.set(RX + 0.6, 0.03, 0); lights.add(redPool);
+      bus.add(lights);
+    }
+    function updateLights(dt) {
+      const target = document.body.classList.contains('night-mode') ? 1 : 0;
+      lightLevel += (target - lightLevel) * Math.min(1, dt * 4);
+      lights.visible = lightLevel > 0.01;
+      glassU.uNight.value = lightLevel;
+      if (lights.visible) lightMats.forEach(([m, base]) => { m.opacity = base * lightLevel; });
+    }
+
     // ---- Modelo real (GLB) · Autoline ----
     let usingGLB = false, glbMats = [];
     function applyHolo(on) {
@@ -278,6 +361,7 @@
           g.position.y = (size.y / 2) * s + 0.04;
           bus.children.slice().forEach((c) => { if (c !== scan && c !== shadow && c !== beacon) bus.remove(c); });
           bus.add(g);
+          buildNightLights(size.y * s);
           bus.visible = true; // modelo real cargado: mostrar
           usingGLB = true;
           g.traverse((o) => {
@@ -286,6 +370,7 @@
               // el GLB viene con metallic=1 (negro sin entorno): darle el envMap del dashboard y pintura legible
               m.envMap = env; m.envMapIntensity = 0.8;
               m.metalness = 0.25; m.roughness = 0.55;
+              tintGlass(m);
               m.needsUpdate = true;
               const holo = new T.MeshStandardMaterial({ color: 0x16a6c9, transparent: true, opacity: 0.35, emissive: 0x063a52, metalness: 0.3, roughness: 0.4, side: T.DoubleSide });
               glbMats.push({ mesh: o, orig: m, holo });
@@ -333,9 +418,11 @@
       scan.position.y = 0.4 + ((now / 2600) % 1) * 2.2;
       scan.material.opacity = 0.26 * (1 - Math.abs(scan.position.y - 1.5) / 1.4);
       beacon.scale.setScalar(0.8 + 0.4 * Math.abs(Math.sin(now / 350)));
+      updateLights(dt);
+      bus.updateMatrixWorld();
+      glassU.uBusInv.value.copy(bus.matrixWorld).invert();
       renderer.render(scene, camera);
       if (holo) {
-        bus.updateMatrixWorld();
         spots.forEach((o) => {
           v.copy(o.p); bus.localToWorld(v); v.project(camera);
           o.el.style.left = ((v.x + 1) / 2 * 100) + '%';
