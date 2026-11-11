@@ -4,43 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Golden Dragon XML6609 Dashboard</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Leaflet JS & CSS for GPS Satellite Map -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        dash: {
-                            bg: '#010610',
-                            panel: '#051325',
-                            border: '#0d2d4d',
-                            cyan: '#00f0ff',
-                            cyanDark: '#008ba3',
-                            green: '#00ffaa',
-                            amber: '#ffb700',
-                            muted: '#4f759b',
-                            text: '#d0e8ff'
-                        }
-                    },
-                    fontFamily: {
-                        orbitron: ['Orbitron', 'sans-serif'],
-                        rajdhani: ['Rajdhani', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Librerías locales (vendor/) — funcionan sin internet -->
+    <link rel="stylesheet" href="vendor/fonts/fonts.css">
+    <link rel="stylesheet" href="vendor/tailwind.css">
+    <link rel="stylesheet" href="vendor/leaflet.css">
+    <script src="vendor/leaflet.js"></script>
+    <script src="vendor/lucide.min.js"></script>
 
     <style>
         * {
@@ -161,39 +130,38 @@
 
         <!-- Status Badge -->
         <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-dash-cyan/10 border border-dash-cyan/40">
-            <span class="w-2.5 h-2.5 rounded-full bg-dash-green animate-ping"></span>
-            <span class="w-2.5 h-2.5 rounded-full bg-dash-green -ml-4.5"></span>
-            <span class="font-orbitron text-dash-green font-bold text-xs">EN RUTA</span>
-            <span class="text-dash-muted text-[11px]">Todo en orden</span>
+            <span class="relative flex w-2.5 h-2.5">
+                <span id="status-ping" class="absolute inline-flex w-full h-full rounded-full bg-dash-muted opacity-75"></span>
+                <span id="status-dot" class="relative inline-flex w-2.5 h-2.5 rounded-full bg-dash-muted"></span>
+            </span>
+            <span id="status-label" class="font-orbitron text-dash-muted font-bold text-xs">SIN DATOS</span>
+            <span id="status-sub" class="text-dash-muted text-[11px]">Conectando…</span>
         </div>
 
         <!-- Clock, Weather, Networks -->
         <div class="flex items-center gap-4 text-xs font-semibold">
             <!-- Date & Clock -->
             <div class="text-right border-r border-dash-border pr-3">
-                <div id="header-date" class="text-[10px] text-dash-muted uppercase font-orbitron">Sáb, 26 Abr 2025</div>
+                <div id="header-date" class="text-[10px] text-dash-muted uppercase font-orbitron">--</div>
                 <div id="header-clock" class="text-lg font-orbitron font-extrabold text-white text-glow leading-none">11:38</div>
             </div>
 
             <!-- Weather -->
             <div class="flex items-center gap-1.5 border-r border-dash-border pr-3">
-                <i data-lucide="sun" class="w-6 h-6 text-dash-amber"></i>
+                <span id="weather-icon"><i data-lucide="cloud-off" class="w-6 h-6 text-dash-muted"></i></span>
                 <div>
-                    <div class="font-orbitron text-white font-bold text-xs">22°C</div>
-                    <div class="text-[9px] text-dash-muted">Guayaquil, EC</div>
+                    <div id="weather-temp" class="font-orbitron text-white font-bold text-xs">--°C</div>
+                    <div id="weather-place" class="text-[9px] text-dash-muted">Cargando clima…</div>
                 </div>
             </div>
 
             <!-- Signals & Battery -->
             <div class="flex items-center gap-2.5">
-                <i data-lucide="wifi" class="w-5 h-5 text-dash-cyan"></i>
-                <span class="text-dash-cyan font-orbitron text-xs font-bold flex items-center gap-0.5">
-                    <span class="text-[10px]">4G</span>
-                    <i data-lucide="signal" class="w-4.5 h-4.5 inline"></i>
-                </span>
-                <div class="flex items-center gap-1 bg-dash-panel border border-dash-border px-2 py-0.5 rounded">
-                    <i data-lucide="battery-charging" class="w-5 h-5 text-dash-green"></i>
-                    <span class="font-orbitron text-white text-xs">76%</span>
+                <span id="net-icon" class="text-dash-cyan"><i data-lucide="wifi" class="w-5 h-5"></i></span>
+                <span id="net-type" class="text-dash-cyan font-orbitron text-[10px] font-bold">--</span>
+                <div id="batt-box" class="flex items-center gap-1 bg-dash-panel border border-dash-border px-2 py-0.5 rounded" title="Batería de la radio">
+                    <span id="batt-icon"><i data-lucide="battery" class="w-5 h-5 text-dash-muted"></i></span>
+                    <span id="batt-pct" class="font-orbitron text-white text-xs">--%</span>
                 </div>
                 <button onclick="toggleNight()" id="btn-night" class="bg-dash-panel border border-dash-border px-2 py-0.5 rounded text-dash-cyan hover:text-white text-xs" title="Modo noche">☾</button>
             </div>
@@ -306,10 +274,10 @@
                         </div>
                         <div class="bg-dash-panel border border-dash-border p-1 rounded-md">
                             <div class="text-[9px] text-dash-muted flex items-center justify-center gap-1">
-                                <i data-lucide="gauge" class="w-4 h-4 text-dash-cyan"></i>
-                                <span>Presión de Aceite</span>
+                                <i data-lucide="flame" class="w-4 h-4 text-dash-cyan"></i>
+                                <span>Temp. Aceite</span>
                             </div>
-                            <div id="val-oil" class="font-orbitron font-bold text-white text-xs">-- bar</div>
+                            <div id="val-oil" class="font-orbitron font-bold text-white text-xs">--°C</div>
                         </div>
                         <div class="bg-dash-panel border border-dash-border p-1 rounded-md">
                             <div class="text-[9px] text-dash-muted flex items-center justify-center gap-1">
@@ -321,9 +289,9 @@
                         <div class="bg-dash-panel border border-dash-border p-1 rounded-md">
                             <div class="text-[9px] text-dash-muted flex items-center justify-center gap-1">
                                 <i data-lucide="milestone" class="w-4 h-4 text-dash-cyan"></i>
-                                <span>Kilometraje</span>
+                                <span id="val-odo-lbl">Kilometraje</span>
                             </div>
-                            <div class="font-orbitron font-bold text-white text-xs">124,532 km</div>
+                            <div id="val-odo" class="font-orbitron font-bold text-white text-xs">-- km</div>
                         </div>
                     </div>
                 </div>
@@ -433,14 +401,17 @@
 
     <!-- ==================== PÁGINA: AJUSTES ==================== -->
     <div id="page-ajustes" class="hidden col-span-10 cyber-panel p-2 h-full">
-        <div class="grid grid-cols-2 gap-2 h-full">
+        <div class="grid grid-cols-3 gap-2 h-full">
             <div class="cyber-panel p-2 flex flex-col">
                 <h2 class="font-orbitron font-bold text-white text-xs tracking-wider mb-2 pb-1 border-b border-dash-border">HERMES AGENT</h2>
                 <label class="block text-[10px] text-dash-muted mb-1">URL base
                     <input id="h-url" placeholder="https://…:8642/v1" class="w-full bg-dash-bg border border-dash-border rounded p-1.5 text-white text-[11px] mt-0.5">
                 </label>
                 <label class="block text-[10px] text-dash-muted mb-1">Clave API
-                    <input id="h-key" type="password" placeholder="sk-…" class="w-full bg-dash-bg border border-dash-border rounded p-1.5 text-white text-[11px] mt-0.5">
+                    <input id="h-key" type="password" autocomplete="off" placeholder="sk-…" class="w-full bg-dash-bg border border-dash-border rounded p-1.5 text-white text-[11px] mt-0.5">
+                </label>
+                <label class="flex items-center gap-1.5 text-[10px] text-dash-muted mb-1">
+                    <input id="h-remember" type="checkbox"> Recordar la clave en esta radio
                 </label>
                 <label class="block text-[10px] text-dash-muted mb-1">Modelo
                     <input id="h-model" placeholder="hermes-agent" class="w-full bg-dash-bg border border-dash-border rounded p-1.5 text-white text-[11px] mt-0.5">
@@ -451,11 +422,32 @@
                 </div>
                 <div id="h-stat" class="text-dash-muted text-[10px] mt-2">No configurado</div>
             </div>
+            <div class="cyber-panel p-2 flex flex-col">
+                <h2 class="font-orbitron font-bold text-white text-xs tracking-wider mb-2 pb-1 border-b border-dash-border">OBD-II (ELM327)</h2>
+                <label class="block text-[10px] text-dash-muted mb-1">Fuente de datos
+                    <select id="o-mode" class="w-full bg-dash-bg border border-dash-border rounded p-1.5 text-white text-[11px] mt-0.5">
+                        <option value="bridge">Adaptador ELM327 (bridge.py)</option>
+                        <option value="sim">Simulación (demo)</option>
+                        <option value="off">Desactivado</option>
+                    </select>
+                </label>
+                <label class="block text-[10px] text-dash-muted mb-1">URL del puente
+                    <input id="o-url" placeholder="/obd" class="w-full bg-dash-bg border border-dash-border rounded p-1.5 text-white text-[11px] mt-0.5">
+                </label>
+                <label class="block text-[10px] text-dash-muted mb-1">Capacidad del tanque (L)
+                    <input id="o-tank" type="number" min="1" placeholder="70" class="w-full bg-dash-bg border border-dash-border rounded p-1.5 text-white text-[11px] mt-0.5">
+                </label>
+                <button onclick="saveObd()" class="w-full mt-2 py-1.5 bg-dash-cyan/10 hover:bg-dash-cyan/20 border border-dash-cyan/60 text-dash-cyan font-bold text-xs rounded">GUARDAR</button>
+                <div id="o-stat" class="text-dash-cyan text-[10px] mt-2"></div>
+                <div id="o-live" class="text-dash-muted text-[10px] mt-1"></div>
+                <p class="text-[9px] text-dash-muted mt-2 leading-relaxed">Conecta la radio a la red Wi-Fi del adaptador ELM327 y arranca el dashboard con <b class="text-white">bash setup.sh</b>. La capacidad del tanque se usa para calcular la autonomía: verifícala en el manual del vehículo.</p>
+            </div>
             <div class="cyber-panel p-2">
                 <h2 class="font-orbitron font-bold text-white text-xs tracking-wider mb-2 pb-1 border-b border-dash-border">INFORMACIÓN</h2>
                 <div class="text-[10px] text-dash-muted space-y-2 leading-relaxed">
                     <p>🔌 Conecta este dashboard con Hermes Agent para respuestas de J.A.R.V.I.S. reales.</p>
                     <p>⚠️ <b class="text-dash-amber">No expongas la clave API a Internet.</b> Usa la misma red Wi-Fi o una VPN (Tailscale).</p>
+                    <p>🔑 Si no marcas «Recordar», la clave se borra al cerrar el navegador. Si la marcas, queda guardada <b class="text-white">sin cifrar</b> en esta radio: usa una clave propia de la radio que puedas revocar.</p>
                     <p>📱 Vehículo: <b class="text-white">Golden Dragon XML6609</b> · Transporte escolar · 18 pasajeros.</p>
                     <p>📍 Ubicación base: <b class="text-dash-cyan">Guayaquil, Ecuador</b>.</p>
                 </div>
@@ -513,21 +505,22 @@
             <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="flex items-center gap-1 text-[8px] text-dash-muted font-bold uppercase"><i data-lucide="percent" class="w-4 h-4 text-dash-cyan"></i> LTFT</div><div id="t-ltft" class="font-orbitron font-bold text-white text-base">--%</div></div>
         </div>
         <div class="grid grid-cols-5 gap-2">
-            <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="flex items-center gap-1 text-[8px] text-dash-muted font-bold uppercase"><i data-lucide="fuel" class="w-4 h-4 text-dash-cyan"></i> Combustible</div><div id="t-fuel" class="font-orbitron font-bold text-white text-base">--%</div><div class="text-[8px] text-dash-muted">Rango: -- km</div></div>
+            <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="flex items-center gap-1 text-[8px] text-dash-muted font-bold uppercase"><i data-lucide="fuel" class="w-4 h-4 text-dash-cyan"></i> Combustible</div><div id="t-fuel" class="font-orbitron font-bold text-white text-base">--%</div><div class="text-[8px] text-dash-muted">Rango: <span id="t-range">--</span> km</div></div>
             <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="flex items-center gap-1 text-[8px] text-dash-muted font-bold uppercase"><i data-lucide="wind" class="w-4 h-4 text-dash-cyan"></i> Turbo Boost</div><div id="t-boost" class="font-orbitron font-bold text-white text-base">-- kPa</div></div>
             <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="flex items-center gap-1 text-[8px] text-dash-muted font-bold uppercase"><i data-lucide="milestone" class="w-4 h-4 text-dash-cyan"></i> Odómetro</div><div id="t-odo" class="font-orbitron font-bold text-white text-base">-- km</div></div>
             <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="flex items-center gap-1 text-[8px] text-dash-muted font-bold uppercase"><i data-lucide="timer" class="w-4 h-4 text-dash-cyan"></i> Tiempo Total</div><div id="t-rtime" class="font-orbitron font-bold text-white text-base">-- h</div></div>
-            <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="flex items-center gap-1 text-[8px] text-dash-muted font-bold uppercase"><i data-lucide="gauge" class="w-4 h-4 text-dash-cyan"></i> Velocidad</div><div id="t-vmax" class="font-orbitron font-bold text-white text-base">-- km/h</div><div class="text-[8px] text-dash-muted">Promedio: -- km/h</div></div>
+            <div class="bg-dash-panel border border-dash-border p-2 rounded"><div class="flex items-center gap-1 text-[8px] text-dash-muted font-bold uppercase"><i data-lucide="gauge" class="w-4 h-4 text-dash-cyan"></i> Vel. Máxima</div><div id="t-vmax" class="font-orbitron font-bold text-white text-base">-- km/h</div><div class="text-[8px] text-dash-muted">Promedio: <span id="t-avgspd">--</span> km/h</div></div>
         </div>
         <div class="mt-2 text-[10px] text-dash-muted bg-dash-panel border border-dash-border p-2 rounded">
-            📡 Valores OBD-II. Se alimentarán al integrar el adaptador ELM327.
+            📡 Valores OBD-II en vivo desde el adaptador ELM327 (ver Ajustes). «--» = sin conexión o el vehículo no reporta ese dato.
         </div>
     </div>
 
     <!-- ==================== PÁGINA: MAPA ==================== -->
     <div id="page-mapa" class="hidden col-span-10 cyber-panel p-2 h-full">
         <h2 class="font-orbitron font-bold text-white text-xs tracking-wider mb-2 pb-1 border-b border-dash-border">UBICACIÓN EN TIEMPO REAL</h2>
-        <div id="route-map-full" class="w-full h-[calc(100%-50px)] rounded-lg overflow-hidden border border-dash-border dark-sat-tiles"></div>
+        <div id="map-note" class="text-[10px] text-dash-amber mb-1"></div>
+        <div id="route-map-full" class="w-full h-[calc(100%-60px)] rounded-lg overflow-hidden border border-dash-border dark-sat-tiles"></div>
     </div>
 
     <!-- ==================== PÁGINA: AUTONOMÍA ==================== -->
@@ -540,7 +533,7 @@
             <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-between">
                 <div class="text-[9px] text-dash-muted font-bold uppercase">Alcance Estimado</div>
                 <div class="my-2"><span id="a-range" class="font-orbitron font-black text-white text-3xl">--</span> <span class="text-dash-cyan font-orbitron font-bold text-sm">km</span></div>
-                <div class="text-[8px] text-dash-muted uppercase">Con el combustible actual</div>
+                <div id="a-note" class="text-[8px] text-dash-muted">Con el combustible actual</div>
                 <div class="mt-2">
                     <div class="flex justify-between text-[8px] text-dash-muted mb-1"><span>RANGO SEGURO</span><span id="a-safe" class="text-dash-cyan">-- km</span></div>
                     <div class="h-1.5 w-full bg-dash-border/50 rounded overflow-hidden"><div id="a-safe-bar" class="h-full bg-dash-cyan rounded" style="width:0%"></div></div>
@@ -559,23 +552,23 @@
                     <line x1="0" y1="30" x2="200" y2="30" stroke="#092038" stroke-width="0.5"/>
                     <line x1="0" y1="50" x2="200" y2="50" stroke="#092038" stroke-width="0.5"/>
                     <line x1="0" y1="70" x2="200" y2="70" stroke="#092038" stroke-width="0.5"/>
-                    <path id="a-area" d="M0,15 L40,22 L80,34 L120,46 L160,58 L200,66 L200,80 L0,80 Z" fill="url(#aGrad)"/>
-                    <path id="a-line" d="M0,15 L40,22 L80,34 L120,46 L160,58 L200,66" fill="none" stroke="#00f0ff" stroke-width="2"/>
-                    <circle id="a-dot" cx="200" cy="66" r="3" fill="#00f0ff"/>
+                    <path id="a-area" d="" fill="url(#aGrad)"/>
+                    <path id="a-line" d="" fill="none" stroke="#00f0ff" stroke-width="2"/>
+                    <circle id="a-dot" cx="-10" cy="66" r="3" fill="#00f0ff"/>
                 </svg>
-                <div class="flex justify-between text-[7px] text-dash-muted mt-1"><span>-30 km</span><span>-20 km</span><span>-10 km</span><span>0</span><span class="text-dash-cyan">Actual</span></div>
+                <div class="flex justify-between text-[7px] text-dash-muted mt-1"><span>Más antiguo</span><span class="text-dash-cyan">Actual</span></div>
             </div>
         </div>
         <div class="grid grid-cols-3 gap-2 mb-2">
             <div class="bg-dash-panel border border-dash-border p-3 rounded">
                 <div class="flex items-center gap-1 text-[8px] text-dash-muted font-bold uppercase mb-1"><i data-lucide="fuel" class="w-4 h-4 text-dash-cyan"></i> Combustible Restante</div>
                 <div class="font-orbitron font-bold text-white text-xl"><span id="a-fuel">--</span> <span class="text-xs text-dash-muted">L</span></div>
-                <div class="text-[8px] text-dash-muted uppercase">Aproximado</div>
+                <div class="text-[8px] text-dash-muted uppercase">Sensor × tanque</div>
             </div>
             <div class="bg-dash-panel border border-dash-border p-3 rounded">
                 <div class="flex items-center gap-1 text-[8px] text-dash-muted font-bold uppercase mb-1"><i data-lucide="calendar" class="w-4 h-4 text-dash-cyan"></i> Última Carga</div>
                 <div class="font-orbitron font-bold text-white text-xl"><span id="a-lastfill">--</span> <span class="text-xs text-dash-muted">L</span></div>
-                <div class="text-[8px] text-dash-muted uppercase">Sin registro</div>
+                <div id="a-lastfill-date" class="text-[8px] text-dash-muted uppercase">Sin registro</div>
             </div>
             <div class="bg-dash-panel border border-dash-border p-3 rounded">
                 <div class="flex items-center gap-1 text-[8px] text-dash-muted font-bold uppercase mb-1"><i data-lucide="trending-down" class="w-4 h-4 text-dash-cyan"></i> Consumo Promedio</div>
@@ -592,7 +585,7 @@
             <div class="bg-dash-panel border border-dash-border p-3 rounded">
                 <div class="flex items-center gap-1 text-[8px] text-dash-muted font-bold uppercase mb-1"><i data-lucide="droplets" class="w-4 h-4 text-dash-cyan"></i> Tipo de Combustible</div>
                 <div class="font-orbitron font-bold text-white text-xl" id="a-type">DIESEL</div>
-                <div class="text-[8px] text-dash-muted uppercase">Recomendado</div>
+                <div class="text-[8px] text-dash-muted uppercase">Última carga</div>
             </div>
             <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-between">
                 <div class="flex items-center gap-1 text-[8px] text-dash-muted font-bold uppercase mb-1"><i data-lucide="info" class="w-4 h-4 text-dash-cyan"></i> Registro Manual</div>
@@ -603,21 +596,25 @@
     </div>
 
     <!-- ==================== PÁGINA: DIAGNÓSTICO ==================== -->
-    <div id="page-diagnostico" class="hidden col-span-10 cyber-panel p-2 h-full">
+    <div id="page-diagnostico" class="hidden col-span-10 cyber-panel p-2 h-full overflow-y-auto">
         <h2 class="font-orbitron font-bold text-white text-xs tracking-wider mb-2 pb-1 border-b border-dash-border">DIAGNÓSTICO</h2>
         <div class="grid grid-cols-4 gap-2 text-center">
-            <div class="bg-dash-panel border border-dash-border p-3 rounded"><div class="text-[9px] text-dash-muted">OBD-II</div><div class="font-orbitron font-bold text-white text-lg">No conectado</div></div>
-            <div class="bg-dash-panel border border-dash-border p-3 rounded"><div class="text-[9px] text-dash-muted">DTC</div><div class="font-orbitron font-bold text-white text-lg">--</div></div>
-            <div class="bg-dash-panel border border-dash-border p-3 rounded"><div class="text-[9px] text-dash-muted">GPS</div><div class="font-orbitron font-bold text-white text-lg">Pendiente</div></div>
-            <div class="bg-dash-panel border border-dash-border p-3 rounded"><div class="text-[9px] text-dash-muted">UI</div><div class="font-orbitron font-bold text-green text-lg">OK</div></div>
+            <div class="bg-dash-panel border border-dash-border p-3 rounded"><div class="text-[9px] text-dash-muted">OBD-II</div><div id="d-obd" class="font-orbitron font-bold text-dash-muted text-lg">--</div><div id="d-obd-sub" class="text-[9px] text-dash-muted"></div></div>
+            <div class="bg-dash-panel border border-dash-border p-3 rounded"><div class="text-[9px] text-dash-muted">Códigos DTC</div><div id="d-dtc" class="font-orbitron font-bold text-dash-muted text-lg">--</div></div>
+            <div class="bg-dash-panel border border-dash-border p-3 rounded"><div class="text-[9px] text-dash-muted">GPS</div><div id="d-gps" class="font-orbitron font-bold text-dash-muted text-lg">--</div><div id="d-gps-sub" class="text-[9px] text-dash-muted"></div></div>
+            <div class="bg-dash-panel border border-dash-border p-3 rounded"><div class="text-[9px] text-dash-muted">Red</div><div id="d-net" class="font-orbitron font-bold text-dash-muted text-lg">--</div></div>
         </div>
-        <div class="mt-3 text-[10px] text-dash-muted bg-dash-panel border border-dash-border p-2 rounded">Sin OBD-II no se leen códigos de avería. No se inventan datos.</div>
+        <div class="mt-3 text-[10px] bg-dash-panel border border-dash-border p-2 rounded">
+            <div class="text-[9px] text-dash-muted font-bold uppercase mb-1">Códigos de avería (DTC)</div>
+            <div id="d-dtc-list" class="text-dash-muted">--</div>
+        </div>
     </div>
 
     <!-- ==================== PÁGINA: J.A.R.V.I.S. (consola completa) ==================== -->
     <div id="page-jarvis" class="hidden col-span-10 cyber-panel p-2 h-full">
         <h2 class="font-orbitron font-black text-dash-cyan text-xs tracking-widest text-glow mb-2 pb-1 border-b border-dash-border">J.A.R.V.I.S.</h2>
-        <div id="jarvis-console" class="bg-dash-bg border border-dash-border rounded p-2 h-[calc(100%-90px)] overflow-y-auto text-[11px] font-mono text-dash-cyan">[SISTEMA] Asistente listo.\n[J.A.R.V.I.S.] Configura Hermes en Ajustes para respuestas reales.</div>
+        <div id="jarvis-console" class="bg-dash-bg border border-dash-border rounded p-2 h-[calc(100%-90px)] overflow-y-auto text-[11px] font-mono text-dash-cyan whitespace-pre-wrap">[SISTEMA] Asistente listo.
+[J.A.R.V.I.S.] Configura Hermes en Ajustes para respuestas reales.</div>
         <div class="flex gap-1.5 mt-2">
             <input id="jarvis-input" placeholder="Comando…" class="flex-1 bg-dash-bg border border-dash-border rounded p-2 text-white text-[11px]">
             <button onclick="sendJarvis()" class="px-3 py-1.5 bg-dash-cyan/10 hover:bg-dash-cyan/20 border border-dash-cyan/60 text-dash-cyan font-bold text-xs rounded">ENVIAR</button>
@@ -629,26 +626,24 @@
     <!-- ==================== 3. BOTTOM SYSTEM FOOTER ==================== -->
     <footer class="cyber-panel px-3 py-1 flex items-center justify-between text-[10px] text-dash-muted h-[28px]">
         <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-dash-green shadow-[0_0_6px_#00ffaa]"></span>
-            <span class="text-dash-text font-semibold">Sistema conectado</span>
+            <span id="foot-dot" class="w-2 h-2 rounded-full bg-dash-muted"></span>
+            <span id="foot-sys" class="text-dash-text font-semibold">Iniciando…</span>
         </div>
 
         <div class="flex items-center gap-6 font-semibold">
-            <span class="flex items-center gap-1 text-dash-cyan">
+            <span id="foot-obd" class="flex items-center gap-1 text-dash-muted">
                 <i data-lucide="activity" class="w-4 h-4"></i> Datos OBD-II
             </span>
-            <span class="flex items-center gap-1 text-dash-cyan">
+            <span id="foot-gps" class="flex items-center gap-1 text-dash-muted">
                 <i data-lucide="navigation" class="w-4 h-4"></i> GPS
-                <i data-lucide="signal" class="w-3 h-3 text-dash-green inline"></i>
             </span>
-            <span class="flex items-center gap-1 text-dash-cyan">
-                <i data-lucide="radio" class="w-4 h-4"></i> 4G
-                <i data-lucide="signal" class="w-3 h-3 text-dash-green inline"></i>
+            <span id="foot-net" class="flex items-center gap-1 text-dash-muted">
+                <i data-lucide="radio" class="w-4 h-4"></i> <span id="foot-net-txt">Red</span>
             </span>
         </div>
 
         <div class="flex items-center gap-3">
-            <span class="font-mono text-[9px]">v2.1.0</span>
+            <span class="font-mono text-[9px]">v2.2.0</span>
             <div class="flex items-center gap-1">
                 <span class="font-orbitron font-bold text-white text-[9px]">MACHINE</span>
                 <span class="text-[8px] text-dash-cyan font-bold">OUTDOORS</span>
@@ -658,51 +653,67 @@
 
     <!-- ==================== LOGIC & SCRIPTING ==================== -->
     <script>
-        // Init Lucide Icons
         lucide.createIcons();
 
-        // Realtime Clock Updater
+        // ==========================================
+        // UTILIDADES
+        // ==========================================
+        const $ = (id) => document.getElementById(id);
+        const pad = (n) => String(n).padStart(2, '0');
+        const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        const num = (v) => (v === null || v === undefined || v === '' || isNaN(+v)) ? null : +v;
+        function lsGet(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }
+        function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+        function setText(id, v, suf) { const el = $(id); if (el) el.textContent = (v === null || v === undefined || v === '') ? '--' + (suf || '') : v + (suf || ''); }
+        function setIcon(id, name, cls) { const el = $(id); if (!el || el.dataset.icon === name) return; el.dataset.icon = name; el.innerHTML = '<i data-lucide="' + name + '" class="' + cls + '"></i>'; lucide.createIcons(); }
+        function setTone(el, tone) { // tone: green | amber | muted | cyan
+            if (!el) return;
+            el.classList.remove('text-dash-green', 'text-dash-amber', 'text-dash-muted', 'text-dash-cyan');
+            el.classList.add('text-dash-' + tone);
+        }
+        function setDot(el, tone) {
+            if (!el) return;
+            el.classList.remove('bg-dash-green', 'bg-dash-amber', 'bg-dash-muted', 'bg-dash-cyan');
+            el.classList.add('bg-dash-' + tone);
+        }
+        const fmtKm = (v) => v === null ? null : Math.round(v).toLocaleString('es-EC');
+        const fmtDur = (s) => s === null || s === undefined ? null : pad(Math.floor(s / 3600)) + ':' + pad(Math.floor(s / 60) % 60);
+        function haversine(a, b) {
+            const R = 6371, r = Math.PI / 180;
+            const dLat = (b[0] - a[0]) * r, dLon = (b[1] - a[1]) * r;
+            const x = Math.sin(dLat / 2) ** 2 + Math.cos(a[0] * r) * Math.cos(b[0] * r) * Math.sin(dLon / 2) ** 2;
+            return 2 * R * Math.asin(Math.sqrt(x));
+        }
+
+        // ==========================================
+        // RELOJ Y FECHA
+        // ==========================================
+        const DIAS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+        const MESES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
         function updateClock() {
-            const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            document.getElementById('header-clock').innerText = `${hours}:${minutes}`;
+            const n = new Date();
+            $('header-clock').textContent = pad(n.getHours()) + ':' + pad(n.getMinutes());
+            $('header-date').textContent = DIAS[n.getDay()] + ', ' + n.getDate() + ' ' + MESES[n.getMonth()] + ' ' + n.getFullYear();
         }
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Navigation Sidebar Toggle (patrón de versiones anteriores: data-page + setPage)
-        function selectNav(btn) {
-            // Mantener compatibilidad: si se llama con un botón, usar su data-page
-            setPage(btn.dataset.page || btn.querySelector('span')?.textContent.trim().toLowerCase());
-        }
+        // ==========================================
+        // NAVEGACIÓN
+        // ==========================================
         function setPage(n) {
-            // Resaltar botón activo
             document.querySelectorAll('.nav-btn').forEach(b => {
                 const active = b.dataset.page === n;
                 b.className = active
                     ? "nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg bg-dash-cyan/20 border border-dash-cyan text-dash-cyan font-bold font-orbitron shadow-[0_0_10px_rgba(0,240,255,0.2)]"
                     : "nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold";
             });
-            // Mostrar/ocultar TODAS las páginas según data-page
-            const pages = ['inicio', 'tablero', 'mapa', 'autonomia', 'registro', 'diagnostico', 'jarvis', 'ajustes'];
-            pages.forEach(p => {
-                const el = document.getElementById('page-' + p);
+            ['inicio', 'tablero', 'mapa', 'autonomia', 'registro', 'diagnostico', 'jarvis', 'ajustes'].forEach(p => {
+                const el = $('page-' + p);
                 if (el) el.classList.toggle('hidden', p !== n);
             });
-            // Si abrimos mapa, lazy-init (crear al abrir para evitar el bug de Leaflet con display:none)
-            if (n === 'mapa') setTimeout(() => {
-                if (!mapFull && window.L && document.getElementById('route-map-full')) {
-                    const cur = currentPos, start = [-2.1850, -79.8900], end = [-2.2000, -79.8700];
-                    mapFull = L.map('route-map-full', { center: cur, zoom: 13, zoomControl: false, attributionControl: false });
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapFull);
-                    const bd = L.divIcon({ html: '<div style="background:#00f0ff; width:16px; height:16px; border-radius:50%; border:2px solid #010610; box-shadow:0 0 12px #00f0ff;"></div>', iconSize: [16,16] });
-                    busMarkerFull = L.marker(cur, { icon: bd }).addTo(mapFull);
-                    L.polyline([start, cur, end], { color: '#00f0ff', weight: 3, dashArray: '4, 8' }).addTo(mapFull);
-                    mapFull.fitBounds(L.latLngBounds([start, end]), { padding: [15,15] });
-                }
-                if (mapFull) mapFull.invalidateSize();
-            }, 120);
+            // El mapa se crea al abrir la página (Leaflet falla dentro de display:none)
+            if (n === 'mapa') setTimeout(initMapFull, 120);
         }
 
         // ==========================================
@@ -710,405 +721,526 @@
         // ==========================================
         function toggleNight() {
             const on = document.body.classList.toggle('night-mode');
-            document.getElementById('btn-night').textContent = on ? '☀' : '☾';
-            try { localStorage.setItem('moNight', on ? '1' : '0'); } catch(e) {}
-            lucide.createIcons();
+            $('btn-night').textContent = on ? '☀' : '☾';
+            try { localStorage.setItem('moNight', on ? '1' : '0'); } catch (e) {}
         }
-        (function(){ try { if (localStorage.getItem('moNight')==='1') { document.body.classList.add('night-mode'); document.getElementById('btn-night').textContent='☀'; } } catch(e) {} })();
+        (function () { try { if (localStorage.getItem('moNight') === '1') { document.body.classList.add('night-mode'); $('btn-night').textContent = '☀'; } } catch (e) {} })();
 
         // ==========================================
-        // CONEXIÓN HERMES (API real)
+        // ESTADO GLOBAL
+        // ==========================================
+        const S = {
+            obd: { mode: 'off', connected: false, ecu: false, error: null, data: {}, dtc: null, ts: 0, shown: false },
+            gps: { ok: false, err: 'Buscando…', lat: null, lon: null, speed: null, acc: null, ts: 0, tripKm: 0, tripStart: null, last: null, trail: [] },
+            speed: null
+        };
+        const obdFresh = () => S.obd.ecu && Date.now() - S.obd.ts < 5000;
+        const gpsFresh = () => S.gps.ok && Date.now() - S.gps.ts < 60000;
+
+        // ==========================================
+        // TELEMETRÍA OBD-II  (puente bridge.py o simulación)
+        // ==========================================
+        const OBD_KEY = 'moObdV1';
+        const OBD_FIELDS = [ // [id, clave, sufijo]
+            ['val-temp', 'temp', '°C'], ['m-temp', 'temp', '°C'], ['t-temp', 'temp', '°C'],
+            ['val-volts', 'volts', ' V'], ['val-oil', 'oil', '°C'], ['t-oil', 'oil', '°C'],
+            ['val-fuel', 'fuel', '%'], ['m-fuel', 'fuel', '%'], ['t-fuel', 'fuel', '%'],
+            ['t-rpm', 'rpm', ''], ['t-speed', 'speed', ''], ['t-map', 'map', ' kPa'],
+            ['t-throttle', 'throttle', '%'], ['t-econ', 'econ', ' km/L'], ['t-stft', 'stft', '%'],
+            ['t-ltft', 'ltft', '%'], ['t-boost', 'boost', ' bar'], ['t-vmax', 'vmax', ' km/h']
+        ];
+        function obdCfg() { return Object.assign({ mode: 'bridge', url: '/obd', tank: 70 }, lsGet(OBD_KEY, {})); }
+
+        function applyObdii(data) {
+            if (!data) return;
+            S.obd.data = data; S.obd.ts = Date.now(); S.obd.shown = true;
+            OBD_FIELDS.forEach(([id, k, suf]) => setText(id, data[k], suf));
+            setText('t-odo', fmtKm(num(data.odo)), ' km');
+            setText('t-rtime', fmtDur(num(data.runtime)), '');
+            const n = new Date(); setText('t-upd', pad(n.getHours()) + ':' + pad(n.getMinutes()) + ':' + pad(n.getSeconds()), '');
+            const temp = num(data.temp), fuel = num(data.fuel), rpm = num(data.rpm), spd = num(data.speed);
+            $('m-temp-bar').style.width = temp === null ? '0%' : Math.max(0, Math.min(100, temp / 120 * 100)) + '%';
+            $('m-fuel-bar').style.width = fuel === null ? '0%' : Math.min(100, fuel) + '%';
+            $('tab-gauge-rpm').style.strokeDashoffset = 314 * (1 - Math.min(1, (rpm || 0) / 4000));
+            $('tab-gauge-speed').style.strokeDashoffset = 314 * (1 - Math.min(1, (spd || 0) / 120));
+            refreshOdo();
+            recalcAutonomia();
+        }
+        function clearObdFields() {
+            S.obd.data = {}; S.obd.shown = false;
+            OBD_FIELDS.forEach(([id, , suf]) => setText(id, null, suf));
+            ['t-odo', 't-rtime'].forEach(id => setText(id, null, id === 't-odo' ? ' km' : ''));
+            $('m-temp-bar').style.width = '0%'; $('m-fuel-bar').style.width = '0%';
+            $('tab-gauge-rpm').style.strokeDashoffset = 314; $('tab-gauge-speed').style.strokeDashoffset = 314;
+            refreshOdo();
+            recalcAutonomia();
+        }
+
+        let obdTimer = null, obdBusy = false;
+        function startObd() {
+            clearInterval(obdTimer); obdTimer = null;
+            const c = obdCfg();
+            S.obd = { mode: c.mode, connected: false, ecu: false, error: null, data: {}, dtc: null, ts: 0, shown: false };
+            clearObdFields();
+            if (c.mode === 'bridge') { pollObd(); obdTimer = setInterval(pollObd, 1000); }
+            else if (c.mode === 'sim') { sim.reset(); obdTimer = setInterval(sim.tick, 500); sim.tick(); }
+            refreshStatus();
+        }
+        async function pollObd() {
+            if (obdBusy) return;
+            obdBusy = true;
+            const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 3000);
+            try {
+                const r = await fetch(obdCfg().url || '/obd', { cache: 'no-store', signal: ctl.signal });
+                if (!r.ok) throw new Error(r.status === 404 ? 'Puente no encontrado (inicia con bridge.py)' : 'HTTP ' + r.status);
+                const j = await r.json();
+                S.obd.connected = !!j.connected; S.obd.ecu = !!j.ecu; S.obd.error = j.error || null;
+                S.obd.dtc = Array.isArray(j.dtc) ? j.dtc : S.obd.dtc;
+                if (j.connected && j.ecu && j.data) applyObdii(j.data);
+            } catch (e) {
+                S.obd.connected = false; S.obd.ecu = false; S.obd.dtc = null;
+                S.obd.error = e.name === 'AbortError' ? 'El puente no responde' : (e.message || 'Error');
+            } finally { clearTimeout(t); obdBusy = false; }
+            refreshStatus();
+        }
+
+        // Simulación (solo para demostración: se marca como DEMO en toda la interfaz)
+        const sim = {
+            v: {}, last: 0,
+            reset() {
+                const odo = lastKnownOdo() || 150000;
+                this.v = { rpm: 800, speed: 0, temp: 70, oil: 65, volts: 14.1, fuel: 62, map: 35, baro: 101, throttle: 4, stft: 0, ltft: 1.5, odo, runtime: 0, trip: 0, trip_time: 0, vmax: 0 };
+                this.last = Date.now();
+            },
+            tick() {
+                const v = sim.v, now = Date.now(), dt = (now - sim.last) / 1000; sim.last = now;
+                const walk = (x, lo, hi, step) => Math.max(lo, Math.min(hi, x + (Math.random() - 0.5) * step));
+                v.speed = Math.round(walk(v.speed, 0, 90, 8));
+                v.rpm = Math.round(v.speed < 2 ? walk(v.rpm, 750, 850, 30) : 900 + v.speed * 22 + (Math.random() - 0.5) * 120);
+                v.throttle = +(v.speed < 2 ? 4 : walk(v.throttle, 10, 45, 4)).toFixed(1);
+                v.temp = +walk(Math.min(v.temp + 0.15, 92), 70, 92, 0.4).toFixed(0);
+                v.oil = +walk(Math.min(v.oil + 0.1, 88), 60, 88, 0.3).toFixed(0);
+                v.volts = +walk(v.volts, 13.8, 14.4, 0.1).toFixed(1);
+                v.map = Math.round(35 + v.throttle * 2.2);
+                v.boost = +((v.map - v.baro) / 100).toFixed(2);
+                v.stft = +walk(v.stft, -4, 4, 1).toFixed(1);
+                v.trip += v.speed * dt / 3600; v.odo += v.speed * dt / 3600;
+                v.fuel = Math.max(5, v.fuel - v.speed * dt / 3600 * 0.15);
+                v.runtime += dt; v.trip_time += dt; v.vmax = Math.max(v.vmax, v.speed);
+                S.obd.connected = S.obd.ecu = true; S.obd.error = null; S.obd.dtc = [];
+                applyObdii(Object.assign({}, v, { fuel: Math.round(v.fuel), trip: +v.trip.toFixed(1), odo: Math.round(v.odo), runtime: Math.round(v.runtime), trip_time: Math.round(v.trip_time) }));
+                refreshStatus();
+            }
+        };
+
+        // Ajustes OBD
+        function loadObdForm() {
+            const c = obdCfg();
+            $('o-mode').value = c.mode; $('o-url').value = c.url; $('o-tank').value = c.tank || '';
+        }
+        function saveObd() {
+            const tank = num($('o-tank').value);
+            lsSet(OBD_KEY, { mode: $('o-mode').value, url: $('o-url').value.trim() || '/obd', tank: tank && tank > 0 ? tank : null });
+            $('o-stat').textContent = '✓ Guardado';
+            startObd();
+        }
+
+        // ==========================================
+        // ESTADO DEL SISTEMA (encabezado, pie, diagnóstico)
+        // ==========================================
+        function netInfo() {
+            const c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (!navigator.onLine) return { txt: 'SIN RED', icon: 'wifi-off', tone: 'amber' };
+            if (c && c.type === 'wifi') return { txt: 'WI-FI', icon: 'wifi', tone: 'cyan' };
+            if (c && c.type === 'cellular') return { txt: 'MÓVIL', icon: 'signal', tone: 'cyan' };
+            return { txt: 'EN LÍNEA', icon: 'wifi', tone: 'cyan' };
+        }
+
+        function refreshStatus() {
+            const o = S.obd, of = obdFresh(), gf = gpsFresh(), demo = o.mode === 'sim';
+            if (!of && o.shown) clearObdFields(); // no mostrar datos viejos
+
+            // Velocidad (OBD si hay, si no GPS) -> también la usa el bus 3D
+            const spd = of ? num(o.data.speed) : (gf ? S.gps.speed : null);
+            S.speed = spd; window.dashSpeed = spd || 0;
+
+            // Insignia de estado
+            const alerts = [];
+            if (of) {
+                const d = o.data;
+                if (num(d.temp) >= 105) alerts.push('Motor caliente');
+                if (num(d.volts) !== null && num(d.volts) < 11.8) alerts.push('Batería baja');
+                if (num(d.fuel) !== null && num(d.fuel) <= 15) alerts.push('Combustible bajo');
+            }
+            if (of && o.dtc && o.dtc.length) alerts.push(o.dtc.length + (o.dtc.length === 1 ? ' código de avería' : ' códigos de avería'));
+            let label, sub, tone;
+            if (spd === null) { label = gf ? 'SOLO GPS' : 'SIN DATOS'; tone = 'muted'; }
+            else { label = spd > 3 ? 'EN RUTA' : 'DETENIDO'; tone = 'green'; }
+            if (alerts.length) { sub = alerts.join(' · '); tone = 'amber'; }
+            else if (of) sub = demo ? 'Datos simulados' : 'Todo en orden';
+            else if (gf) sub = 'Solo GPS (sin OBD-II)';
+            else sub = 'Sin OBD-II ni GPS';
+            if (demo) label = 'DEMO · ' + label;
+            $('status-label').textContent = label; setTone($('status-label'), tone);
+            $('status-sub').textContent = sub;
+            setDot($('status-dot'), tone); setDot($('status-ping'), tone);
+            $('status-ping').classList.toggle('animate-ping', tone !== 'muted');
+
+            // Red
+            const net = netInfo();
+            $('net-type').textContent = net.txt; setTone($('net-type'), net.tone);
+            setIcon('net-icon', net.icon, 'w-5 h-5');
+            setTone($('net-icon'), net.tone);
+
+            // Viaje: OBD si hay, si no GPS
+            let trip = null, ttime = null;
+            if (of && num(o.data.trip) !== null) { trip = num(o.data.trip); ttime = num(o.data.trip_time); }
+            else if (S.gps.tripStart) { trip = S.gps.tripKm; ttime = (Date.now() - S.gps.tripStart) / 1000; }
+            setText('m-trip', trip === null ? null : trip.toFixed(1), ' km');
+            setText('m-time', fmtDur(ttime), '');
+            setText('t-avgspd', trip !== null && ttime > 60 ? Math.round(trip / (ttime / 3600)) : null, '');
+
+            // Panel derecho: GPS y OBD
+            $('m-gps').textContent = gf ? S.gps.lat.toFixed(4) + ', ' + S.gps.lon.toFixed(4) : 'GPS: ' + (S.gps.err || 'sin señal');
+            $('m-obd').textContent = 'OBD: ' + (demo ? 'DEMO' : of ? 'OK' : o.mode === 'off' ? 'APAGADO' : '--');
+            setTone($('m-obd'), of ? (demo ? 'amber' : 'green') : 'muted');
+
+            // Pie de página
+            $('foot-sys').textContent = demo ? 'MODO DEMO · datos simulados' : of ? 'Vehículo conectado' : 'OBD-II sin conexión';
+            setDot($('foot-dot'), demo ? 'amber' : of ? 'green' : 'muted');
+            setTone($('foot-obd'), of ? (demo ? 'amber' : 'green') : 'muted');
+            setTone($('foot-gps'), gf ? 'green' : 'muted');
+            $('foot-net-txt').textContent = net.txt; setTone($('foot-net'), net.tone === 'amber' ? 'muted' : 'green');
+
+            // Página Diagnóstico
+            let obdTxt, obdSub = o.error || '';
+            if (o.mode === 'off') { obdTxt = 'Desactivado'; obdSub = 'Actívalo en Ajustes'; }
+            else if (demo) { obdTxt = 'Demo'; obdSub = 'Datos simulados, no reales'; }
+            else if (of) { obdTxt = 'Conectado'; obdSub = 'ELM327 · ECU respondiendo'; }
+            else if (o.connected) obdTxt = 'Sin ECU';
+            else obdTxt = 'No conectado';
+            $('d-obd').textContent = obdTxt; setTone($('d-obd'), of ? (demo ? 'amber' : 'green') : 'muted');
+            $('d-obd-sub').textContent = obdSub;
+            if (o.dtc === null || o.dtc === undefined) {
+                $('d-dtc').textContent = '--'; setTone($('d-dtc'), 'muted');
+                $('d-dtc-list').innerHTML = '<div class="text-dash-muted">' + (of ? 'Leyendo códigos…' : 'Sin conexión OBD-II: no se pueden leer los códigos de avería.') + '</div>';
+            } else if (!o.dtc.length) {
+                $('d-dtc').textContent = '0'; setTone($('d-dtc'), 'green');
+                $('d-dtc-list').innerHTML = '<div class="text-dash-green">✓ Sin códigos de avería almacenados.</div>';
+            } else {
+                $('d-dtc').textContent = o.dtc.length; setTone($('d-dtc'), 'amber');
+                $('d-dtc-list').innerHTML = o.dtc.map(c => '<span class="inline-block font-orbitron font-bold text-dash-amber border border-dash-amber/60 rounded px-2 py-0.5 mr-1 mb-1">' + esc(c) + '</span>').join('') +
+                    '<div class="text-dash-muted mt-1">Consulta el significado del código en el manual del vehículo o con tu mecánico.</div>';
+            }
+            $('d-gps').textContent = gf ? 'En vivo' : (S.gps.err || 'Sin señal'); setTone($('d-gps'), gf ? 'green' : 'muted');
+            $('d-gps-sub').textContent = gf ? '±' + Math.round(S.gps.acc) + ' m' : '';
+            $('d-net').textContent = net.txt; setTone($('d-net'), net.tone === 'amber' ? 'amber' : 'green');
+            $('o-live').textContent = obdTxt + (obdSub ? ' · ' + obdSub : '');
+        }
+        setInterval(refreshStatus, 2000);
+        window.addEventListener('online', refreshStatus);
+        window.addEventListener('offline', refreshStatus);
+
+        // Batería de la radio (si el navegador lo permite)
+        if (navigator.getBattery) {
+            navigator.getBattery().then(b => {
+                const upd = () => {
+                    $('batt-pct').textContent = Math.round(b.level * 100) + '%';
+                    setIcon('batt-icon', b.charging ? 'battery-charging' : (b.level < 0.2 ? 'battery-low' : 'battery'), 'w-5 h-5 ' + (b.level < 0.2 && !b.charging ? 'text-dash-amber' : 'text-dash-green'));
+                };
+                upd(); b.addEventListener('levelchange', upd); b.addEventListener('chargingchange', upd);
+            }).catch(() => $('batt-box').classList.add('hidden'));
+        } else { $('batt-box').classList.add('hidden'); }
+
+        // ==========================================
+        // CLIMA (Open-Meteo, sin clave). Usa el GPS o, si no hay, Guayaquil.
+        // ==========================================
+        const BASE_POS = [-2.1900, -79.8800];
+        const WMO = (c) => c === 0 ? 'sun' : c <= 2 ? 'cloud-sun' : c === 3 ? 'cloud' : c <= 48 ? 'cloud-fog' : c <= 57 ? 'cloud-drizzle' : c <= 67 ? 'cloud-rain' : c <= 77 ? 'snowflake' : c <= 82 ? 'cloud-rain' : 'cloud-lightning';
+        async function updateWeather() {
+            const usingGps = gpsFresh();
+            const [lat, lon] = usingGps ? [S.gps.lat, S.gps.lon] : BASE_POS;
+            try {
+                const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lat.toFixed(2) + '&longitude=' + lon.toFixed(2) + '&current=temperature_2m,weather_code', { cache: 'no-store' });
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const cur = (await r.json()).current;
+                $('weather-temp').textContent = Math.round(cur.temperature_2m) + '°C';
+                $('weather-place').textContent = usingGps ? 'Ubicación actual' : 'Guayaquil, EC';
+                setIcon('weather-icon', WMO(cur.weather_code), 'w-6 h-6 text-dash-amber');
+            } catch (e) {
+                $('weather-temp').textContent = '--°C';
+                $('weather-place').textContent = 'Clima sin conexión';
+                setIcon('weather-icon', 'cloud-off', 'w-6 h-6 text-dash-muted');
+            }
+        }
+        updateWeather();
+        setInterval(updateWeather, 15 * 60 * 1000);
+
+        // ==========================================
+        // GPS EN TIEMPO REAL + MAPA
+        // ==========================================
+        let mapFull = null, busMarkerFull = null, trailLine = null;
+        function initMapFull() {
+            if (!window.L || !$('route-map-full')) return;
+            const cur = gpsFresh() ? [S.gps.lat, S.gps.lon] : BASE_POS;
+            if (!mapFull) {
+                mapFull = L.map('route-map-full', { center: cur, zoom: 15, zoomControl: false, attributionControl: false });
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapFull);
+                const bd = L.divIcon({ html: '<div style="background:#00f0ff; width:16px; height:16px; border-radius:50%; border:2px solid #010610; box-shadow:0 0 12px #00f0ff;"></div>', iconSize: [16, 16], className: '' });
+                busMarkerFull = L.marker(cur, { icon: bd }).addTo(mapFull);
+                trailLine = L.polyline(S.gps.trail, { color: '#00f0ff', weight: 3, dashArray: '4, 8' }).addTo(mapFull);
+            }
+            mapFull.invalidateSize();
+            mapFull.setView(cur, mapFull.getZoom());
+            $('map-note').textContent = gpsFresh() ? '' : 'Sin señal GPS: se muestra la ubicación base (Guayaquil).';
+        }
+
+        function startGPS() {
+            if (!('geolocation' in navigator)) { S.gps.err = 'No disponible'; refreshStatus(); return; }
+            const onPos = pos => {
+                const { latitude: lat, longitude: lon, accuracy: acc, speed } = pos.coords;
+                const g = S.gps, now = Date.now(), first = !g.ok && !g.tripStart;
+                if (g.last && acc < 50) {
+                    const d = haversine(g.last, [lat, lon]);
+                    if (d > 0.005 && d < 2) g.tripKm += d; // ignora saltos y temblor del GPS
+                }
+                if (!g.tripStart) g.tripStart = now;
+                if (acc < 50 || !g.last) g.last = [lat, lon];
+                Object.assign(g, { ok: true, err: null, lat, lon, acc, speed: speed !== null ? speed * 3.6 : null, ts: now });
+                g.trail.push([lat, lon]); if (g.trail.length > 2000) g.trail.shift();
+                if (busMarkerFull) { busMarkerFull.setLatLng([lat, lon]); trailLine.setLatLngs(g.trail); if (!$('page-mapa').classList.contains('hidden')) mapFull.panTo([lat, lon]); $('map-note').textContent = ''; }
+                if (first) updateWeather();
+                refreshStatus();
+            };
+            const onErr = err => {
+                if (err.code !== 1 && gpsFresh()) return; // un fallo suelto no anula una posición reciente
+                S.gps.ok = false;
+                S.gps.err = err.code === 1 ? 'Sin permiso' : err.code === 2 ? 'Sin señal' : 'Sin respuesta';
+                refreshStatus();
+            };
+            const opts = { enableHighAccuracy: true, maximumAge: 2000, timeout: 15000 };
+            navigator.geolocation.watchPosition(onPos, onErr, opts);
+            // Con el vehículo quieto algunos navegadores dejan de enviar posiciones: consultar cada 20 s
+            setInterval(() => navigator.geolocation.getCurrentPosition(onPos, onErr, opts), 20000);
+        }
+        window.addEventListener('load', () => setTimeout(startGPS, 500));
+
+        // ==========================================
+        // CONEXIÓN HERMES (J.A.R.V.I.S.)
         // ==========================================
         const HS_KEY = 'moHermesV1';
-        function rh() { try { return JSON.parse(localStorage.getItem(HS_KEY)||'{}'); } catch(e) { return {}; } }
+        function rh() {
+            const c = lsGet(HS_KEY, {});
+            if (!c.key) { try { const k = sessionStorage.getItem(HS_KEY + '.key'); if (k) c.key = k; } catch (e) {} }
+            return c;
+        }
+        function telemetrySnapshot() {
+            const snap = { fuente_obd: obdFresh() ? (S.obd.mode === 'sim' ? 'SIMULACIÓN' : 'real') : 'sin datos' };
+            if (obdFresh()) Object.assign(snap, S.obd.data);
+            if (S.obd.dtc) snap.codigos_averia = S.obd.dtc;
+            if (gpsFresh()) Object.assign(snap, { lat: +S.gps.lat.toFixed(5), lon: +S.gps.lon.toFixed(5), vel_gps_kmh: S.gps.speed });
+            return snap;
+        }
         async function callHermes(userMsg) {
             const c = rh();
             if (!c.url || !c.key) return 'Configura Hermes en Ajustes (URL + Clave) para respuestas reales.';
             try {
-                const r = await fetch(c.url.replace(/\/$/,'') + '/chat/completions', {
+                const r = await fetch(c.url.replace(/\/$/, '') + '/chat/completions', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + c.key },
-                    body: JSON.stringify({ model: c.model || 'hermes-agent', messages: [{ role: 'system', content: 'Eres J.A.R.V.I.S., asistente del Golden Dragon XML6609. Español, breve, no inventes telemetría.' }, { role: 'user', content: userMsg }] })
+                    body: JSON.stringify({
+                        model: c.model || 'hermes-agent', messages: [
+                            { role: 'system', content: 'Eres J.A.R.V.I.S., asistente del Golden Dragon XML6609. Español, breve, no inventes telemetría. Telemetría actual del vehículo (JSON): ' + JSON.stringify(telemetrySnapshot()) },
+                            { role: 'user', content: userMsg }]
+                    })
                 });
-                const d = await r.json();
+                let d = null; try { d = await r.json(); } catch (e) {}
+                if (!r.ok) return 'Error ' + r.status + ': ' + (d?.error?.message || r.statusText || 'respuesta inválida');
                 return d?.choices?.[0]?.message?.content || 'Sin respuesta.';
-            } catch(e) { return 'Error conexión: ' + e.message; }
+            } catch (e) {
+                return 'Error de conexión: no se pudo contactar con Hermes (revisa la URL, la red y que el servidor permita CORS).';
+            }
         }
+        function sendJarvis() {
+            const inp = $('jarvis-input'), out = $('jarvis-console');
+            const q = inp.value.trim();
+            if (!q) return;
+            out.textContent += '\n[TÚ] ' + q;
+            inp.value = '';
+            out.scrollTop = out.scrollHeight;
+            callHermes(q).then(resp => {
+                out.textContent += '\n[J.A.R.V.I.S.] ' + resp;
+                out.scrollTop = out.scrollHeight;
+            });
+        }
+        $('jarvis-input').addEventListener('keydown', e => { if (e.key === 'Enter') sendJarvis(); });
+
+        function saveH() {
+            const remember = $('h-remember').checked, key = $('h-key').value.trim();
+            const c = { url: $('h-url').value.trim(), model: $('h-model').value.trim() || 'hermes-agent', remember };
+            if (remember) c.key = key;
+            lsSet(HS_KEY, c);
+            try { if (remember) sessionStorage.removeItem(HS_KEY + '.key'); else sessionStorage.setItem(HS_KEY + '.key', key); } catch (e) {}
+            $('h-stat').textContent = remember ? '✓ Guardado (clave recordada en esta radio)' : '✓ Guardado (la clave se borra al cerrar el navegador)';
+        }
+        function testH() {
+            const stat = $('h-stat');
+            stat.textContent = 'Probando…';
+            callHermes('Di OK').then(r => { stat.textContent = r.startsWith('Error') || r.startsWith('Configura') ? r : '✓ OK: ' + r; });
+        }
+        (function () {
+            const c = rh();
+            if (c.url) $('h-url').value = c.url;
+            if (c.key) $('h-key').value = c.key;
+            if (c.model) $('h-model').value = c.model;
+            $('h-remember').checked = !!c.remember;
+            if (c.url) $('h-stat').textContent = 'Configuración guardada';
+        })();
 
         // ==========================================
         // REGISTRO DE MANTENIMIENTOS Y COMBUSTIBLE
         // ==========================================
         const REGS_KEY = 'moRegistroV1';
         let regTab = 'mantenimiento';
-        function readReg() { try { return JSON.parse(localStorage.getItem(REGS_KEY)||'[]'); } catch(e) { return []; } }
-        function saveReg(l) { try { localStorage.setItem(REGS_KEY, JSON.stringify(l)); } catch(e) {} }
+        const readReg = () => lsGet(REGS_KEY, []);
+        const saveReg = (l) => lsSet(REGS_KEY, l);
+        const TAB_ON = 'px-2 py-1 bg-dash-cyan/20 border border-dash-cyan text-dash-cyan font-bold rounded text-[10px]';
+        const TAB_OFF = 'px-2 py-1 text-dash-muted border border-dash-border font-bold rounded text-[10px]';
         function setRegTab(t) {
             regTab = t;
-            document.getElementById('reg-tab-mant').className = t==='mantenimiento' ? 'px-2 py-1 bg-dash-cyan/20 border border-dash-cyan text-dash-cyan font-bold rounded text-[10px]' : 'px-2 py-1 text-dash-muted border border-dash-border font-bold rounded text-[10px]';
-            document.getElementById('reg-tab-comb').className = t==='combustible' ? 'px-2 py-1 bg-dash-cyan/20 border border-dash-cyan text-dash-cyan font-bold rounded text-[10px]' : 'px-2 py-1 text-dash-muted border border-dash-border font-bold rounded text-[10px]';
-            document.getElementById('reg-form-mant').classList.toggle('hidden', t!=='mantenimiento');
-            document.getElementById('reg-form-comb').classList.toggle('hidden', t!=='combustible');
+            $('reg-tab-mant').className = t === 'mantenimiento' ? TAB_ON : TAB_OFF;
+            $('reg-tab-comb').className = t === 'combustible' ? TAB_ON : TAB_OFF;
+            $('reg-form-mant').classList.toggle('hidden', t !== 'mantenimiento');
+            $('reg-form-comb').classList.toggle('hidden', t !== 'combustible');
             renderReg();
         }
         function renderReg() {
-            const box = document.getElementById('reg-list');
+            const box = $('reg-list');
             const l = readReg().filter(r => r.tipo === regTab);
-            if (!l.length) { box.innerHTML = '<div class="text-dash-muted text-center py-6 border border-dashed border-dash-border rounded">' + (regTab==='mantenimiento' ? 'Sin mantenimientos todavía' : 'Sin cargas de combustible todavía') + '</div>'; return; }
+            if (!l.length) { box.innerHTML = '<div class="text-dash-muted text-center py-6 border border-dashed border-dash-border rounded">' + (regTab === 'mantenimiento' ? 'Sin mantenimientos todavía' : 'Sin cargas de combustible todavía') + '</div>'; return; }
             box.innerHTML = l.map(r => {
-                const ico = r.tipo==='mantenimiento' ? '🔧' : '⛽';
-                const t = r.tipo==='mantenimiento' ? r.subtipo : (r.estacion||'Combustible');
-                const s = r.tipo==='mantenimiento' ? (r.nota||'') : (r.galones + ' gal · $' + (r.precio||'--') + '/gal');
+                const ico = r.tipo === 'mantenimiento' ? '🔧' : '⛽';
+                const t = r.tipo === 'mantenimiento' ? r.subtipo : (r.estacion || 'Combustible');
+                const s = r.tipo === 'mantenimiento' ? (r.nota || '') : (r.galones + ' gal · $' + (r.precio || '--') + '/gal');
                 return '<div class="flex items-center gap-2 bg-dash-panel border border-dash-border rounded p-1.5">' +
                     '<span class="text-sm">' + ico + '</span>' +
-                    '<div class="flex-1"><div class="font-bold text-white">' + t + '</div>' +
-                    '<div class="text-dash-muted text-[9px]">' + (r.km ? r.km + ' km · ' : '') + s + '</div></div>' +
-                    '<span class="text-dash-cyan text-[9px]">' + (r.fecha||'') + '</span></div>';
+                    '<div class="flex-1"><div class="font-bold text-white">' + esc(t) + '</div>' +
+                    '<div class="text-dash-muted text-[9px]">' + (r.km ? esc(r.km) + ' km · ' : '') + esc(s) + '</div></div>' +
+                    '<span class="text-dash-cyan text-[9px]">' + esc(r.fecha) + '</span></div>';
             }).join('');
         }
-        function addReg(e) {
-            const l = readReg(); l.unshift({...e, id: Date.now()}); saveReg(l); renderReg();
-            const m = document.getElementById('reg-msg'); m.classList.remove('hidden');
-            setTimeout(()=>m.classList.add('hidden'), 1800);
-        }
+        function regMsg(t) { const m = $('reg-msg'); m.textContent = t; m.classList.remove('hidden'); setTimeout(() => m.classList.add('hidden'), 1800); }
+        function addReg(e) { const l = readReg(); l.unshift({ ...e, id: Date.now() }); saveReg(l); renderReg(); refreshOdo(); regMsg('✓ Registro guardado'); }
         function saveMant() {
-            const f = document.getElementById('reg-fecha').value;
-            if (!f) { document.getElementById('reg-msg').textContent = '⚠️ Indica la fecha'; document.getElementById('reg-msg').classList.remove('hidden'); return; }
-            addReg({ tipo:'mantenimiento', subtipo:document.getElementById('reg-tipo').value, fecha:f, km:document.getElementById('reg-km').value, nota:document.getElementById('reg-nota').value.trim() });
-            document.getElementById('reg-fecha').value=''; document.getElementById('reg-km').value=''; document.getElementById('reg-nota').value='';
-            document.getElementById('reg-msg').textContent = '✓ Registro guardado';
+            const f = $('reg-fecha').value;
+            if (!f) return regMsg('⚠️ Indica la fecha');
+            addReg({ tipo: 'mantenimiento', subtipo: $('reg-tipo').value, fecha: f, km: $('reg-km').value, nota: $('reg-nota').value.trim() });
+            $('reg-fecha').value = ''; $('reg-km').value = ''; $('reg-nota').value = '';
         }
         function saveComb() {
-            const f = document.getElementById('reg-fecha2').value;
-            if (!f) { document.getElementById('reg-msg').textContent = '⚠️ Indica la fecha'; document.getElementById('reg-msg').classList.remove('hidden'); return; }
-            addReg({ tipo:'combustible', estacion:document.getElementById('reg-est').value.trim(), fecha:f, galones:document.getElementById('reg-gal').value, precio:document.getElementById('reg-precio').value, km:document.getElementById('reg-km2').value });
-            document.getElementById('reg-est').value=''; document.getElementById('reg-fecha2').value=''; document.getElementById('reg-gal').value=''; document.getElementById('reg-precio').value=''; document.getElementById('reg-km2').value='';
-            document.getElementById('reg-msg').textContent = '✓ Registro guardado';
+            const f = $('reg-fecha2').value;
+            if (!f) return regMsg('⚠️ Indica la fecha');
+            addReg({ tipo: 'combustible', estacion: $('reg-est').value.trim(), fecha: f, galones: $('reg-gal').value, precio: $('reg-precio').value, km: $('reg-km2').value });
+            ['reg-est', 'reg-fecha2', 'reg-gal', 'reg-precio', 'reg-km2'].forEach(id => $(id).value = '');
         }
 
-        // Leaflet Satellite GPS Map Setup
-        let map;
-        let mapFull;
-        let busMarker = null;        // marcador del bus en mapa tablero
-        let busMarkerFull = null;    // marcador del bus en mapa página
-        let currentPos = [-2.1900, -79.8800];  // posición real (se actualiza con GPS)
-
-        function initMap() {
-            const startPos = [-2.1850, -79.8900];
-            const endPos = [-2.2000, -79.8700];
-
-            map = L.map('route-map', {
-                center: currentPos,
-                zoom: 13,
-                zoomControl: false,
-                attributionControl: false
-            });
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-            // Bus Location Marker (mutable: se actualiza con GPS)
-            const busDiv = L.divIcon({
-                html: `<div style="background:#00f0ff; width:14px; height:14px; border-radius:50%; border:2px solid #010610; box-shadow:0 0 10px #00f0ff;"></div>`,
-                iconSize: [14, 14]
-            });
-            busMarker = L.marker(currentPos, { icon: busDiv }).addTo(map);
-            L.marker(startPos).addTo(map);
-            L.marker(endPos).addTo(map);
-
-            const route = L.polyline([startPos, currentPos, endPos], {
-                color: '#00f0ff',
-                weight: 3,
-                dashArray: '4, 8'
-            }).addTo(map);
-
-            map.fitBounds(route.getBounds(), { padding: [15, 15] });
+        // Kilometraje: odómetro OBD si existe; si no, el último registrado a mano
+        function lastKnownOdo() {
+            const kms = readReg().map(r => num(r.km)).concat(lsGet('cargas', []).map(c => num(c.odo))).filter(v => v > 0);
+            return kms.length ? Math.max(...kms) : null;
         }
-        window.addEventListener('load', initMap);
-
-        // ==================== GPS EN TIEMPO REAL ====================
-        // Intenta obtener la posición real del dispositivo (navegador con permisos).
-        // Si el navegador no da permiso (WebView Geyser sin onGeolocationPermissionsShowPrompt),
-        // mantiene la posición fija actual y no rompe nada.
-        function updateGPSText(lat, lon, speed, acc) {
-            // Recuadro de coords en el mapa del tablero
-            const coordBox = document.querySelector('#route-map ~ div');
-            const latEl = document.querySelector('#route-map ~ div .text-dash-cyan');
-            if (latEl) latEl.textContent = `Lat: ${lat.toFixed(4)} &nbsp; Lon: ${lon.toFixed(4)}`;
-            const speedEl = document.getElementById('map-speed');
-            if (speedEl) speedEl.textContent = `${speed} km/h`;
-            // GPS en diagnóstico
-            const gpsDiag = document.querySelector('#page-diagnostico .font-orbitron');
-            // Actualizar todos los elementos con clase que muestren GPS
-            const gpsStatus = document.querySelectorAll('.text-dash-cyan.font-semibold');
-            gpsStatus.forEach(el => { if (el.textContent.includes('GPS')) el.textContent = '● GPS en vivo'; });
-            // Indicador "UBICACIÓN EN TIEMPO REAL" ya está activo
-        }
-
-        function startGPS() {
-            if (!('geolocation' in navigator)) {
-                console.log('[GPS] Geolocalización no disponible en este navegador — posición fija');
-                return;
-            }
-            navigator.geolocation.watchPosition(
-                (pos) => {
-                    const lat = pos.coords.latitude;
-                    const lon = pos.coords.longitude;
-                    const acc = pos.coords.accuracy;
-                    const spd = pos.coords.speed !== null ? (pos.coords.speed * 3.6).toFixed(1) : '0.0';
-                    currentPos = [lat, lon];
-                    // Actualizar marcador en el mapa del tablero
-                    if (busMarker && map) {
-                        busMarker.setLatLng([lat, lon]);
-                        map.panTo([lat, lon]);
-                    }
-                    // Actualizar marcador en el mapa de la página (si existe)
-                    if (busMarkerFull && mapFull) {
-                        busMarkerFull.setLatLng([lat, lon]);
-                    }
-                    updateGPSText(lat, lon, spd, acc);
-                    console.log(`[GPS] Posición real: ${lat.toFixed(5)}, ${lon.toFixed(5)} (precisión ${acc.toFixed(1)}m)`);
-                },
-                (err) => {
-                    console.log(`[GPS] Sin permiso/error (${err.code}): ${err.message} — posición fija`);
-                    // Mantener posición por defecto; no romper
-                },
-                { enableHighAccuracy: true, maximumAge: 2000, timeout: 15000 }
-            );
-        }
-        // Iniciar GPS cuando cargue (con pequeño delay para que Leaflet esté listo)
-        window.addEventListener('load', () => setTimeout(startGPS, 1500));
-
-        // JARVIS Dynamic AI Assistant
-        function askJarvis(type) {
-            const box = document.getElementById('jarvis-text');
-            let msg = '';
-            switch(type) {
-                case 'location':
-                    msg = "¿Cuál es la ubicación del bus?";
-                    break;
-                case 'temp':
-                    msg = "¿Qué temperatura tiene el motor?";
-                    break;
-                case 'route':
-                    msg = "Mostrar ruta en el mapa";
-                    if (map) map.invalidateSize();
-                    break;
-                case 'telegram':
-                    msg = "Enviar mensaje a Telegram";
-                    break;
-                case 'diag':
-                    msg = "Diagnóstico del vehículo";
-                    break;
-                case 'mic':
-                    box.innerText = "J.A.R.V.I.S.: Escuchando orden por micrófono...";
-                    return;
-            }
-            // Usar Hermes real si está configurado
-            callHermes(msg).then(resp => {
-                box.innerText = 'J.A.R.V.I.S.: ' + resp;
-            });
-        }
-
-        // Dynamic Telemetry Simulation Toggle
-        let isSimulating = false;
-        let simTimer = null;
-
-        function applyObdii(data) {
-            if (!data) return;
-            const set = (id, v, suf) => { const el = document.getElementById(id); if (el && v !== undefined && v !== null) el.innerText = v + (suf||''); };
-
-            if (data.rpm !== undefined) {
-                set('val-rpm', data.rpm, '');
-                const g = document.getElementById('gauge-rpm'); if (g) g.style.strokeDashoffset = 290 - (data.rpm / 4000) * 190;
-            }
-            if (data.speed !== undefined) {
-                set('val-speed', data.speed, '');
-                set('map-speed', data.speed, ' km/h');
-                const g = document.getElementById('gauge-speed'); if (g) g.style.strokeDashoffset = 290 - (data.speed / 160) * 210;
-            }
-            if (data.temp !== undefined) { set('val-temp', data.temp, '°C'); set('m-temp', data.temp, '°C'); const b = document.getElementById('m-temp-bar'); if (b) b.style.width = Math.min(100,(data.temp/120)*100)+'%'; }
-            if (data.volts !== undefined) set('val-volts', data.volts, ' V');
-            if (data.fuel !== undefined) { set('m-fuel', data.fuel, '%'); const b = document.getElementById('m-fuel-bar'); if (b) b.style.width = Math.min(100,data.fuel)+'%'; }
-            if (data.trip !== undefined) set('m-trip', data.trip, ' km');
-            if (data.range !== undefined) set('m-range', data.range, ' km');
-
-            // Tablero OBD-II
-            set('t-rpm', data.rpm, '');
-            set('t-speed', data.speed, '');
-            set('t-temp', data.temp, '°C');
-            set('t-oil', data.oil, '°C');
-            set('t-map', data.map, ' kPa');
-            set('t-throttle', data.throttle, '%');
-            set('t-econ', data.econ, ' km/L');
-            set('t-stft', data.stft, '%');
-            set('t-ltft', data.ltft, '%');
-            set('t-fuel', data.fuel, '%');
-            set('t-boost', data.boost, ' bar');
-            set('t-odo', data.odo, ' km');
-            set('t-rtime', data.rtime, '');
-            set('t-vmax', data.vmax, ' km/h');
-            set('t-upd', data.upd, '');
-
-            // Autonomía
-            if (data.range !== undefined || data.history) {
-                updateAutonomia({ range: data.range, safe: data.safe, fuel: data.fuel, lastfill: data.lastfill, avg: data.avg, tank: data.tank, history: data.history });
-            }
-        }
-
-        function toggleSimulation() {
-            const btn = document.getElementById('btn-sim');
-            isSimulating = !isSimulating;
-
-            if (isSimulating) {
-                btn.innerHTML = `<i data-lucide="square" class="w-4.5 h-4.5"></i> DETENER SIMULACIÓN`;
-                btn.classList.replace('text-dash-cyan', 'text-dash-amber');
-
-                simTimer = setInterval(() => {
-                    const o = {
-                        rpm: Math.floor(2100 + Math.random() * 400),
-                        speed: Math.floor(66 + Math.random() * 12),
-                        temp: (88 + Math.random() * 3).toFixed(1),
-                        volts: (13.6 + Math.random() * 0.4).toFixed(1),
-                        oil: (90 + Math.random() * 3).toFixed(1),
-                        map: (60 + Math.random() * 10).toFixed(1),
-                        throttle: (22 + Math.random() * 8).toFixed(1),
-                        econ: (9.2 + Math.random() * 0.5).toFixed(1),
-                        stft: (0 + Math.random() * 4).toFixed(1),
-                        ltft: (0 + Math.random() * 4).toFixed(1),
-                        fuel: 45,
-                        boost: (0.7 + Math.random() * 0.2).toFixed(2),
-                        odo: 154330,
-                        rtime: '00:14',
-                        vmax: 120,
-                        upd: '0.4s',
-                        range: 286, safe: 220, lastfill: 22.4, avg: 9.2, tank: 45,
-                        trip: (124.7 + (Math.random() * 0.1)).toFixed(1)
-                    };
-                    applyObdii(o);
-                }, 400);
-            } else {
-                clearInterval(simTimer);
-                btn.innerHTML = `<i data-lucide="play" class="w-4.5 h-4.5"></i> SIMULAR TELEMETRÍA`;
-                btn.classList.replace('text-dash-amber', 'text-dash-cyan');
-            }
-            lucide.createIcons();
+        function refreshOdo() {
+            const o = obdFresh() ? num(S.obd.data.odo) : null;
+            const v = o !== null ? o : lastKnownOdo();
+            setText('val-odo', fmtKm(v), ' km');
+            $('val-odo-lbl').textContent = o !== null ? 'Kilometraje' : (v !== null ? 'Km (último registro)' : 'Kilometraje');
         }
 
         // ==========================================
-        // J.A.R.V.I.S. CONSOLA (envío de comandos)
+        // AUTONOMÍA
         // ==========================================
-        function sendJarvis() {
-            const inp = document.getElementById('jarvis-input');
-            const console = document.getElementById('jarvis-console');
-            const q = inp.value.trim();
-            if (!q) return;
-            console.textContent += '\n[TÚ] ' + q;
-            inp.value = '';
-            callHermes(q).then(resp => {
-                console.textContent += '\n[J.A.R.V.I.S.] ' + resp;
-                console.scrollTop = console.scrollHeight;
-            });
-        }
-        document.getElementById('jarvis-input')?.addEventListener('keydown', e => { if (e.key === 'Enter') sendJarvis(); });
-
-        // ==========================================
-        // AJUSTES HERMES
-        // ==========================================
-        function saveH() {
-            const c = { url: document.getElementById('h-url').value.trim(), key: document.getElementById('h-key').value.trim(), model: document.getElementById('h-model').value.trim() || 'hermes-agent' };
-            try { localStorage.setItem(HS_KEY, JSON.stringify(c)); } catch(e) {}
-            document.getElementById('h-stat').textContent = '✓ Guardado';
-            setTimeout(()=>document.getElementById('h-stat').textContent = 'Configuración guardada', 1800);
-        }
-        function testH() {
-            const stat = document.getElementById('h-stat');
-            stat.textContent = 'Probando…';
-            callHermes('Di OK').then(r => { stat.textContent = r.startsWith('Error') ? r : '✓ OK: ' + r; });
-        }
-        (function() { try { const c = rh(); if (c.url) document.getElementById('h-url').value = c.url; if (c.key) document.getElementById('h-key').value = c.key; if (c.model) document.getElementById('h-model').value = c.model; } catch(e) {} })();
-
-        // ==================== AUTONOMÍA DINÁMICA ====================
-        // Redibuja el gráfico de alcance y actualiza los valores de la sección Autonomía.
-        // data: { range, safe, fuel, lastfill, avg, tank, history: [números] }
-        function updateAutonomia(data) {
-            if (!data) return;
-            const set = (id, v, suf) => { const el = document.getElementById(id); if (el && v !== undefined && v !== null) el.innerText = v + (suf||''); };
-            set('a-range', data.range, '');
-            set('m-range', data.range, ' km');
-            set('m-fuel', data.fuel, '%');
-            const mf = document.getElementById('m-fuel-bar'); if (mf && data.fuel !== undefined) mf.style.width = Math.min(100,data.fuel)+'%';
-            set('a-safe', data.safe, ' km');
-            set('a-fuel', data.fuel, '');
-            set('a-lastfill', data.lastfill, '');
-            set('a-avg', data.avg, '');
-            set('a-tank', data.tank, '');
-            const bar = document.getElementById('a-safe-bar');
-            if (bar && data.safe !== undefined && data.range > 0) bar.style.width = Math.min(100, (data.safe/data.range)*100) + '%';
-
-            // Redibujar el gráfico si hay historial
-            const area = document.getElementById('a-area');
-            const line = document.getElementById('a-line');
-            const dot = document.getElementById('a-dot');
-            if (area && line && dot && Array.isArray(data.history) && data.history.length > 1) {
-                const W = 200, H = 80, n = data.history.length;
-                const min = Math.min(...data.history), max = Math.max(...data.history);
-                const span = (max - min) || 1;
-                const pts = data.history.map((v, i) => {
-                    const x = (i/(n-1))*W;
-                    const y = H - 6 - ((v - min)/span)*(H-16);
-                    return [x, y];
-                });
-                const d = pts.map((p,i) => (i? 'L':'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
-                line.setAttribute('d', d);
-                area.setAttribute('d', d + ' L' + W + ',' + H + ' L0,' + H + ' Z');
-                const last = pts[n-1];
-                dot.setAttribute('cx', last[0]); dot.setAttribute('cy', last[1]);
-            }
-        }
-
-        // ==================== MODAL REGISTRAR CARGA ====================
-        function openCargaModal() {
-            const m = document.getElementById('carga-modal');
-            if (m) { m.classList.remove('hidden'); m.classList.add('flex'); }
-            const fecha = document.getElementById('c-fecha');
-            if (fecha && !fecha.value) fecha.value = new Date().toISOString().slice(0,10);
-        }
-        function closeCargaModal() {
-            const m = document.getElementById('carga-modal');
-            if (m) { m.classList.add('hidden'); m.classList.remove('flex'); }
-        }
-        function guardarCarga() {
-            const cantidad = parseFloat(document.getElementById('c-cantidad').value) || 0;
-            const precio = parseFloat(document.getElementById('c-precio').value) || 0;
-            const total = parseFloat(document.getElementById('c-total').value) || 0;
-            const odo = parseFloat(document.getElementById('c-odo').value) || 0;
-            const tipo = document.getElementById('c-tipo').value || 'DIESEL';
-
-            // Persistir en localStorage (historial de cargas)
-            let cargas = [];
-            try { cargas = JSON.parse(localStorage.getItem('cargas') || '[]'); } catch(e) {}
-            cargas.push({ fecha: document.getElementById('c-fecha').value, cantidad, precio, total, odo, tipo, ts: Date.now() });
-            try { localStorage.setItem('cargas', JSON.stringify(cargas)); } catch(e) {}
-
-            // Actualizar sección Autonomía con los datos ingresados
-            const tipoEl = document.getElementById('a-type');
-            if (tipoEl) tipoEl.innerText = tipo;
-            // Consumo promedio: si hay 2+ cargas y odómetro, calcular km/L entre la última y la anterior
+        // Consumo promedio "tanque lleno a tanque lleno": km recorridos entre la primera y la
+        // última carga, dividido por los litros cargados después de la primera.
+        function fuelStats() {
+            const all = lsGet('cargas', []);
+            const cg = all.filter(c => c.odo > 0 && c.cantidad > 0).sort((a, b) => a.odo - b.odo);
             let avg = null;
-            if (cargas.length >= 2 && cargas[cargas.length-1].odo > 0 && cargas[cargas.length-2].odo > 0) {
-                const km = cargas[cargas.length-1].odo - cargas[cargas.length-2].odo;
-                if (km > 0 && cargas[cargas.length-1].cantidad > 0) avg = (km / cargas[cargas.length-1].cantidad).toFixed(1);
+            if (cg.length >= 2) {
+                const km = cg[cg.length - 1].odo - cg[0].odo;
+                const L = cg.slice(1).reduce((s, c) => s + c.cantidad, 0);
+                if (km > 0 && L > 0) avg = km / L;
             }
-            const hist = cargas.map(c => c.odo).filter(v => v > 0);
-            updateAutonomia({
-                fuel: cantidad ? cantidad.toFixed(1) : null,
-                lastfill: cantidad ? cantidad.toFixed(1) : null,
-                avg: avg,
-                range: total > 0 && precio > 0 && avg ? Math.round(avg * (cantidad)) : null,
-                tank: avg ? Math.round(avg * 100) : null,
-                history: hist.length >= 2 ? hist : null
-            });
+            return { avg, last: all.length ? all[all.length - 1] : null };
+        }
+        let rangeHist = lsGet('moRangeHist', []), rangeHistT = 0;
+        function recalcAutonomia() {
+            const tank = num(obdCfg().tank);
+            const { avg, last } = fuelStats();
+            const fuelPct = obdFresh() ? num(S.obd.data.fuel) : null;
+            const liters = fuelPct !== null && tank ? fuelPct / 100 * tank : null;
+            const range = liters !== null && avg ? Math.round(liters * avg) : null;
+            const safe = range !== null ? Math.round(range * 0.8) : null; // reserva del 20 %
+            setText('a-range', range, ''); setText('m-range', range, ' km'); setText('t-range', range, ''); setText('a-safe', safe, ' km');
+            $('a-safe-bar').style.width = range ? '80%' : '0%';
+            setText('a-fuel', liters === null ? null : liters.toFixed(1), '');
+            setText('a-lastfill', last ? (+last.cantidad).toFixed(1) : null, '');
+            $('a-lastfill-date').textContent = last ? (last.fecha || 'Registrada') : 'Sin registro';
+            setText('a-avg', avg === null ? null : avg.toFixed(1), '');
+            setText('a-tank', tank && avg ? Math.round(tank * avg) : null, '');
+            $('a-type').textContent = last ? last.tipo : 'DIESEL';
+            $('a-note').textContent = !avg ? 'Registra al menos 2 cargas (llenando el tanque, con odómetro) para calcular el consumo.'
+                : !tank ? 'Indica la capacidad del tanque en Ajustes.'
+                : fuelPct === null ? 'Falta el nivel de combustible del OBD-II para estimar el alcance.' : 'Alcance = combustible actual × consumo promedio.';
+            if (range !== null && Date.now() - rangeHistT > 60000) {
+                rangeHistT = Date.now(); rangeHist.push(range);
+                if (rangeHist.length > 40) rangeHist.shift();
+                lsSet('moRangeHist', rangeHist);
+            }
+            drawRangeHistory();
+        }
+        function drawRangeHistory() {
+            const area = $('a-area'), line = $('a-line'), dot = $('a-dot'), h = rangeHist;
+            if (h.length < 2) { line.setAttribute('d', ''); area.setAttribute('d', ''); dot.setAttribute('cx', -10); return; }
+            const W = 200, H = 80, n = h.length, min = Math.min(...h), span = (Math.max(...h) - min) || 1;
+            const pts = h.map((v, i) => [(i / (n - 1)) * W, H - 6 - ((v - min) / span) * (H - 16)]);
+            const d = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+            line.setAttribute('d', d);
+            area.setAttribute('d', d + ' L' + W + ',' + H + ' L0,' + H + ' Z');
+            dot.setAttribute('cx', pts[n - 1][0]); dot.setAttribute('cy', pts[n - 1][1]);
+        }
+
+        // Modal "Registrar carga"
+        function openCargaModal() {
+            $('carga-modal').classList.remove('hidden'); $('carga-modal').classList.add('flex');
+            if (!$('c-fecha').value) $('c-fecha').value = new Date().toISOString().slice(0, 10);
+            $('c-msg').textContent = '';
+        }
+        function closeCargaModal() { $('carga-modal').classList.add('hidden'); $('carga-modal').classList.remove('flex'); }
+        function guardarCarga() {
+            const cantidad = parseFloat($('c-cantidad').value) || 0;
+            const precio = parseFloat($('c-precio').value) || 0;
+            let total = parseFloat($('c-total').value) || 0;
+            const odo = parseFloat($('c-odo').value) || 0;
+            const fecha = $('c-fecha').value;
+            if (!fecha || cantidad <= 0) { $('c-msg').textContent = '⚠️ Indica la fecha y la cantidad de litros.'; return; }
+            if (!total && precio) total = +(cantidad * precio).toFixed(2);
+            const cargas = lsGet('cargas', []);
+            cargas.push({ fecha, cantidad, precio, total, odo, tipo: $('c-tipo').value || 'DIESEL', ts: Date.now() });
+            lsSet('cargas', cargas);
+            ['c-cantidad', 'c-precio', 'c-total', 'c-odo'].forEach(id => $(id).value = '');
+            refreshOdo();
+            recalcAutonomia();
             closeCargaModal();
         }
+
+        // ==========================================
+        // ARRANQUE
+        // ==========================================
+        renderReg();
+        loadObdForm();
+        startObd();
+        refreshOdo();
+        recalcAutonomia();
     </script>
     <script src="bus3d.js"></script>
 
@@ -1133,7 +1265,7 @@
                     <input id="c-precio" type="number" step="0.0001" min="0" placeholder="0.0000" class="w-full bg-dash-border/40 border border-dash-border rounded px-2 py-1.5 text-white font-mono outline-none focus:border-dash-cyan" />
                 </div>
                 <div>
-                    <label class="text-dash-muted font-bold uppercase block mb-1">Total (USD)</label>
+                    <label class="text-dash-muted font-bold uppercase block mb-1">Total (USD, opcional)</label>
                     <input id="c-total" type="number" step="0.01" min="0" placeholder="0.00" class="w-full bg-dash-border/40 border border-dash-border rounded px-2 py-1.5 text-white font-mono outline-none focus:border-dash-cyan" />
                 </div>
                 <div>
@@ -1148,7 +1280,8 @@
                     </select>
                 </div>
             </div>
-            <div class="flex gap-2 mt-4">
+            <div id="c-msg" class="text-dash-amber text-[10px] mt-2"></div>
+            <div class="flex gap-2 mt-2">
                 <button onclick="guardarCarga()" class="flex-1 text-[10px] font-orbitron font-bold text-black bg-dash-cyan rounded px-3 py-2 hover:brightness-110">GUARDAR CARGA</button>
                 <button onclick="closeCargaModal()" class="flex-1 text-[10px] font-orbitron font-bold text-dash-muted border border-dash-border rounded px-3 py-2 hover:text-white">CANCELAR</button>
             </div>

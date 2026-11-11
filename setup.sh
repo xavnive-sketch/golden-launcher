@@ -52,8 +52,11 @@ echo ""
 echo "✅  Dashboard descargado en: $(pwd)"
 echo ""
 
-# 5. Iniciar el servidor
-echo "🚀  Iniciando servidor en el puerto 8080..."
+# 5. Iniciar el servidor + puente OBD-II
+#    Para leer el vehículo, conecte primero la radio a la red Wi-Fi del adaptador
+#    ELM327 (suele llamarse "WiFi_OBDII"; dirección 192.168.0.10, puerto 35000).
+#    Si su adaptador usa otra dirección:  ELM_HOST=192.168.4.1 ELM_PORT=35000 bash setup.sh
+echo "🚀  Iniciando dashboard en el puerto 8080..."
 echo "    (Deje esta ventana abierta. No la cierre.)"
 echo ""
 echo "    Abra el navegador de la radio y vaya a:"
@@ -62,12 +65,11 @@ echo "    ┌──────────────────────�
 echo "    │   http://localhost:8080            │"
 echo "    └────────────────────────────────────┘"
 echo ""
+echo "    OBD-II: adaptador ELM327 en ${ELM_HOST:-192.168.0.10}:${ELM_PORT:-35000}"
 echo "    Ctrl+C para detener."
 echo ""
 
-# Servir en el puerto 8080 (usar python3 si existe, si no python)
-if command -v python3 > /dev/null 2>&1; then
-  python3 -m http.server 8080
-else
-  python -m http.server 8080
-fi
+# Usar python3 si existe, si no python
+PY=python
+command -v python3 > /dev/null 2>&1 && PY=python3
+exec "$PY" bridge.py --port 8080
