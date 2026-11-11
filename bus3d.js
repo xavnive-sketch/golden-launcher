@@ -1,10 +1,10 @@
 /* bus3d.js v3 · Modelo 3D de la furgoneta Golden Dragon XML6609 (familia X5) para el dashboard
    Proporciones de la familia X5 / Higer H5C: ~6.0 m largo · ~2.0 m ancho · ~2.6 m techo alto · entre ejes 3.67 m
    - Arrastra para girar · TOCA el vehículo para alternar REALISTA <-> HOLOGRAMA (con etiquetas en vivo)
-   - Las ruedas giran y la carrocería vibra según la velocidad (#val-speed); el motor muestra #val-temp */
+   - Las ruedas giran y la carrocería vibra según la velocidad real (window.dashSpeed, de OBD-II o GPS); el motor muestra #val-temp */
 (function () {
-  const THREE_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-  const GLTF_SRC = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js';
+  const THREE_SRC = 'vendor/three.min.js';      // three.js r128 (local, funciona sin internet)
+  const GLTF_SRC = 'vendor/GLTFLoader.js';
   const GLB_URL = 'assets/autoline_bus.glb';
 
   function boot() {
@@ -14,7 +14,7 @@
     const s = document.createElement('script');
     s.src = THREE_SRC;
     s.onload = () => build(box);
-    s.onerror = () => console.warn('[bus3d] no se pudo cargar three.js (¿sin internet?)');
+    s.onerror = () => console.warn('[bus3d] no se pudo cargar vendor/three.min.js');
     document.head.appendChild(s);
   }
 
@@ -202,7 +202,7 @@
     box.appendChild(ov);
     const spots = [
       { p: new T.Vector3(2.6, 1.1, 0), txt: () => 'MOTOR ' + ((document.getElementById('val-temp') || {}).textContent || 'OK') },
-      { p: new T.Vector3(-2.2, 2.76, 0), txt: () => 'GPS · 4G' },
+      { p: new T.Vector3(-2.2, 2.76, 0), txt: () => 'GPS · ' + ((document.getElementById('net-type') || {}).textContent || '--') },
       { p: new T.Vector3(XF, WR, 1.0), txt: () => 'FRENOS · ABS' },
       { p: new T.Vector3(-0.2, 2.0, 1.0), txt: () => '18 PAX' }
     ].map((o) => {
@@ -327,9 +327,7 @@
       const dt = smoothDt;
       if (box.offsetParent === null) return; // página oculta: no gastar batería
       if (!drag) { bus.rotation.y += vel + 0.35 * smoothDt; vel *= 0.94; }
-      const el = document.getElementById('val-speed');
-      const kmh = el ? parseFloat(el.textContent) : NaN;
-      const sp = isNaN(kmh) ? 25 : kmh;
+      const sp = Math.max(0, +window.dashSpeed || 0); // km/h reales; 0 = detenido o sin datos
       if (!usingGLB) wheels.forEach((w) => { w.rotation.z -= sp * 0.12 * dt; });
       bus.position.y = 0.012 * Math.sin(now / 90) * Math.min(sp / 80, 1); // vibración leve al rodar
       scan.position.y = 0.4 + ((now / 2600) % 1) * 2.2;
