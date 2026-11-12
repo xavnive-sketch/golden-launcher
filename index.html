@@ -173,37 +173,37 @@
 
         <!-- ===== LEFT SIDEBAR MENU (2 COLS) ===== -->
         <aside class="col-span-2 cyber-panel p-2 flex flex-col justify-between">
-            <nav class="space-y-1">
-                <button onclick="setPage('inicio')" data-page="inicio" class="nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg bg-dash-cyan/20 border border-dash-cyan text-dash-cyan font-bold font-orbitron shadow-[0_0_10px_rgba(0,240,255,0.2)]">
-                    <i data-lucide="home" class="w-5 h-5"></i>
+            <nav class="space-y-1.5">
+                <button onclick="setPage('inicio')" data-page="inicio" class="nav-btn w-full flex items-center gap-3 px-3 py-3 rounded-lg text-base bg-dash-cyan/20 border border-dash-cyan text-dash-cyan font-bold font-orbitron shadow-[0_0_10px_rgba(0,240,255,0.2)]">
+                    <i data-lucide="home" class="w-7 h-7"></i>
                     <span>Inicio</span>
                 </button>
-                <button onclick="setPage('tablero')" data-page="tablero" class="nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
-                    <i data-lucide="gauge" class="w-5 h-5"></i>
+                <button onclick="setPage('tablero')" data-page="tablero" class="nav-btn w-full flex items-center gap-3 px-3 py-3 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
+                    <i data-lucide="gauge" class="w-7 h-7"></i>
                     <span>Tablero</span>
                 </button>
-                <button onclick="setPage('mapa')" data-page="mapa" class="nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
-                    <i data-lucide="map" class="w-5 h-5"></i>
+                <button onclick="setPage('mapa')" data-page="mapa" class="nav-btn w-full flex items-center gap-3 px-3 py-3 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
+                    <i data-lucide="map" class="w-7 h-7"></i>
                     <span>Mapa</span>
                 </button>
-                <button onclick="setPage('autonomia')" data-page="autonomia" class="nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
-                    <i data-lucide="battery-full" class="w-5 h-5"></i>
+                <button onclick="setPage('autonomia')" data-page="autonomia" class="nav-btn w-full flex items-center gap-3 px-3 py-3 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
+                    <i data-lucide="battery-full" class="w-7 h-7"></i>
                     <span>Autonomía</span>
                 </button>
-                <button onclick="setPage('registro')" data-page="registro" class="nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
-                    <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+                <button onclick="setPage('registro')" data-page="registro" class="nav-btn w-full flex items-center gap-3 px-3 py-3 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
+                    <i data-lucide="clipboard-list" class="w-7 h-7"></i>
                     <span>Registro</span>
                 </button>
-                <button onclick="setPage('diagnostico')" data-page="diagnostico" class="nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
-                    <i data-lucide="activity" class="w-5 h-5"></i>
+                <button onclick="setPage('diagnostico')" data-page="diagnostico" class="nav-btn w-full flex items-center gap-3 px-3 py-3 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
+                    <i data-lucide="activity" class="w-7 h-7"></i>
                     <span>Diagnóstico</span>
                 </button>
-                <button onclick="setPage('jarvis')" data-page="jarvis" class="nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
-                    <i data-lucide="bot" class="w-5 h-5"></i>
+                <button onclick="setPage('jarvis')" data-page="jarvis" class="nav-btn w-full flex items-center gap-3 px-3 py-3 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
+                    <i data-lucide="bot" class="w-7 h-7"></i>
                     <span>J.A.R.V.I.S.</span>
                 </button>
-                <button onclick="setPage('ajustes')" data-page="ajustes" class="nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
-                    <i data-lucide="settings" class="w-5 h-5"></i>
+                <button onclick="setPage('ajustes')" data-page="ajustes" class="nav-btn w-full flex items-center gap-3 px-3 py-3 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
+                    <i data-lucide="settings" class="w-7 h-7"></i>
                     <span>Ajustes</span>
                 </button>
             </nav>
@@ -249,13 +249,32 @@
                         
 
                     <div class="flex flex-col items-center justify-center relative w-full">
-                            <div class="bus-3d-box relative w-full h-[340px] shrink-0 rounded-lg overflow-hidden border border-dash-border flex items-center justify-center shadow-inner">
+                            <div class="bus-3d-box relative w-full h-[300px] shrink-0 rounded-lg overflow-hidden border border-dash-border flex items-center justify-center shadow-inner">
                                 <div class="absolute bottom-2 bg-dash-bg/90 border border-dash-cyan/60 px-2 py-0.5 rounded-full z-20">
                                     <span class="font-orbitron font-bold text-white text-[9px] tracking-wider">XML6609</span>
                                 </div>
                             </div>
                         </div>
-                        
+
+                    <!-- Tarjetas: mantenimiento, alertas y accesos rápidos -->
+                    <div class="grid grid-cols-3 gap-2 flex-1 my-2 min-h-0">
+                        <div class="bg-dash-panel border border-dash-border rounded-lg p-3 flex flex-col justify-between">
+                            <div class="flex items-center gap-2 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="wrench" class="w-6 h-6 text-dash-cyan"></i> Próximo cambio de aceite</div>
+                            <div><span id="mt-left" class="font-orbitron font-bold text-white text-2xl">--</span> <span id="mt-unit" class="text-dash-cyan font-orbitron text-sm">km</span></div>
+                            <div class="h-1.5 w-full bg-dash-border/50 rounded overflow-hidden"><div id="mt-bar" class="h-full bg-dash-cyan rounded" style="width:0%"></div></div>
+                            <div id="mt-sub" class="text-[11px] text-dash-muted">Registra el último cambio de aceite</div>
+                        </div>
+                        <div class="bg-dash-panel border border-dash-border rounded-lg p-3 flex flex-col">
+                            <div class="flex items-center gap-2 text-[11px] text-dash-muted font-bold uppercase mb-2"><i data-lucide="bell" class="w-6 h-6 text-dash-cyan"></i> Alertas</div>
+                            <div id="alert-list" class="flex-1 overflow-y-auto space-y-1 text-sm"><div class="text-dash-muted">--</div></div>
+                        </div>
+                        <div class="bg-dash-panel border border-dash-border rounded-lg p-3 flex flex-col gap-2 justify-center">
+                            <button onclick="openCargaModal()" class="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-dash-cyan/50 text-dash-cyan font-bold text-sm hover:bg-dash-cyan/10"><i data-lucide="fuel" class="w-6 h-6"></i> Registrar carga</button>
+                            <button onclick="setPage('registro')" class="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-dash-border text-white font-bold text-sm hover:bg-dash-border/40"><i data-lucide="wrench" class="w-6 h-6 text-dash-cyan"></i> Mantenimiento</button>
+                            <button onclick="toggleNight()" class="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-dash-border text-white font-bold text-sm hover:bg-dash-border/40"><i data-lucide="moon" class="w-6 h-6 text-dash-cyan"></i> Modo noche</button>
+                        </div>
+                    </div>
+
                         <!-- Telemetry Sensors Bar -->
                     <div class="grid grid-cols-5 gap-1 pt-1.5 border-t border-dash-border/60 text-center">
                         <div class="bg-dash-panel border border-dash-border p-1 rounded-md">
@@ -347,54 +366,54 @@
         <div class="grid grid-cols-12 gap-2 flex-grow h-full">
             <!-- Lista -->
             <div class="col-span-7 cyber-panel p-2 flex flex-col overflow-y-auto">
-                <h2 class="font-orbitron font-bold text-white text-xs tracking-wider mb-2 pb-1 border-b border-dash-border">REGISTRO DEL VEHÍCULO</h2>
-                <div class="flex gap-1 mb-2">
-                    <button id="reg-tab-mant" onclick="setRegTab('mantenimiento')" class="px-2 py-1 bg-dash-cyan/20 border border-dash-cyan text-dash-cyan font-bold rounded text-[10px]">🔧 MANTENIMIENTO</button>
-                    <button id="reg-tab-comb" onclick="setRegTab('combustible')" class="px-2 py-1 text-dash-muted border border-dash-border font-bold rounded text-[10px]">⛽ COMBUSTIBLE</button>
+                <h2 class="font-orbitron font-bold text-white text-sm tracking-wider mb-3 pb-1.5 border-b border-dash-border">REGISTRO DEL VEHÍCULO</h2>
+                <div class="flex gap-2 mb-3">
+                    <button id="reg-tab-mant" onclick="setRegTab('mantenimiento')" class="px-4 py-2.5 bg-dash-cyan/20 border border-dash-cyan text-dash-cyan font-bold rounded-lg text-sm">🔧 MANTENIMIENTO</button>
+                    <button id="reg-tab-comb" onclick="setRegTab('combustible')" class="px-4 py-2.5 text-dash-muted border border-dash-border font-bold rounded-lg text-sm">⛽ COMBUSTIBLE</button>
                 </div>
-                <div id="reg-list" class="space-y-1.5 text-[10px]">
+                <div id="reg-list" class="space-y-2 text-sm">
                     <div class="text-dash-muted text-center py-6 border border-dashed border-dash-border rounded">Sin registros todavía</div>
                 </div>
             </div>
             <!-- Formulario -->
             <div class="col-span-5 cyber-panel p-2 flex flex-col">
-                <h2 class="font-orbitron font-bold text-white text-xs tracking-wider mb-2 pb-1 border-b border-dash-border">NUEVO REGISTRO</h2>
+                <h2 class="font-orbitron font-bold text-white text-sm tracking-wider mb-3 pb-1.5 border-b border-dash-border">NUEVO REGISTRO</h2>
                 <div id="reg-form-mant" class="space-y-2">
-                    <label class="block text-[10px] text-dash-muted">Tipo
-                        <select id="reg-tipo" class="w-full bg-dash-bg border border-dash-border rounded p-1.5 text-white text-[11px] mt-0.5">
+                    <label class="block text-sm text-dash-muted">Tipo
+                        <select id="reg-tipo" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
                             <option>Cambio de aceite</option><option>Filtro de aire</option><option>Frenos</option><option>Llantas</option><option>Revisión general</option><option>Otro</option>
                         </select>
                     </label>
-                    <label class="block text-[10px] text-dash-muted">Fecha
-                        <input type="date" id="reg-fecha" class="w-full bg-dash-bg border border-dash-border rounded p-1.5 text-white text-[11px] mt-0.5">
+                    <label class="block text-sm text-dash-muted">Fecha
+                        <input type="date" id="reg-fecha" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
                     </label>
-                    <label class="block text-[10px] text-dash-muted">Kilometraje (km)
-                        <input type="number" id="reg-km" placeholder="Ej. 125000" class="w-full bg-dash-bg border border-dash-border rounded p-1.5 text-white text-[11px] mt-0.5">
+                    <label class="block text-sm text-dash-muted">Kilometraje (km)
+                        <input type="number" id="reg-km" placeholder="Ej. 125000" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
                     </label>
-                    <label class="block text-[10px] text-dash-muted">Notas
-                        <input type="text" id="reg-nota" placeholder="Ej. Aceite 15W-40" class="w-full bg-dash-bg border border-dash-border rounded p-1.5 text-white text-[11px] mt-0.5">
+                    <label class="block text-sm text-dash-muted">Notas
+                        <input type="text" id="reg-nota" placeholder="Ej. Aceite 15W-40" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
                     </label>
-                    <button onclick="saveMant()" class="w-full py-1.5 bg-dash-cyan/10 hover:bg-dash-cyan/20 border border-dash-cyan/60 text-dash-cyan font-bold text-xs rounded">GUARDAR MANTENIMIENTO</button>
+                    <button onclick="saveMant()" class="w-full py-3 bg-dash-cyan/10 hover:bg-dash-cyan/20 border border-dash-cyan/60 text-dash-cyan font-bold text-sm rounded-lg">GUARDAR MANTENIMIENTO</button>
                 </div>
                 <div id="reg-form-comb" class="space-y-2 hidden">
-                    <label class="block text-[10px] text-dash-muted">Estación
-                        <input type="text" id="reg-est" placeholder="Ej. Solintec" class="w-full bg-dash-bg border border-dash-border rounded p-1.5 text-white text-[11px] mt-0.5">
+                    <label class="block text-sm text-dash-muted">Estación
+                        <input type="text" id="reg-est" placeholder="Ej. Solintec" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
                     </label>
-                    <label class="block text-[10px] text-dash-muted">Fecha
-                        <input type="date" id="reg-fecha2" class="w-full bg-dash-bg border border-dash-border rounded p-1.5 text-white text-[11px] mt-0.5">
+                    <label class="block text-sm text-dash-muted">Fecha
+                        <input type="date" id="reg-fecha2" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
                     </label>
-                    <label class="block text-[10px] text-dash-muted">Galones
-                        <input type="number" id="reg-gal" placeholder="Ej. 20" class="w-full bg-dash-bg border border-dash-border rounded p-1.5 text-white text-[11px] mt-0.5">
+                    <label class="block text-sm text-dash-muted">Galones
+                        <input type="number" id="reg-gal" placeholder="Ej. 20" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
                     </label>
-                    <label class="block text-[10px] text-dash-muted">Precio/galón ($)
-                        <input type="number" id="reg-precio" placeholder="Ej. 2.45" class="w-full bg-dash-bg border border-dash-border rounded p-1.5 text-white text-[11px] mt-0.5">
+                    <label class="block text-sm text-dash-muted">Precio/galón ($)
+                        <input type="number" id="reg-precio" placeholder="Ej. 2.45" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
                     </label>
-                    <label class="block text-[10px] text-dash-muted">Kilometraje (km)
-                        <input type="number" id="reg-km2" placeholder="Ej. 125500" class="w-full bg-dash-bg border border-dash-border rounded p-1.5 text-white text-[11px] mt-0.5">
+                    <label class="block text-sm text-dash-muted">Kilometraje (km)
+                        <input type="number" id="reg-km2" placeholder="Ej. 125500" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
                     </label>
-                    <button onclick="saveComb()" class="w-full py-1.5 bg-dash-cyan/10 hover:bg-dash-cyan/20 border border-dash-cyan/60 text-dash-cyan font-bold text-xs rounded">GUARDAR COMBUSTIBLE</button>
+                    <button onclick="saveComb()" class="w-full py-3 bg-dash-cyan/10 hover:bg-dash-cyan/20 border border-dash-cyan/60 text-dash-cyan font-bold text-sm rounded-lg">GUARDAR COMBUSTIBLE</button>
                 </div>
-                <div id="reg-msg" class="text-dash-cyan text-[10px] mt-2 text-center hidden">✓ Registro guardado</div>
+                <div id="reg-msg" class="text-dash-cyan text-sm mt-2 text-center hidden">✓ Registro guardado</div>
             </div>
         </div>
     </div>
@@ -403,51 +422,54 @@
     <div id="page-ajustes" class="hidden col-span-10 cyber-panel p-2 h-full">
         <div class="grid grid-cols-3 gap-2 h-full">
             <div class="cyber-panel p-2 flex flex-col">
-                <h2 class="font-orbitron font-bold text-white text-xs tracking-wider mb-2 pb-1 border-b border-dash-border">HERMES AGENT</h2>
-                <label class="block text-[10px] text-dash-muted mb-1">URL base
-                    <input id="h-url" placeholder="https://…:8642/v1" class="w-full bg-dash-bg border border-dash-border rounded p-1.5 text-white text-[11px] mt-0.5">
+                <h2 class="font-orbitron font-bold text-white text-sm tracking-wider mb-3 pb-1.5 border-b border-dash-border">HERMES AGENT</h2>
+                <label class="block text-sm text-dash-muted mb-1">URL base
+                    <input id="h-url" placeholder="https://…:8642/v1" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
                 </label>
-                <label class="block text-[10px] text-dash-muted mb-1">Clave API
-                    <input id="h-key" type="password" autocomplete="off" placeholder="sk-…" class="w-full bg-dash-bg border border-dash-border rounded p-1.5 text-white text-[11px] mt-0.5">
+                <label class="block text-sm text-dash-muted mb-1">Clave API
+                    <input id="h-key" type="password" autocomplete="off" placeholder="sk-…" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
                 </label>
-                <label class="flex items-center gap-1.5 text-[10px] text-dash-muted mb-1">
-                    <input id="h-remember" type="checkbox"> Recordar la clave en esta radio
+                <label class="flex items-center gap-2 text-sm text-dash-muted my-2">
+                    <input id="h-remember" type="checkbox" class="w-5 h-5"> Recordar la clave en esta radio
                 </label>
-                <label class="block text-[10px] text-dash-muted mb-1">Modelo
-                    <input id="h-model" placeholder="hermes-agent" class="w-full bg-dash-bg border border-dash-border rounded p-1.5 text-white text-[11px] mt-0.5">
+                <label class="block text-sm text-dash-muted mb-1">Modelo
+                    <input id="h-model" placeholder="hermes-agent" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
                 </label>
                 <div class="flex gap-1.5 mt-2">
-                    <button onclick="saveH()" class="flex-1 py-1.5 bg-dash-cyan/10 hover:bg-dash-cyan/20 border border-dash-cyan/60 text-dash-cyan font-bold text-xs rounded">GUARDAR</button>
-                    <button onclick="testH()" class="flex-1 py-1.5 bg-dash-panel hover:bg-dash-border border border-dash-border text-white font-bold text-xs rounded">PROBAR</button>
+                    <button onclick="saveH()" class="flex-1 py-3 bg-dash-cyan/10 hover:bg-dash-cyan/20 border border-dash-cyan/60 text-dash-cyan font-bold text-sm rounded-lg">GUARDAR</button>
+                    <button onclick="testH()" class="flex-1 py-3 bg-dash-panel hover:bg-dash-border border border-dash-border text-white font-bold text-sm rounded-lg">PROBAR</button>
                 </div>
-                <div id="h-stat" class="text-dash-muted text-[10px] mt-2">No configurado</div>
+                <div id="h-stat" class="text-dash-muted text-sm mt-2">No configurado</div>
             </div>
             <div class="cyber-panel p-2 flex flex-col">
-                <h2 class="font-orbitron font-bold text-white text-xs tracking-wider mb-2 pb-1 border-b border-dash-border">OBD-II (ELM327)</h2>
-                <label class="block text-[10px] text-dash-muted mb-1">Fuente de datos
-                    <select id="o-mode" class="w-full bg-dash-bg border border-dash-border rounded p-1.5 text-white text-[11px] mt-0.5">
+                <h2 class="font-orbitron font-bold text-white text-sm tracking-wider mb-3 pb-1.5 border-b border-dash-border">OBD-II (ELM327)</h2>
+                <label class="block text-sm text-dash-muted mb-1">Fuente de datos
+                    <select id="o-mode" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
                         <option value="bridge">Adaptador ELM327 (bridge.py)</option>
                         <option value="sim">Simulación (demo)</option>
                         <option value="off">Desactivado</option>
                     </select>
                 </label>
-                <label class="block text-[10px] text-dash-muted mb-1">URL del puente
-                    <input id="o-url" placeholder="/obd" class="w-full bg-dash-bg border border-dash-border rounded p-1.5 text-white text-[11px] mt-0.5">
+                <label class="block text-sm text-dash-muted mb-1">URL del puente
+                    <input id="o-url" placeholder="/obd" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
                 </label>
-                <label class="block text-[10px] text-dash-muted mb-1">Capacidad del tanque (L)
-                    <input id="o-tank" type="number" min="1" placeholder="70" class="w-full bg-dash-bg border border-dash-border rounded p-1.5 text-white text-[11px] mt-0.5">
+                <label class="block text-sm text-dash-muted mb-1">Capacidad del tanque (L)
+                    <input id="o-tank" type="number" min="1" placeholder="70" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
                 </label>
-                <label class="block text-[10px] text-dash-muted mb-1">Consumo de referencia (km/L)
-                    <input id="o-ref" type="number" min="1" step="0.1" placeholder="8" class="w-full bg-dash-bg border border-dash-border rounded p-1.5 text-white text-[11px] mt-0.5">
+                <label class="block text-sm text-dash-muted mb-1">Consumo de referencia (km/L)
+                    <input id="o-ref" type="number" min="1" step="0.1" placeholder="8" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
                 </label>
-                <button onclick="saveObd()" class="w-full mt-2 py-1.5 bg-dash-cyan/10 hover:bg-dash-cyan/20 border border-dash-cyan/60 text-dash-cyan font-bold text-xs rounded">GUARDAR</button>
-                <div id="o-stat" class="text-dash-cyan text-[10px] mt-2"></div>
-                <div id="o-live" class="text-dash-muted text-[10px] mt-1"></div>
-                <p class="text-[9px] text-dash-muted mt-2 leading-relaxed">Conecta la radio a la red Wi-Fi del adaptador ELM327 y arranca el dashboard con <b class="text-white">bash setup.sh</b>. La capacidad del tanque y el consumo de referencia se usan para predecir la autonomía hasta que haya 2 cargas registradas (entonces se usa el consumo real). Verifica el tanque en el manual del vehículo.</p>
+                <label class="block text-sm text-dash-muted">Cambio de aceite cada (km)
+                    <input id="o-oil" type="number" min="500" step="500" placeholder="5000" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
+                </label>
+                <button onclick="saveObd()" class="w-full mt-2 py-3 bg-dash-cyan/10 hover:bg-dash-cyan/20 border border-dash-cyan/60 text-dash-cyan font-bold text-sm rounded-lg">GUARDAR</button>
+                <div id="o-stat" class="text-dash-cyan text-sm mt-2"></div>
+                <div id="o-live" class="text-dash-muted text-sm mt-1"></div>
+                <p class="text-xs text-dash-muted mt-2 leading-relaxed">Conecta la radio a la red Wi-Fi del adaptador ELM327 y arranca el dashboard con <b class="text-white">bash setup.sh</b>. La capacidad del tanque y el consumo de referencia se usan para predecir la autonomía hasta que haya 2 cargas registradas (entonces se usa el consumo real). Verifica el tanque en el manual del vehículo.</p>
             </div>
             <div class="cyber-panel p-2">
-                <h2 class="font-orbitron font-bold text-white text-xs tracking-wider mb-2 pb-1 border-b border-dash-border">INFORMACIÓN</h2>
-                <div class="text-[10px] text-dash-muted space-y-2 leading-relaxed">
+                <h2 class="font-orbitron font-bold text-white text-sm tracking-wider mb-3 pb-1.5 border-b border-dash-border">INFORMACIÓN</h2>
+                <div class="text-sm text-dash-muted space-y-2.5 leading-relaxed">
                     <p>🔌 Conecta este dashboard con Hermes Agent para respuestas de J.A.R.V.I.S. reales.</p>
                     <p>⚠️ <b class="text-dash-amber">No expongas la clave API a Internet.</b> Usa la misma red Wi-Fi o una VPN (Tailscale).</p>
                     <p>🔑 Si no marcas «Recordar», la clave se borra al cerrar el navegador. Si la marcas, queda guardada <b class="text-white">sin cifrar</b> en esta radio: usa una clave propia de la radio que puedas revocar.</p>
@@ -616,10 +638,10 @@
     <!-- ==================== PÁGINA: J.A.R.V.I.S. (consola completa) ==================== -->
     <div id="page-jarvis" class="hidden col-span-10 cyber-panel p-2 h-full">
         <h2 class="font-orbitron font-black text-dash-cyan text-xs tracking-widest text-glow mb-2 pb-1 border-b border-dash-border">J.A.R.V.I.S.</h2>
-        <div id="jarvis-console" class="bg-dash-bg border border-dash-border rounded p-2 h-[calc(100%-90px)] overflow-y-auto text-[11px] font-mono text-dash-cyan whitespace-pre-wrap">[SISTEMA] Asistente listo.
+        <div id="jarvis-console" class="bg-dash-bg border border-dash-border rounded p-2 h-[calc(100%-90px)] overflow-y-auto text-sm font-mono text-dash-cyan whitespace-pre-wrap">[SISTEMA] Asistente listo.
 [J.A.R.V.I.S.] Configura Hermes en Ajustes para respuestas reales.</div>
         <div class="flex gap-1.5 mt-2">
-            <input id="jarvis-input" placeholder="Comando…" class="flex-1 bg-dash-bg border border-dash-border rounded p-2 text-white text-[11px]">
+            <input id="jarvis-input" placeholder="Comando…" class="flex-1 bg-dash-bg border border-dash-border rounded-lg p-3 text-white text-base">
             <button onclick="sendJarvis()" class="px-3 py-1.5 bg-dash-cyan/10 hover:bg-dash-cyan/20 border border-dash-cyan/60 text-dash-cyan font-bold text-xs rounded">ENVIAR</button>
         </div>
     </div>
@@ -708,8 +730,8 @@
             document.querySelectorAll('.nav-btn').forEach(b => {
                 const active = b.dataset.page === n;
                 b.className = active
-                    ? "nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg bg-dash-cyan/20 border border-dash-cyan text-dash-cyan font-bold font-orbitron shadow-[0_0_10px_rgba(0,240,255,0.2)]"
-                    : "nav-btn w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold";
+                    ? "nav-btn w-full flex items-center gap-3 px-3 py-3 rounded-lg text-base bg-dash-cyan/20 border border-dash-cyan text-dash-cyan font-bold font-orbitron shadow-[0_0_10px_rgba(0,240,255,0.2)]"
+                    : "nav-btn w-full flex items-center gap-3 px-3 py-3 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold";
             });
             ['inicio', 'tablero', 'mapa', 'autonomia', 'registro', 'diagnostico', 'jarvis', 'ajustes'].forEach(p => {
                 const el = $('page-' + p);
@@ -761,7 +783,7 @@
             ['t-throttle', 'throttle', '%'], ['t-econ', 'econ', ' km/L'], ['t-stft', 'stft', '%'],
             ['t-ltft', 'ltft', '%'], ['t-boost', 'boost', ' bar'], ['t-vmax', 'vmax', ' km/h']
         ];
-        function obdCfg() { return Object.assign({ mode: 'bridge', url: '/obd', tank: 70, ref: 8 }, lsGet(OBD_KEY, {})); }
+        function obdCfg() { return Object.assign({ mode: 'bridge', url: '/obd', tank: 70, ref: 8, oil: 5000 }, lsGet(OBD_KEY, {})); }
 
         function applyObdii(data) {
             if (!data) return;
@@ -850,11 +872,11 @@
         // Ajustes OBD
         function loadObdForm() {
             const c = obdCfg();
-            $('o-mode').value = c.mode; $('o-url').value = c.url; $('o-tank').value = c.tank || ''; $('o-ref').value = c.ref || '';
+            $('o-mode').value = c.mode; $('o-url').value = c.url; $('o-tank').value = c.tank || ''; $('o-ref').value = c.ref || ''; $('o-oil').value = c.oil || '';
         }
         function saveObd() {
-            const tank = num($('o-tank').value), ref = num($('o-ref').value);
-            lsSet(OBD_KEY, { mode: $('o-mode').value, url: $('o-url').value.trim() || '/obd', tank: tank && tank > 0 ? tank : null, ref: ref && ref > 0 ? ref : null });
+            const tank = num($('o-tank').value), ref = num($('o-ref').value), oil = num($('o-oil').value);
+            lsSet(OBD_KEY, { mode: $('o-mode').value, url: $('o-url').value.trim() || '/obd', tank: tank && tank > 0 ? tank : null, ref: ref && ref > 0 ? ref : null, oil: oil && oil > 0 ? oil : null });
             $('o-stat').textContent = '✓ Guardado';
             startObd();
         }
@@ -872,6 +894,7 @@
 
         function refreshStatus() {
             const o = S.obd, of = obdFresh(), gf = gpsFresh(), demo = o.mode === 'sim';
+            refreshOdo();
             if (!of && o.shown) clearObdFields(); // no mostrar datos viejos
 
             // Velocidad (OBD si hay, si no GPS) -> también la usa el bus 3D
@@ -886,6 +909,9 @@
                 if (num(d.volts) !== null && num(d.volts) < 11.8) alerts.push('Batería baja');
                 if (num(d.fuel) !== null && num(d.fuel) <= 15) alerts.push('Combustible bajo');
             }
+            const mt = maintStatus();
+            if (mt && mt.left < 0) alerts.push('Cambio de aceite vencido');
+            else if (mt && mt.left < 500) alerts.push('Cambio de aceite en ' + fmtKm(mt.left) + ' km');
             if (of && o.dtc && o.dtc.length) alerts.push(o.dtc.length + (o.dtc.length === 1 ? ' código de avería' : ' códigos de avería'));
             let label, sub, tone;
             if (spd === null) { label = gf ? 'SOLO GPS' : 'SIN DATOS'; tone = 'muted'; }
@@ -895,6 +921,13 @@
             else if (gf) sub = 'Solo GPS (sin OBD-II)';
             else sub = 'Sin OBD-II ni GPS';
             if (demo) label = 'DEMO · ' + label;
+            const al = $('alert-list');
+            const info = [];
+            if (!of) info.push(o.mode === 'off' ? 'OBD-II desactivado' : 'OBD-II sin conexión');
+            if (!gf) info.push('GPS: ' + (S.gps.err || 'sin señal'));
+            al.innerHTML = (alerts.length ? alerts.map(a => '<div class="flex items-center gap-2 text-dash-amber font-semibold">⚠ ' + esc(a) + '</div>').join('')
+                : '<div class="text-dash-green font-semibold">✓ Sin alertas</div>') +
+                info.map(a => '<div class="text-dash-muted">• ' + esc(a) + '</div>').join('');
             $('status-label').textContent = label; setTone($('status-label'), tone);
             $('status-sub').textContent = sub;
             setDot($('status-dot'), tone); setDot($('status-ping'), tone);
@@ -1118,8 +1151,8 @@
         let regTab = 'mantenimiento';
         const readReg = () => lsGet(REGS_KEY, []);
         const saveReg = (l) => lsSet(REGS_KEY, l);
-        const TAB_ON = 'px-2 py-1 bg-dash-cyan/20 border border-dash-cyan text-dash-cyan font-bold rounded text-[10px]';
-        const TAB_OFF = 'px-2 py-1 text-dash-muted border border-dash-border font-bold rounded text-[10px]';
+        const TAB_ON = 'px-4 py-2.5 bg-dash-cyan/20 border border-dash-cyan text-dash-cyan font-bold rounded-lg text-sm';
+        const TAB_OFF = 'px-4 py-2.5 text-dash-muted border border-dash-border font-bold rounded-lg text-sm';
         function setRegTab(t) {
             regTab = t;
             $('reg-tab-mant').className = t === 'mantenimiento' ? TAB_ON : TAB_OFF;
@@ -1136,11 +1169,11 @@
                 const ico = r.tipo === 'mantenimiento' ? '🔧' : '⛽';
                 const t = r.tipo === 'mantenimiento' ? r.subtipo : (r.estacion || 'Combustible');
                 const s = r.tipo === 'mantenimiento' ? (r.nota || '') : (r.galones + ' gal · $' + (r.precio || '--') + '/gal');
-                return '<div class="flex items-center gap-2 bg-dash-panel border border-dash-border rounded p-1.5">' +
-                    '<span class="text-sm">' + ico + '</span>' +
+                return '<div class="flex items-center gap-3 bg-dash-panel border border-dash-border rounded-lg p-2.5">' +
+                    '<span class="text-xl">' + ico + '</span>' +
                     '<div class="flex-1"><div class="font-bold text-white">' + esc(t) + '</div>' +
-                    '<div class="text-dash-muted text-[9px]">' + (r.km ? esc(r.km) + ' km · ' : '') + esc(s) + '</div></div>' +
-                    '<span class="text-dash-cyan text-[9px]">' + esc(r.fecha) + '</span></div>';
+                    '<div class="text-dash-muted text-xs">' + (r.km ? esc(r.km) + ' km · ' : '') + esc(s) + '</div></div>' +
+                    '<span class="text-dash-cyan text-xs">' + esc(r.fecha) + '</span></div>';
             }).join('');
         }
         function regMsg(t) { const m = $('reg-msg'); m.textContent = t; m.classList.remove('hidden'); setTimeout(() => m.classList.add('hidden'), 1800); }
@@ -1163,11 +1196,45 @@
             const kms = readReg().map(r => num(r.km)).concat(lsGet('cargas', []).map(c => num(c.odo))).filter(v => v > 0);
             return kms.length ? Math.max(...kms) : null;
         }
-        function refreshOdo() {
+        // Odómetro actual: OBD; si no, la última carga con odómetro + km recorridos desde entonces
+        function estOdo() {
             const o = obdFresh() ? num(S.obd.data.odo) : null;
-            const v = o !== null ? o : lastKnownOdo();
+            if (o !== null) return { v: o, est: false };
+            const cg = lsGet('cargas', []), last = cg.length ? cg[cg.length - 1] : null;
+            const known = lastKnownOdo();
+            if (last && last.odo > 0 && last.odo >= (known || 0)) return { v: last.odo + kmSinceFill, est: true };
+            return { v: known, est: true };
+        }
+        function refreshOdo() {
+            const { v, est } = estOdo();
             setText('val-odo', fmtKm(v), ' km');
-            $('val-odo-lbl').textContent = o !== null ? 'Kilometraje' : (v !== null ? 'Km (último registro)' : 'Kilometraje');
+            $('val-odo-lbl').textContent = v !== null && est ? 'Km (estimado)' : 'Kilometraje';
+            refreshMaint();
+        }
+        // Próximo cambio de aceite: último registro "Cambio de aceite" + intervalo de Ajustes
+        function maintStatus() {
+            const every = num(obdCfg().oil) || 5000;
+            const oil = readReg().filter(r => r.tipo === 'mantenimiento' && r.subtipo === 'Cambio de aceite' && num(r.km) > 0)
+                .sort((a, b) => num(b.km) - num(a.km))[0];
+            if (!oil) return null;
+            const now = estOdo().v;
+            const done = now !== null ? Math.max(0, now - num(oil.km)) : 0;
+            return { every, last: num(oil.km), fecha: oil.fecha, left: every - done, done };
+        }
+        function refreshMaint() {
+            const m = maintStatus();
+            if (!m) {
+                setText('mt-left', null, ''); $('mt-bar').style.width = '0%';
+                $('mt-sub').textContent = 'Registra el último cambio de aceite en Registro'; return;
+            }
+            const over = m.left < 0;
+            $('mt-left').textContent = over ? 'VENCIDO' : fmtKm(m.left);
+            $('mt-unit').textContent = over ? '' : 'km';
+            setTone($('mt-left'), over || m.left < 500 ? 'amber' : 'cyan');
+            $('mt-left').classList.toggle('text-white', false);
+            const bar = $('mt-bar'); bar.style.width = Math.min(100, m.done / m.every * 100) + '%';
+            bar.classList.toggle('bg-dash-amber', over || m.left < 500); bar.classList.toggle('bg-dash-cyan', !(over || m.left < 500));
+            $('mt-sub').textContent = 'Último: ' + fmtKm(m.last) + ' km (' + (m.fecha || '--') + ') · cada ' + fmtKm(m.every) + ' km';
         }
 
         // ==========================================
@@ -1287,45 +1354,45 @@
 
     <!-- ==================== MODAL: REGISTRAR CARGA ==================== -->
     <div id="carga-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm">
-        <div class="bg-dash-panel border border-dash-cyan/40 rounded-lg w-[92%] max-w-md p-4 shadow-[0_0_30px_rgba(0,240,255,0.15)]">
+        <div class="bg-dash-panel border border-dash-cyan/40 rounded-lg w-[92%] max-w-xl p-5 shadow-[0_0_30px_rgba(0,240,255,0.15)]">
             <div class="flex items-center justify-between mb-3 pb-2 border-b border-dash-border">
-                <h3 class="font-orbitron font-bold text-white text-sm tracking-wider">REGISTRAR CARGA</h3>
-                <button onclick="closeCargaModal()" class="text-dash-muted hover:text-white text-lg leading-none">&times;</button>
+                <h3 class="font-orbitron font-bold text-white text-base tracking-wider">REGISTRAR CARGA</h3>
+                <button onclick="closeCargaModal()" class="text-dash-muted hover:text-white text-4xl leading-none px-2">&times;</button>
             </div>
-            <div class="grid grid-cols-2 gap-2 text-[10px]">
+            <div class="grid grid-cols-2 gap-3 text-sm">
                 <div class="col-span-2">
                     <label class="text-dash-muted font-bold uppercase block mb-1">Fecha</label>
-                    <input id="c-fecha" type="date" class="w-full bg-dash-border/40 border border-dash-border rounded px-2 py-1.5 text-white font-mono outline-none focus:border-dash-cyan" />
+                    <input id="c-fecha" type="date" class="w-full bg-dash-border/40 border border-dash-border rounded px-3 py-2.5 text-base text-white font-mono outline-none focus:border-dash-cyan" />
                 </div>
                 <div>
                     <label class="text-dash-muted font-bold uppercase block mb-1">Cantidad (L)</label>
-                    <input id="c-cantidad" type="number" step="0.01" min="0" placeholder="0.00" class="w-full bg-dash-border/40 border border-dash-border rounded px-2 py-1.5 text-white font-mono outline-none focus:border-dash-cyan" />
+                    <input id="c-cantidad" type="number" step="0.01" min="0" placeholder="0.00" class="w-full bg-dash-border/40 border border-dash-border rounded px-3 py-2.5 text-base text-white font-mono outline-none focus:border-dash-cyan" />
                 </div>
                 <div>
                     <label class="text-dash-muted font-bold uppercase block mb-1">Precio (USD/L)</label>
-                    <input id="c-precio" type="number" step="0.0001" min="0" placeholder="0.0000" class="w-full bg-dash-border/40 border border-dash-border rounded px-2 py-1.5 text-white font-mono outline-none focus:border-dash-cyan" />
+                    <input id="c-precio" type="number" step="0.0001" min="0" placeholder="0.0000" class="w-full bg-dash-border/40 border border-dash-border rounded px-3 py-2.5 text-base text-white font-mono outline-none focus:border-dash-cyan" />
                 </div>
                 <div>
                     <label class="text-dash-muted font-bold uppercase block mb-1">Total (USD, opcional)</label>
-                    <input id="c-total" type="number" step="0.01" min="0" placeholder="0.00" class="w-full bg-dash-border/40 border border-dash-border rounded px-2 py-1.5 text-white font-mono outline-none focus:border-dash-cyan" />
+                    <input id="c-total" type="number" step="0.01" min="0" placeholder="0.00" class="w-full bg-dash-border/40 border border-dash-border rounded px-3 py-2.5 text-base text-white font-mono outline-none focus:border-dash-cyan" />
                 </div>
                 <div>
                     <label class="text-dash-muted font-bold uppercase block mb-1">Odómetro (km)</label>
-                    <input id="c-odo" type="number" step="1" min="0" placeholder="0" class="w-full bg-dash-border/40 border border-dash-border rounded px-2 py-1.5 text-white font-mono outline-none focus:border-dash-cyan" />
+                    <input id="c-odo" type="number" step="1" min="0" placeholder="0" class="w-full bg-dash-border/40 border border-dash-border rounded px-3 py-2.5 text-base text-white font-mono outline-none focus:border-dash-cyan" />
                 </div>
                 <div class="col-span-2">
                     <label class="text-dash-muted font-bold uppercase block mb-1">Tipo de Combustible</label>
-                    <select id="c-tipo" class="w-full bg-dash-border/40 border border-dash-border rounded px-2 py-1.5 text-white font-mono outline-none focus:border-dash-cyan">
+                    <select id="c-tipo" class="w-full bg-dash-border/40 border border-dash-border rounded px-3 py-2.5 text-base text-white font-mono outline-none focus:border-dash-cyan">
                         <option value="DIESEL">DIESEL</option>
                         <option value="GASOLINA">GASOLINA</option>
                     </select>
                 </div>
             </div>
-            <label class="flex items-center gap-1.5 text-[11px] text-white mt-3"><input id="c-lleno" type="checkbox" checked> Llené el tanque completo</label>
-            <div id="c-msg" class="text-dash-amber text-[10px] mt-2"></div>
+            <label class="flex items-center gap-2 text-sm text-white mt-3"><input id="c-lleno" type="checkbox" class="w-5 h-5" checked> Llené el tanque completo</label>
+            <div id="c-msg" class="text-dash-amber text-sm mt-2"></div>
             <div class="flex gap-2 mt-2">
-                <button onclick="guardarCarga()" class="flex-1 text-[10px] font-orbitron font-bold text-black bg-dash-cyan rounded px-3 py-2 hover:brightness-110">GUARDAR CARGA</button>
-                <button onclick="closeCargaModal()" class="flex-1 text-[10px] font-orbitron font-bold text-dash-muted border border-dash-border rounded px-3 py-2 hover:text-white">CANCELAR</button>
+                <button onclick="guardarCarga()" class="flex-1 text-sm font-orbitron font-bold text-black bg-dash-cyan rounded-lg px-3 py-3 hover:brightness-110">GUARDAR CARGA</button>
+                <button onclick="closeCargaModal()" class="flex-1 text-sm font-orbitron font-bold text-dash-muted border border-dash-border rounded-lg px-3 py-3 hover:text-white">CANCELAR</button>
             </div>
         </div>
     </div>
