@@ -6,6 +6,7 @@
 (function () {
   const THREE_SRC = 'vendor/three.min.js';      // three.js r128 (local, funciona sin internet)
   const GLTF_SRC = 'vendor/GLTFLoader.js';
+  const MESHOPT_SRC = 'vendor/meshopt_decoder.js'; // el GLB usa compresión meshopt (malla completa, sin simplificar)
   const GLB_URL = 'assets/autoline_bus.glb';
 
   function boot() {
@@ -338,15 +339,21 @@
     }
     function loadRealModel() {
       const fail = (why) => console.warn('[bus3d] modelo GLB no disponible (' + why + '); se usa el procedural');
-      if (!T.GLTFLoader) {
+      const need = [];
+      if (!T.GLTFLoader) need.push(GLTF_SRC);
+      if (!window.MeshoptDecoder) need.push(MESHOPT_SRC);
+      (function next() {
+        if (!need.length) return fetchModel();
         const s2 = document.createElement('script');
-        s2.src = GLTF_SRC;
-        s2.onload = fetchModel; s2.onerror = () => fail('loader');
+        s2.src = need.shift();
+        s2.onload = next; s2.onerror = () => fail('loader');
         document.head.appendChild(s2);
-      } else fetchModel();
+      })();
       function fetchModel() {
-        if (!T.GLTFLoader) return fail('loader');
-        new T.GLTFLoader().load(GLB_URL, (gltf) => {
+        if (!T.GLTFLoader || !window.MeshoptDecoder) return fail('loader');
+        const loader = new T.GLTFLoader();
+        loader.setMeshoptDecoder(window.MeshoptDecoder);
+        loader.load(GLB_URL, (gltf) => {
           const root = gltf.scene;
           root.updateMatrixWorld(true);
           const b3 = new T.Box3().setFromObject(root);
