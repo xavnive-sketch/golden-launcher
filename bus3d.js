@@ -33,7 +33,7 @@
     const renderer = new T.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
     const scene = new T.Scene();
-    const camera = new T.PerspectiveCamera(32, 1, 0.1, 100);
+    const camera = new T.PerspectiveCamera(22, 1, 0.1, 100); // lente cerrado: menos deformación al girar
     camera.position.set(0, 2.6, 7.5);
     camera.lookAt(0, 1.3, 0);
 
@@ -240,11 +240,28 @@
     });
     canvas.addEventListener('pointercancel', () => { drag = false; canvas.style.cursor = 'grab'; });
 
+    let fitDims = null;
+    function fitCamera() {
+      if (!fitDims) return;
+      const r0 = box.getBoundingClientRect();
+      if (r0.width < 10 || r0.height < 10) return;
+      const aspect = r0.width / r0.height, t = Math.tan(camera.fov * Math.PI / 360);
+      const { len, h, w } = fitDims;
+      // Debe caber en cualquier ángulo del giro:
+      //  - de lado: el largo completo a lo ancho (más medio ancho de profundidad)
+      //  - de frente: el alto completo con el frente medio largo más cerca de la cámara
+      const dist = Math.max(len / 2 / (t * aspect) + w / 2, h * 0.62 / t + len / 2) * 1.04;
+      const cy = h / 2;
+      camera.position.set(0, cy + h * 0.45, dist);
+      camera.lookAt(0, cy - h * 0.02, 0);
+      camera.updateProjectionMatrix();
+    }
     function resize() {
       const r = box.getBoundingClientRect();
       const w = Math.max(r.width, 10), h = Math.max(r.height, 10);
       renderer.setSize(w, h, false);
       camera.aspect = w / h; camera.updateProjectionMatrix();
+      fitCamera();
     }
     resize();
     window.addEventListener('resize', resize);
@@ -275,7 +292,8 @@
             'float headMask = (1.0 - smoothstep(-2.85, -2.7, vBusPos.x)) * smoothstep(0.3, 0.5, gMn) * step(0.75, vBusPos.y) * step(vBusPos.y, 1.2);'
           ].join('\n'))
           .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance += uNight * (vec3(1.0, 0.06, 0.03) * tailMask * 6.0 + vec3(1.0, 0.97, 0.9) * headMask * 1.6);')
-          .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = mix(roughnessFactor, 0.38, glassMask);');
+          .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = mix(roughnessFactor, 0.38, glassMask);')
+          .replace('#include <metalnessmap_fragment>', '#include <metalnessmap_fragment>\nmetalnessFactor = mix(metalnessFactor, 0.0, glassMask);');
       };
     }
 
@@ -390,20 +408,10 @@
           spots[3].p.set(-0.3, roofY * 0.6, 0.75);
           beacon.position.set(-2.0, roofY + 0.08, 0);
           console.log('[bus3d] modelo GLB cargado ·', size.x.toFixed(2) + 'x' + size.y.toFixed(2) + 'x' + size.z.toFixed(2), '· escala ' + s.toFixed(3));
-          // Encuadrar el bus COMPLETO en el viewport (se vea entero en cualquier pantalla)
-          requestAnimationFrame(() => {
-            const bb = new T.Box3().setFromObject(bus);
-            const bs = bb.getSize(new T.Vector3());
-            const bc = bb.getCenter(new T.Vector3());
-            const r0 = box.getBoundingClientRect();
-            const aspect = Math.max(r0.width, 10) / Math.max(r0.height, 10);
-            const fov = camera.fov * Math.PI / 180;
-            const dist = Math.max(bs.y / 2 / Math.tan(fov / 2), bs.x / 2 / (Math.tan(fov / 2) * aspect)) * 1.3;
-            camera.position.set(0, bc.y + bs.y * 0.25, bc.z + dist);
-            camera.lookAt(bc.x, bc.y, bc.z);
-            camera.updateProjectionMatrix();
-            console.log('[bus3d] encuadre: dist ' + dist.toFixed(2) + ' · bus ' + bs.x.toFixed(1) + 'x' + bs.y.toFixed(1) + 'x' + bs.z.toFixed(1));
-          });
+          // Encuadrar SOLO el vehículo (no las luces ni el piso), para que se vea grande y completo
+          // mientras gira: el ancho máximo en pantalla es su largo (vista de lado).
+          fitDims = { len: LEN, h: size.y * s, w: Math.min(size.x, size.z) * s };
+          fitCamera();
         }, undefined, () => fail('glb'));
       }
     }
