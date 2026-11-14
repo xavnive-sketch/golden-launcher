@@ -1,0 +1,61 @@
+name: APK
+
+# Compila la app Android en cada cambio. En main, además publica el APK en "Releases"
+# para descargarlo directo desde la radio:
+#   https://github.com/xavnive-sketch/golden-launcher/releases/latest/download/golden-launcher.apk
+on:
+  push:
+    branches: [main, 'claude/**']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Compilar APK
+        run: gradle -p android assembleRelease --no-daemon --stacktrace
+
+      - name: Preparar archivo
+        run: cp android/app/build/outputs/apk/release/app-release.apk golden-launcher.apk
+
+      - name: Verificar contenido del APK
+        run: |
+          unzip -l golden-launcher.apk | grep -E 'assets/www/' | awk '{print $1, $4}' | head -40
+          for f in index.html bus3d.js assets/autoline_bus.glb vendor/three.min.js vendor/GLTFLoader.js \
+                   vendor/meshopt_decoder.js vendor/tailwind.css vendor/leaflet.js vendor/lucide.min.js vendor/fonts/fonts.css; do
+            unzip -l golden-launcher.apk "assets/www/$f" > /dev/null || { echo "FALTA assets/www/$f"; exit 1; }
+          done
+          ls -la golden-launcher.apk
+          echo "APK verificado"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: golden-launcher-apk
+          path: golden-launcher.apk
+
+      - name: Publicar en Releases
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-${{ github.run_number }}
+          name: Golden Launcher ${{ github.run_number }}
+          make_latest: true
+          files: golden-launcher.apk
+          body: |
+            APK de Golden Launcher (compilación ${{ github.run_number }}).
+            Descarga directa en la radio:
+            https://github.com/${{ github.repository }}/releases/latest/download/golden-launcher.apk

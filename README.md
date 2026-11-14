@@ -3,7 +3,22 @@
 Panel para la radio Android de la furgoneta escolar. Muestra el modelo 3D, la telemetría OBD-II,
 el GPS, la autonomía, el registro de mantenimientos y el asistente J.A.R.V.I.S.
 
-## Instalación en la radio (Termux)
+## App para la radio (APK) — recomendado
+
+Descarga e instala desde el navegador de la radio:
+
+https://github.com/xavnive-sketch/golden-launcher/releases/latest/download/golden-launcher.apk
+
+(Android pedirá permitir "instalar apps de origen desconocido" la primera vez.)
+Cada versión nueva se instala encima de la anterior sin perder los datos.
+
+En la app: **Ajustes → OBD-II → Buscar adaptadores** y toca tu adaptador Bluetooth
+(por ejemplo Vgate iCar Pro 2S). El Wi-Fi de la radio queda libre para internet.
+
+El APK se compila solo con GitHub Actions (`.github/workflows/apk.yml`) en cada cambio a `main`.
+El código Android está en `android/`.
+
+## Instalación en la radio (Termux) (alternativa sin app)
 
 ```bash
 bash setup.sh
