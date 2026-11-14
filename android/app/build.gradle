@@ -1,0 +1,68 @@
+plugins {
+    id 'com.android.application'
+}
+
+// Número de compilación (GitHub Actions) -> versionCode creciente para poder actualizar encima
+def runNumber = (System.getenv('GITHUB_RUN_NUMBER') ?: '1') as Integer
+def webOut = layout.buildDirectory.dir('generated/www-assets')
+
+android {
+    namespace 'com.goldenlauncher.app'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.goldenlauncher.app'
+        minSdk 24
+        targetSdk 34
+        versionCode runNumber
+        versionName "2.3.${runNumber}"
+    }
+
+    // Firma fija: así cada APK nuevo se instala ENCIMA del anterior sin perder los datos guardados.
+    signingConfigs {
+        release {
+            storeFile file('golden-launcher.jks')
+            storePassword 'goldenlauncher'
+            keyAlias 'golden'
+            keyPassword 'goldenlauncher'
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+        debug {
+            signingConfig signingConfigs.release
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    sourceSets {
+        main {
+            assets.srcDirs += [webOut.get().asFile]
+        }
+    }
+    androidResources {
+        noCompress 'glb'
+    }
+    lint {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation 'androidx.webkit:webkit:1.11.0'
+}
+
+// Copia el dashboard (index.html, bus3d.js, assets/, vendor/) dentro del APK, en assets/www/
+def copyWeb = tasks.register('copyWeb', Copy) {
+    from(rootProject.projectDir.parentFile) {
+        include 'index.html', 'bus3d.js', 'assets/**', 'vendor/**'
+    }
+    into webOut.map { it.dir('www') }
+}
+tasks.named('preBuild').configure { dependsOn copyWeb }

@@ -362,8 +362,8 @@
     
 
     <!-- ==================== PÁGINA: REGISTRO ==================== -->
-    <div id="page-registro" class="hidden col-span-10 cyber-panel p-2 h-full flex flex-col">
-        <div class="grid grid-cols-12 gap-2 flex-grow h-full">
+    <div id="page-registro" class="hidden col-span-10 cyber-panel p-2 h-full flex flex-col overflow-hidden">
+        <div class="grid grid-cols-12 gap-2 flex-grow h-full min-h-0">
             <!-- Lista -->
             <div class="col-span-7 cyber-panel p-2 flex flex-col overflow-y-auto">
                 <h2 class="font-orbitron font-bold text-white text-sm tracking-wider mb-3 pb-1.5 border-b border-dash-border">REGISTRO DEL VEHÍCULO</h2>
@@ -371,47 +371,49 @@
                     <button id="reg-tab-mant" onclick="setRegTab('mantenimiento')" class="px-4 py-2.5 bg-dash-cyan/20 border border-dash-cyan text-dash-cyan font-bold rounded-lg text-sm">🔧 MANTENIMIENTO</button>
                     <button id="reg-tab-comb" onclick="setRegTab('combustible')" class="px-4 py-2.5 text-dash-muted border border-dash-border font-bold rounded-lg text-sm">⛽ COMBUSTIBLE</button>
                 </div>
+                <div id="reg-total" class="text-sm text-dash-muted mb-2"></div>
                 <div id="reg-list" class="space-y-2 text-sm">
                     <div class="text-dash-muted text-center py-6 border border-dashed border-dash-border rounded">Sin registros todavía</div>
                 </div>
             </div>
             <!-- Formulario -->
-            <div class="col-span-5 cyber-panel p-2 flex flex-col">
+            <div class="col-span-5 cyber-panel p-2 flex flex-col overflow-y-auto min-h-0">
                 <h2 class="font-orbitron font-bold text-white text-sm tracking-wider mb-3 pb-1.5 border-b border-dash-border">NUEVO REGISTRO</h2>
-                <div id="reg-form-mant" class="space-y-2">
-                    <label class="block text-sm text-dash-muted">Tipo
-                        <select id="reg-tipo" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
-                            <option>Cambio de aceite</option><option>Filtro de aire</option><option>Frenos</option><option>Llantas</option><option>Revisión general</option><option>Otro</option>
-                        </select>
-                    </label>
-                    <label class="block text-sm text-dash-muted">Fecha
-                        <input type="date" id="reg-fecha" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
-                    </label>
-                    <label class="block text-sm text-dash-muted">Kilometraje (km)
-                        <input type="number" id="reg-km" placeholder="Ej. 125000" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
-                    </label>
-                    <label class="block text-sm text-dash-muted">Notas
-                        <input type="text" id="reg-nota" placeholder="Ej. Aceite 15W-40" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
-                    </label>
+                <div id="reg-form-mant" class="space-y-2 overflow-y-auto">
+                    <div class="text-sm text-dash-muted">Trabajos realizados <span class="text-xs">(marca uno o varios)</span></div>
+                        <div id="reg-tipos" class="grid grid-cols-2 gap-1.5">
+                            <label class="mt-chip flex items-center gap-2 px-2.5 py-2 rounded-lg border border-dash-border text-white text-sm cursor-pointer"><input type="checkbox" class="w-5 h-5 shrink-0" value="Cambio de aceite"> Cambio de aceite</label>
+                            <label class="mt-chip flex items-center gap-2 px-2.5 py-2 rounded-lg border border-dash-border text-white text-sm cursor-pointer"><input type="checkbox" class="w-5 h-5 shrink-0" value="Filtro de aceite"> Filtro de aceite</label>
+                            <label class="mt-chip flex items-center gap-2 px-2.5 py-2 rounded-lg border border-dash-border text-white text-sm cursor-pointer"><input type="checkbox" class="w-5 h-5 shrink-0" value="Filtro de aire"> Filtro de aire</label>
+                            <label class="mt-chip flex items-center gap-2 px-2.5 py-2 rounded-lg border border-dash-border text-white text-sm cursor-pointer"><input type="checkbox" class="w-5 h-5 shrink-0" value="Filtro de combustible"> Filtro de combustible</label>
+                            <label class="mt-chip flex items-center gap-2 px-2.5 py-2 rounded-lg border border-dash-border text-white text-sm cursor-pointer"><input type="checkbox" class="w-5 h-5 shrink-0" value="Frenos"> Frenos</label>
+                            <label class="mt-chip flex items-center gap-2 px-2.5 py-2 rounded-lg border border-dash-border text-white text-sm cursor-pointer"><input type="checkbox" class="w-5 h-5 shrink-0" value="Llantas"> Llantas</label>
+                            <label class="mt-chip flex items-center gap-2 px-2.5 py-2 rounded-lg border border-dash-border text-white text-sm cursor-pointer"><input type="checkbox" class="w-5 h-5 shrink-0" value="Alineación y balanceo"> Alineación y balanceo</label>
+                            <label class="mt-chip flex items-center gap-2 px-2.5 py-2 rounded-lg border border-dash-border text-white text-sm cursor-pointer"><input type="checkbox" class="w-5 h-5 shrink-0" value="Batería"> Batería</label>
+                            <label class="mt-chip flex items-center gap-2 px-2.5 py-2 rounded-lg border border-dash-border text-white text-sm cursor-pointer"><input type="checkbox" class="w-5 h-5 shrink-0" value="Refrigerante"> Refrigerante</label>
+                            <label class="mt-chip flex items-center gap-2 px-2.5 py-2 rounded-lg border border-dash-border text-white text-sm cursor-pointer"><input type="checkbox" class="w-5 h-5 shrink-0" value="Revisión general"> Revisión general</label>
+                            <label class="mt-chip flex items-center gap-2 px-2.5 py-2 rounded-lg border border-dash-border text-white text-sm cursor-pointer"><input type="checkbox" class="w-5 h-5 shrink-0" value="Otro"> Otro</label>
+                        </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="block text-sm text-dash-muted">Fecha
+                            <input type="date" id="reg-fecha" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
+                        </label>
+                        <label class="block text-sm text-dash-muted">Kilometraje (km)
+                            <input type="number" id="reg-km" placeholder="Ej. 125000" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
+                        </label>
+                        <label class="block text-sm text-dash-muted">Costo total ($)
+                            <input type="number" id="reg-costo" step="0.01" min="0" placeholder="Ej. 85.50" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
+                        </label>
+                        <label class="block text-sm text-dash-muted">Taller / notas
+                            <input type="text" id="reg-nota" placeholder="Ej. Aceite 15W-40" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
+                        </label>
+                    </div>
                     <button onclick="saveMant()" class="w-full py-3 bg-dash-cyan/10 hover:bg-dash-cyan/20 border border-dash-cyan/60 text-dash-cyan font-bold text-sm rounded-lg">GUARDAR MANTENIMIENTO</button>
                 </div>
-                <div id="reg-form-comb" class="space-y-2 hidden">
-                    <label class="block text-sm text-dash-muted">Estación
-                        <input type="text" id="reg-est" placeholder="Ej. Solintec" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
-                    </label>
-                    <label class="block text-sm text-dash-muted">Fecha
-                        <input type="date" id="reg-fecha2" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
-                    </label>
-                    <label class="block text-sm text-dash-muted">Galones
-                        <input type="number" id="reg-gal" placeholder="Ej. 20" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
-                    </label>
-                    <label class="block text-sm text-dash-muted">Precio/galón ($)
-                        <input type="number" id="reg-precio" placeholder="Ej. 2.45" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
-                    </label>
-                    <label class="block text-sm text-dash-muted">Kilometraje (km)
-                        <input type="number" id="reg-km2" placeholder="Ej. 125500" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
-                    </label>
-                    <button onclick="saveComb()" class="w-full py-3 bg-dash-cyan/10 hover:bg-dash-cyan/20 border border-dash-cyan/60 text-dash-cyan font-bold text-sm rounded-lg">GUARDAR COMBUSTIBLE</button>
+                <div id="reg-form-comb" class="space-y-3 hidden">
+                    <div class="text-sm text-dash-muted leading-relaxed">Las cargas de combustible alimentan el cálculo de <b class="text-white">Autonomía</b> y el consumo real (km por galón / litro).</div>
+                    <button onclick="openCargaModal()" class="w-full py-4 bg-dash-cyan text-black font-orbitron font-bold text-sm rounded-lg hover:brightness-110">⛽ REGISTRAR CARGA</button>
+                    <div id="comb-resumen" class="grid grid-cols-2 gap-2 text-center"></div>
                 </div>
                 <div id="reg-msg" class="text-dash-cyan text-sm mt-2 text-center hidden">✓ Registro guardado</div>
             </div>
@@ -419,9 +421,9 @@
     </div>
 
     <!-- ==================== PÁGINA: AJUSTES ==================== -->
-    <div id="page-ajustes" class="hidden col-span-10 cyber-panel p-2 h-full">
-        <div class="grid grid-cols-3 gap-2 h-full">
-            <div class="cyber-panel p-2 flex flex-col">
+    <div id="page-ajustes" class="hidden col-span-10 cyber-panel p-2 h-full overflow-hidden">
+        <div class="grid grid-cols-3 gap-2 h-full min-h-0">
+            <div class="cyber-panel p-2 flex flex-col overflow-y-auto min-h-0">
                 <h2 class="font-orbitron font-bold text-white text-sm tracking-wider mb-3 pb-1.5 border-b border-dash-border">HERMES AGENT</h2>
                 <label class="block text-sm text-dash-muted mb-1">URL base
                     <input id="h-url" placeholder="https://…:8642/v1" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
@@ -441,16 +443,22 @@
                 </div>
                 <div id="h-stat" class="text-dash-muted text-sm mt-2">No configurado</div>
             </div>
-            <div class="cyber-panel p-2 flex flex-col">
+            <div class="cyber-panel p-2 flex flex-col overflow-y-auto min-h-0">
                 <h2 class="font-orbitron font-bold text-white text-sm tracking-wider mb-3 pb-1.5 border-b border-dash-border">OBD-II (ELM327)</h2>
                 <label class="block text-sm text-dash-muted mb-1">Fuente de datos
                     <select id="o-mode" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
-                        <option value="bridge">Adaptador ELM327 (bridge.py)</option>
+                        <option value="bt" class="native-only">Adaptador Bluetooth (app)</option>
+                        <option value="bridge">Adaptador ELM327 Wi-Fi (bridge.py)</option>
                         <option value="sim">Simulación (demo)</option>
                         <option value="off">Desactivado</option>
                     </select>
                 </label>
-                <label class="block text-sm text-dash-muted mb-1">URL del puente
+                <div id="o-bt" class="hidden mb-2">
+                    <div class="text-sm text-dash-muted">Adaptador: <b id="o-dev" class="text-white">ninguno</b></div>
+                    <button onclick="scanBt()" class="w-full mt-1 py-2.5 border border-dash-cyan/60 text-dash-cyan font-bold text-sm rounded-lg hover:bg-dash-cyan/10">🔍 BUSCAR ADAPTADORES</button>
+                    <div id="o-devs" class="mt-1 space-y-1 max-h-40 overflow-y-auto"></div>
+                </div>
+                <label id="o-url-box" class="block text-sm text-dash-muted mb-1">URL del puente
                     <input id="o-url" placeholder="/obd" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
                 </label>
                 <label class="block text-sm text-dash-muted mb-1">Capacidad del tanque (L)
@@ -465,9 +473,9 @@
                 <button onclick="saveObd()" class="w-full mt-2 py-3 bg-dash-cyan/10 hover:bg-dash-cyan/20 border border-dash-cyan/60 text-dash-cyan font-bold text-sm rounded-lg">GUARDAR</button>
                 <div id="o-stat" class="text-dash-cyan text-sm mt-2"></div>
                 <div id="o-live" class="text-dash-muted text-sm mt-1"></div>
-                <p class="text-xs text-dash-muted mt-2 leading-relaxed">Conecta la radio a la red Wi-Fi del adaptador ELM327 y arranca el dashboard con <b class="text-white">bash setup.sh</b>. La capacidad del tanque y el consumo de referencia se usan para predecir la autonomía hasta que haya 2 cargas registradas (entonces se usa el consumo real). Verifica el tanque en el manual del vehículo.</p>
+                <p class="text-xs text-dash-muted mt-2 leading-relaxed"><span class="native-only-txt">En la app: elige «Adaptador Bluetooth», pulsa <b class="text-white">Buscar adaptadores</b> y toca el tuyo (si pide PIN, suele ser 1234).</span><span class="web-only-txt">En el navegador: conecta la radio a la red Wi-Fi del adaptador ELM327 y arranca el dashboard con <b class="text-white">bash setup.sh</b>.</span> La capacidad del tanque y el consumo de referencia se usan para predecir la autonomía hasta que haya 2 cargas registradas (entonces se usa el consumo real). Verifica el tanque en el manual del vehículo.</p>
             </div>
-            <div class="cyber-panel p-2">
+            <div class="cyber-panel p-2 overflow-y-auto min-h-0">
                 <h2 class="font-orbitron font-bold text-white text-sm tracking-wider mb-3 pb-1.5 border-b border-dash-border">INFORMACIÓN</h2>
                 <div class="text-sm text-dash-muted space-y-2.5 leading-relaxed">
                     <p>🔌 Conecta este dashboard con Hermes Agent para respuestas de J.A.R.V.I.S. reales.</p>
@@ -668,7 +676,7 @@
         </div>
 
         <div class="flex items-center gap-3">
-            <span class="font-mono text-[9px]">v2.2.0</span>
+            <span id="app-ver" class="font-mono text-[9px]">v2.3.0</span>
             <div class="flex items-center gap-1">
                 <span class="font-orbitron font-bold text-white text-[9px]">MACHINE</span>
                 <span class="text-[8px] text-dash-cyan font-bold">OUTDOORS</span>
@@ -783,7 +791,9 @@
             ['t-throttle', 'throttle', '%'], ['t-econ', 'econ', ' km/L'], ['t-stft', 'stft', '%'],
             ['t-ltft', 'ltft', '%'], ['t-boost', 'boost', ' bar'], ['t-vmax', 'vmax', ' km/h']
         ];
-        function obdCfg() { return Object.assign({ mode: 'bridge', url: '/obd', tank: 70, ref: 8, oil: 5000 }, lsGet(OBD_KEY, {})); }
+        // App Android (APK): el OBD se lee por Bluetooth desde Java (window.GLNative)
+        const NATIVE = !!window.GLNative;
+        function obdCfg() { return Object.assign({ mode: NATIVE ? 'bt' : 'bridge', url: '/obd', tank: 70, ref: 8, oil: 5000, btAddr: null, btName: null, btKind: 'auto' }, lsGet(OBD_KEY, {})); }
 
         function applyObdii(data) {
             if (!data) return;
@@ -818,7 +828,13 @@
             const c = obdCfg();
             S.obd = { mode: c.mode, connected: false, ecu: false, error: null, data: {}, dtc: null, ts: 0, shown: false };
             clearObdFields();
-            if (c.mode === 'bridge') { pollObd(); obdTimer = setInterval(pollObd, 1000); }
+            if (NATIVE) { try { GLNative.obdStop(); } catch (e) {} }
+            if (c.mode === 'bt') {
+                if (!NATIVE) { S.obd.error = 'Bluetooth solo funciona en la app (APK)'; }
+                else if (!c.btAddr) { S.obd.error = 'Elige el adaptador en Ajustes → Buscar adaptadores'; }
+                else { GLNative.obdStart(c.btAddr, c.btKind || 'auto'); pollObd(); obdTimer = setInterval(pollObd, 1000); }
+            }
+            else if (c.mode === 'bridge') { pollObd(); obdTimer = setInterval(pollObd, 1000); }
             else if (c.mode === 'sim') { sim.reset(); obdTimer = setInterval(sim.tick, 500); sim.tick(); }
             refreshStatus();
         }
@@ -827,9 +843,13 @@
             obdBusy = true;
             const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 3000);
             try {
-                const r = await fetch(obdCfg().url || '/obd', { cache: 'no-store', signal: ctl.signal });
-                if (!r.ok) throw new Error(r.status === 404 ? 'Puente no encontrado (inicia con bridge.py)' : 'HTTP ' + r.status);
-                const j = await r.json();
+                let j;
+                if (NATIVE && S.obd.mode === 'bt') j = JSON.parse(GLNative.obdSnapshot());
+                else {
+                    const r = await fetch(obdCfg().url || '/obd', { cache: 'no-store', signal: ctl.signal });
+                    if (!r.ok) throw new Error(r.status === 404 ? 'Puente no encontrado (inicia con bridge.py)' : 'HTTP ' + r.status);
+                    j = await r.json();
+                }
                 S.obd.connected = !!j.connected; S.obd.ecu = !!j.ecu; S.obd.error = j.error || null;
                 S.obd.dtc = Array.isArray(j.dtc) ? j.dtc : S.obd.dtc;
                 if (j.connected && j.ecu && j.data) applyObdii(j.data);
@@ -872,14 +892,46 @@
         // Ajustes OBD
         function loadObdForm() {
             const c = obdCfg();
-            $('o-mode').value = c.mode; $('o-url').value = c.url; $('o-tank').value = c.tank || ''; $('o-ref').value = c.ref || ''; $('o-oil').value = c.oil || '';
+            if (!NATIVE) document.querySelectorAll('.native-only').forEach(o => o.remove());
+            if (!NATIVE && c.mode === 'bt') c.mode = 'bridge';
+            $('o-mode').value = c.mode; $('o-url').value = c.url;
+            $('o-dev').textContent = c.btName ? c.btName + ' (' + c.btAddr + ')' : 'ninguno';
+            $('o-mode').onchange = updObdForm; updObdForm(); $('o-tank').value = c.tank || ''; $('o-ref').value = c.ref || ''; $('o-oil').value = c.oil || '';
         }
         function saveObd() {
             const tank = num($('o-tank').value), ref = num($('o-ref').value), oil = num($('o-oil').value);
-            lsSet(OBD_KEY, { mode: $('o-mode').value, url: $('o-url').value.trim() || '/obd', tank: tank && tank > 0 ? tank : null, ref: ref && ref > 0 ? ref : null, oil: oil && oil > 0 ? oil : null });
+            const prev = obdCfg();
+            lsSet(OBD_KEY, { mode: $('o-mode').value, url: $('o-url').value.trim() || '/obd', tank: tank && tank > 0 ? tank : null, ref: ref && ref > 0 ? ref : null, oil: oil && oil > 0 ? oil : null,
+                btAddr: prev.btAddr, btName: prev.btName, btKind: prev.btKind });
             $('o-stat').textContent = '✓ Guardado';
             startObd();
         }
+
+        function updObdForm() {
+            const m = $('o-mode').value;
+            $('o-bt').classList.toggle('hidden', m !== 'bt');
+            $('o-url-box').classList.toggle('hidden', m !== 'bridge');
+        }
+        // Búsqueda de adaptadores Bluetooth (la app responde llamando a window.onNativeDevices)
+        function scanBt() {
+            if (!NATIVE) return;
+            $('o-devs').innerHTML = '<div class="text-sm text-dash-muted">Buscando… (deja el adaptador conectado al vehículo con el contacto encendido)</div>';
+            GLNative.scanDevices();
+        }
+        window.onNativeDevices = function (list, done) {
+            const box = $('o-devs');
+            if (!list || !list.length) { box.innerHTML = '<div class="text-sm text-dash-muted">' + (done ? 'No se encontró ningún adaptador. ¿Está conectado al vehículo y con el contacto encendido?' : 'Buscando…') + '</div>'; return; }
+            box.innerHTML = list.map((d, i) => '<button data-i="' + i + '" class="bt-dev w-full text-left px-3 py-2 rounded-lg border border-dash-border hover:border-dash-cyan text-sm">' +
+                '<b class="text-white">' + esc(d.name || 'Sin nombre') + '</b> <span class="text-dash-muted">' + esc(d.address) + ' · ' + esc(d.kind === 'ble' ? 'BLE' : d.kind === 'classic' ? 'Clásico' : 'Doble') + (d.bonded ? ' · emparejado' : '') + '</span></button>').join('') +
+                (done ? '' : '<div class="text-xs text-dash-muted">Buscando más…</div>');
+            box.querySelectorAll('.bt-dev').forEach(b => b.onclick = () => {
+                const d = list[+b.dataset.i], c = obdCfg();
+                lsSet(OBD_KEY, Object.assign(c, { mode: 'bt', btAddr: d.address, btName: d.name || d.address, btKind: d.kind === 'ble' ? 'ble' : d.kind === 'classic' ? 'classic' : 'auto' }));
+                $('o-mode').value = 'bt'; updObdForm(); $('o-dev').textContent = (d.name || d.address) + ' (' + d.address + ')';
+                box.innerHTML = '<div class="text-sm text-dash-green">✓ Adaptador elegido. Conectando…</div>';
+                startObd();
+            });
+        };
 
         // ==========================================
         // ESTADO DEL SISTEMA (encabezado, pie, diagnóstico)
@@ -963,7 +1015,7 @@
             let obdTxt, obdSub = o.error || '';
             if (o.mode === 'off') { obdTxt = 'Desactivado'; obdSub = 'Actívalo en Ajustes'; }
             else if (demo) { obdTxt = 'Demo'; obdSub = 'Datos simulados, no reales'; }
-            else if (of) { obdTxt = 'Conectado'; obdSub = 'ELM327 · ECU respondiendo'; }
+            else if (of) { obdTxt = 'Conectado'; obdSub = (o.mode === 'bt' ? 'Bluetooth' : 'ELM327 Wi-Fi') + ' · ECU respondiendo'; }
             else if (o.connected) obdTxt = 'Sin ECU';
             else obdTxt = 'No conectado';
             $('d-obd').textContent = obdTxt; setTone($('d-obd'), of ? (demo ? 'amber' : 'green') : 'muted');
@@ -1148,9 +1200,27 @@
         // REGISTRO DE MANTENIMIENTOS Y COMBUSTIBLE
         // ==========================================
         const REGS_KEY = 'moRegistroV1';
+        const GAL = 3.78541; // litros por galón
         let regTab = 'mantenimiento';
         const readReg = () => lsGet(REGS_KEY, []);
         const saveReg = (l) => lsSet(REGS_KEY, l);
+        const readCargas = () => lsGet('cargas', []);
+        const money = (v) => '$' + (+v || 0).toFixed(2);
+        const mantTipos = (r) => Array.isArray(r.subtipos) && r.subtipos.length ? r.subtipos : (r.subtipo ? [r.subtipo] : []);
+        // Migración: las cargas que antes se guardaban en Registro (galones) pasan al registro único de cargas
+        (function migrarCombustible() {
+            const l = readReg(), viejas = l.filter(r => r.tipo === 'combustible');
+            if (!viejas.length) return;
+            const cg = readCargas();
+            viejas.forEach(r => {
+                const gal = num(r.galones) || 0, pg = num(r.precio) || 0;
+                cg.push({ fecha: r.fecha, cantidad: +(gal * GAL).toFixed(2), unidad: 'gal', cantUnidad: gal, precio: pg, total: +(gal * pg).toFixed(2),
+                    odo: num(r.km) || 0, tipo: 'DIESEL', estacion: r.estacion || '', lleno: false, ts: r.id || Date.now() });
+            });
+            cg.sort((a, b) => (a.fecha || '').localeCompare(b.fecha || '') || a.ts - b.ts);
+            lsSet('cargas', cg);
+            saveReg(l.filter(r => r.tipo !== 'combustible'));
+        })();
         const TAB_ON = 'px-4 py-2.5 bg-dash-cyan/20 border border-dash-cyan text-dash-cyan font-bold rounded-lg text-sm';
         const TAB_OFF = 'px-4 py-2.5 text-dash-muted border border-dash-border font-bold rounded-lg text-sm';
         function setRegTab(t) {
@@ -1161,35 +1231,67 @@
             $('reg-form-comb').classList.toggle('hidden', t !== 'combustible');
             renderReg();
         }
+        const DEL_BTN = (fn, id) => '<button onclick="' + fn + '(' + id + ')" class="w-10 h-10 shrink-0 rounded-lg border border-dash-border text-dash-muted hover:text-dash-amber hover:border-dash-amber text-lg" title="Borrar">🗑</button>';
         function renderReg() {
-            const box = $('reg-list');
-            const l = readReg().filter(r => r.tipo === regTab);
-            if (!l.length) { box.innerHTML = '<div class="text-dash-muted text-center py-6 border border-dashed border-dash-border rounded">' + (regTab === 'mantenimiento' ? 'Sin mantenimientos todavía' : 'Sin cargas de combustible todavía') + '</div>'; return; }
-            box.innerHTML = l.map(r => {
-                const ico = r.tipo === 'mantenimiento' ? '🔧' : '⛽';
-                const t = r.tipo === 'mantenimiento' ? r.subtipo : (r.estacion || 'Combustible');
-                const s = r.tipo === 'mantenimiento' ? (r.nota || '') : (r.galones + ' gal · $' + (r.precio || '--') + '/gal');
-                return '<div class="flex items-center gap-3 bg-dash-panel border border-dash-border rounded-lg p-2.5">' +
-                    '<span class="text-xl">' + ico + '</span>' +
-                    '<div class="flex-1"><div class="font-bold text-white">' + esc(t) + '</div>' +
-                    '<div class="text-dash-muted text-xs">' + (r.km ? esc(r.km) + ' km · ' : '') + esc(s) + '</div></div>' +
-                    '<span class="text-dash-cyan text-xs">' + esc(r.fecha) + '</span></div>';
-            }).join('');
+            const box = $('reg-list'), empty = (t) => '<div class="text-dash-muted text-center py-6 border border-dashed border-dash-border rounded">' + t + '</div>';
+            if (regTab === 'mantenimiento') {
+                const l = readReg().filter(r => r.tipo === 'mantenimiento');
+                const total = l.reduce((s, r) => s + (num(r.costo) || 0), 0);
+                $('reg-total').innerHTML = l.length ? l.length + ' mantenimientos · gastado <b class="text-white">' + money(total) + '</b>' : '';
+                box.innerHTML = l.length ? l.map(r => '<div class="flex items-center gap-3 bg-dash-panel border border-dash-border rounded-lg p-2.5">' +
+                    '<span class="text-xl">🔧</span>' +
+                    '<div class="flex-1 min-w-0"><div class="font-bold text-white">' + esc(mantTipos(r).join(' + ')) + '</div>' +
+                    '<div class="text-dash-muted text-xs">' + [r.km ? fmtKm(num(r.km)) + ' km' : '', r.nota || ''].filter(Boolean).map(esc).join(' · ') + '</div></div>' +
+                    '<div class="text-right shrink-0">' + (num(r.costo) ? '<div class="font-orbitron font-bold text-white">' + money(r.costo) + '</div>' : '') +
+                    '<div class="text-dash-cyan text-xs">' + esc(r.fecha) + '</div></div>' + DEL_BTN('borrarMant', r.id) + '</div>').join('')
+                    : empty('Sin mantenimientos todavía');
+            } else {
+                const cg = readCargas().slice().reverse();
+                const total = cg.reduce((s, c) => s + (num(c.total) || 0), 0);
+                $('reg-total').innerHTML = cg.length ? cg.length + ' cargas · gastado <b class="text-white">' + money(total) + '</b>' : '';
+                box.innerHTML = cg.length ? cg.map(c => {
+                    const q = c.unidad === 'gal' ? (+c.cantUnidad || c.cantidad / GAL).toFixed(2) + ' gal' : (+c.cantidad).toFixed(2) + ' L';
+                    const pu = c.precio ? ' · ' + money(c.precio) + '/' + (c.unidad === 'gal' ? 'gal' : 'L') : '';
+                    return '<div class="flex items-center gap-3 bg-dash-panel border border-dash-border rounded-lg p-2.5">' +
+                        '<span class="text-xl">⛽</span>' +
+                        '<div class="flex-1 min-w-0"><div class="font-bold text-white">' + esc(c.estacion || c.tipo || 'Combustible') + ' · ' + q + (c.lleno ? ' · lleno' : '') + '</div>' +
+                        '<div class="text-dash-muted text-xs">' + (c.odo ? fmtKm(c.odo) + ' km' : 'sin odómetro') + esc(pu) + '</div></div>' +
+                        '<div class="text-right shrink-0">' + (num(c.total) ? '<div class="font-orbitron font-bold text-white">' + money(c.total) + '</div>' : '') +
+                        '<div class="text-dash-cyan text-xs">' + esc(c.fecha) + '</div></div>' + DEL_BTN('borrarCarga', c.ts) + '</div>';
+                }).join('') : empty('Sin cargas de combustible todavía');
+                const { avg } = fuelStats();
+                $('comb-resumen').innerHTML = [['Cargas', cg.length], ['Gastado', money(total)],
+                    ['Consumo', avg ? avg.toFixed(1) + ' km/L' : '--'], ['Consumo', avg ? (avg * GAL).toFixed(1) + ' km/gal' : '--']]
+                    .map(([k, v]) => '<div class="bg-dash-panel border border-dash-border rounded-lg p-2"><div class="text-xs text-dash-muted">' + k + '</div><div class="font-orbitron font-bold text-white text-lg">' + v + '</div></div>').join('');
+            }
         }
-        function regMsg(t) { const m = $('reg-msg'); m.textContent = t; m.classList.remove('hidden'); setTimeout(() => m.classList.add('hidden'), 1800); }
-        function addReg(e) { const l = readReg(); l.unshift({ ...e, id: Date.now() }); saveReg(l); renderReg(); refreshOdo(); regMsg('✓ Registro guardado'); }
+        function regMsg(t) { const m = $('reg-msg'); m.textContent = t; m.classList.remove('hidden'); setTimeout(() => m.classList.add('hidden'), 2200); }
         function saveMant() {
             const f = $('reg-fecha').value;
+            const tipos = [...document.querySelectorAll('#reg-tipos input:checked')].map(i => i.value);
+            if (!tipos.length) return regMsg('⚠️ Marca al menos un trabajo realizado');
             if (!f) return regMsg('⚠️ Indica la fecha');
-            addReg({ tipo: 'mantenimiento', subtipo: $('reg-tipo').value, fecha: f, km: $('reg-km').value, nota: $('reg-nota').value.trim() });
-            $('reg-fecha').value = ''; $('reg-km').value = ''; $('reg-nota').value = '';
+            const costo = num($('reg-costo').value);
+            const l = readReg();
+            l.unshift({ tipo: 'mantenimiento', subtipos: tipos, fecha: f, km: $('reg-km').value, costo: costo !== null && costo >= 0 ? costo : null, nota: $('reg-nota').value.trim(), id: Date.now() });
+            saveReg(l);
+            ['reg-fecha', 'reg-km', 'reg-costo', 'reg-nota'].forEach(id => $(id).value = '');
+            document.querySelectorAll('#reg-tipos input').forEach(i => { i.checked = false; i.closest('.mt-chip').classList.remove('border-dash-cyan', 'bg-dash-cyan/10'); });
+            renderReg(); refreshOdo(); regMsg('✓ Mantenimiento guardado');
         }
-        function saveComb() {
-            const f = $('reg-fecha2').value;
-            if (!f) return regMsg('⚠️ Indica la fecha');
-            addReg({ tipo: 'combustible', estacion: $('reg-est').value.trim(), fecha: f, galones: $('reg-gal').value, precio: $('reg-precio').value, km: $('reg-km2').value });
-            ['reg-est', 'reg-fecha2', 'reg-gal', 'reg-precio', 'reg-km2'].forEach(id => $(id).value = '');
+        function borrarMant(id) {
+            if (!confirm('¿Borrar este mantenimiento?')) return;
+            saveReg(readReg().filter(r => r.id !== id)); renderReg(); refreshOdo();
         }
+        function borrarCarga(ts) {
+            if (!confirm('¿Borrar esta carga de combustible?')) return;
+            lsSet('cargas', readCargas().filter(c => c.ts !== ts)); renderReg(); refreshOdo(); recalcAutonomia();
+        }
+        // Resaltar las casillas marcadas
+        document.addEventListener('change', (e) => {
+            const chip = e.target.closest && e.target.closest('.mt-chip');
+            if (chip) { chip.classList.toggle('border-dash-cyan', e.target.checked); chip.classList.toggle('bg-dash-cyan/10', e.target.checked); }
+        });
 
         // Kilometraje: odómetro OBD si existe; si no, el último registrado a mano
         function lastKnownOdo() {
@@ -1214,7 +1316,7 @@
         // Próximo cambio de aceite: último registro "Cambio de aceite" + intervalo de Ajustes
         function maintStatus() {
             const every = num(obdCfg().oil) || 5000;
-            const oil = readReg().filter(r => r.tipo === 'mantenimiento' && r.subtipo === 'Cambio de aceite' && num(r.km) > 0)
+            const oil = readReg().filter(r => r.tipo === 'mantenimiento' && mantTipos(r).includes('Cambio de aceite') && num(r.km) > 0)
                 .sort((a, b) => num(b.km) - num(a.km))[0];
             if (!oil) return null;
             const now = estOdo().v;
@@ -1311,39 +1413,54 @@
             dot.setAttribute('cx', pts[n - 1][0]); dot.setAttribute('cy', pts[n - 1][1]);
         }
 
-        // Modal "Registrar carga"
+        // Modal "Registrar carga" (registro único de combustible; se guarda en litros)
+        function updUnidad() {
+            const u = $('c-unidad').value === 'gal' ? 'gal' : 'L';
+            $('c-cant-lbl').textContent = 'Cantidad (' + u + ')';
+            $('c-precio-lbl').textContent = 'Precio (USD/' + u + ')';
+            try { localStorage.setItem('moUnidad', $('c-unidad').value); } catch (e) {}
+        }
         function openCargaModal() {
             $('carga-modal').classList.remove('hidden'); $('carga-modal').classList.add('flex');
             if (!$('c-fecha').value) $('c-fecha').value = new Date().toISOString().slice(0, 10);
+            try { const u = localStorage.getItem('moUnidad'); if (u) $('c-unidad').value = u; } catch (e) {}
+            updUnidad();
+            const o = estOdo().v; if (!$('c-odo').value && o) $('c-odo').placeholder = 'Ej. ' + Math.round(o);
             $('c-msg').textContent = '';
         }
         function closeCargaModal() { $('carga-modal').classList.add('hidden'); $('carga-modal').classList.remove('flex'); }
         function guardarCarga() {
-            const cantidad = parseFloat($('c-cantidad').value) || 0;
-            const precio = parseFloat($('c-precio').value) || 0;
+            const unidad = $('c-unidad').value === 'gal' ? 'gal' : 'L';
+            const cantUnidad = parseFloat($('c-cantidad').value) || 0;
+            const precio = parseFloat($('c-precio').value) || 0;      // por unidad elegida
             let total = parseFloat($('c-total').value) || 0;
             const odo = parseFloat($('c-odo').value) || 0;
             const fecha = $('c-fecha').value;
-            if (!fecha || cantidad <= 0) { $('c-msg').textContent = '⚠️ Indica la fecha y la cantidad de litros.'; return; }
-            if (!total && precio) total = +(cantidad * precio).toFixed(2);
+            if (!fecha || cantUnidad <= 0) { $('c-msg').textContent = '⚠️ Indica la fecha y la cantidad.'; return; }
+            if (!total && precio) total = +(cantUnidad * precio).toFixed(2);
+            const cantidad = +(unidad === 'gal' ? cantUnidad * GAL : cantUnidad).toFixed(2); // litros
             const lleno = $('c-lleno').checked, tank = num(obdCfg().tank);
             // Litros en el tanque después de cargar: lleno = capacidad; si no, lo que quedaba + lo cargado
             const before = num($('a-fuel').textContent);
             let litrosTras = lleno && tank ? tank : (before !== null ? before + cantidad : cantidad);
             if (tank) litrosTras = Math.min(tank, litrosTras);
-            const cargas = lsGet('cargas', []);
-            cargas.push({ fecha, cantidad, precio, total, odo, tipo: $('c-tipo').value || 'DIESEL', lleno, litrosTras, ts: Date.now() });
+            const cargas = readCargas();
+            cargas.push({ fecha, cantidad, unidad, cantUnidad, precio, total, odo, tipo: $('c-tipo').value || 'DIESEL',
+                estacion: $('c-est').value.trim(), lleno, litrosTras, ts: Date.now() });
             lsSet('cargas', cargas);
             kmSinceFill = 0; lsSet(KMF_KEY, 0);
-            ['c-cantidad', 'c-precio', 'c-total', 'c-odo'].forEach(id => $(id).value = '');
+            ['c-cantidad', 'c-precio', 'c-total', 'c-odo', 'c-est'].forEach(id => $(id).value = '');
             refreshOdo();
             recalcAutonomia();
+            renderReg();
             closeCargaModal();
         }
 
         // ==========================================
         // ARRANQUE
         // ==========================================
+        document.querySelectorAll(NATIVE ? '.web-only-txt' : '.native-only-txt').forEach(e => e.remove());
+        if (NATIVE) { try { $('app-ver').textContent = 'v2.3.0 · app ' + GLNative.version(); } catch (e) {} }
         renderReg();
         loadObdForm();
         startObd();
@@ -1365,11 +1482,22 @@
                     <input id="c-fecha" type="date" class="w-full bg-dash-border/40 border border-dash-border rounded px-3 py-2.5 text-base text-white font-mono outline-none focus:border-dash-cyan" />
                 </div>
                 <div>
-                    <label class="text-dash-muted font-bold uppercase block mb-1">Cantidad (L)</label>
+                    <label class="text-dash-muted font-bold uppercase block mb-1">Unidad</label>
+                    <select id="c-unidad" onchange="updUnidad()" class="w-full bg-dash-border/40 border border-dash-border rounded px-3 py-2.5 text-base text-white font-mono outline-none focus:border-dash-cyan">
+                        <option value="gal">GALONES</option>
+                        <option value="L">LITROS</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-dash-muted font-bold uppercase block mb-1">Estación (opcional)</label>
+                    <input id="c-est" type="text" placeholder="Ej. Primax" class="w-full bg-dash-border/40 border border-dash-border rounded px-3 py-2.5 text-base text-white outline-none focus:border-dash-cyan" />
+                </div>
+                <div>
+                    <label id="c-cant-lbl" class="text-dash-muted font-bold uppercase block mb-1">Cantidad (gal)</label>
                     <input id="c-cantidad" type="number" step="0.01" min="0" placeholder="0.00" class="w-full bg-dash-border/40 border border-dash-border rounded px-3 py-2.5 text-base text-white font-mono outline-none focus:border-dash-cyan" />
                 </div>
                 <div>
-                    <label class="text-dash-muted font-bold uppercase block mb-1">Precio (USD/L)</label>
+                    <label id="c-precio-lbl" class="text-dash-muted font-bold uppercase block mb-1">Precio (USD/gal)</label>
                     <input id="c-precio" type="number" step="0.0001" min="0" placeholder="0.0000" class="w-full bg-dash-border/40 border border-dash-border rounded px-3 py-2.5 text-base text-white font-mono outline-none focus:border-dash-cyan" />
                 </div>
                 <div>
