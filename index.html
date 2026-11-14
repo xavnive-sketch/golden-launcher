@@ -114,7 +114,7 @@
     <!-- ==================== PANTALLA DE INICIO (logo) ==================== -->
     <div id="splash" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-dash-bg" style="transition:opacity .7s ease">
         <div class="splash-glow absolute w-[520px] h-[520px] rounded-full" style="background:radial-gradient(circle,rgba(245,183,0,.16),rgba(0,240,255,.06) 45%,transparent 70%)"></div>
-        <img src="assets/logo.png" alt="Golden Dragon" class="splash-logo relative max-h-56 max-w-[55%] object-contain" onerror="this.nextElementSibling.classList.remove('hidden'); this.remove()">
+        <img src="assets/logo.png" alt="Golden Dragon" class="splash-logo relative max-h-60 max-w-[55%] object-contain" style="filter:drop-shadow(0 0 18px rgba(0,240,255,.35))" onerror="this.nextElementSibling.classList.remove('hidden'); this.remove()">
         <div class="splash-logo hidden relative font-orbitron font-black text-6xl tracking-[0.18em]" style="color:#f5b700;text-shadow:0 0 24px rgba(245,183,0,.5)">GOLDEN DRAGON</div>
         <div class="relative font-orbitron font-bold text-dash-cyan text-xl tracking-[0.5em] mt-4">XML6609</div>
         <div class="relative text-dash-muted text-sm tracking-widest mt-1">TRANSPORTE ESCOLAR</div>
@@ -229,10 +229,9 @@
             <!-- Bus Blueprint Outline Card -->
             <div class="p-2 bg-dash-panel/80 border border-dash-border rounded-lg text-center">
                 <!-- Logo de la marca: se carga de assets/logo.png; si no existe, se muestra el texto -->
-                <img src="assets/logo.png" alt="Golden Dragon" class="brand-logo h-14 w-full object-contain mx-auto mb-1" onerror="this.nextElementSibling.classList.remove('hidden'); this.remove()">
+                <img src="assets/logo.png" alt="Golden Dragon" class="brand-logo h-16 w-full object-contain mx-auto mb-1.5" style="filter:drop-shadow(0 0 6px rgba(0,240,255,.3))" onerror="this.nextElementSibling.classList.remove('hidden'); this.remove()">
                 <div class="hidden font-orbitron font-black text-sm tracking-widest leading-tight mb-1" style="color:#f5b700;text-shadow:0 0 10px rgba(245,183,0,.45)">GOLDEN<br>DRAGON</div>
-                <div class="font-orbitron font-bold text-white text-[11px] leading-tight">Golden Dragon</div>
-                <div class="text-dash-cyan font-bold text-[10px]">XML6609</div>
+                <div class="text-dash-cyan font-bold text-[11px] font-orbitron">XML6609</div>
                 <div class="text-dash-muted text-[9px]">18 pasajeros</div>
                 <div class="text-[8px] text-dash-muted italic mt-1 border-t border-dash-border/50 pt-1">
                     Tu seguridad, nuestro destino
