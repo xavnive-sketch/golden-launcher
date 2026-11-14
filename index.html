@@ -99,9 +99,27 @@
         }
         body.night-mode #btn-night { filter: none; background: #241b0b; border-color: #8a6b2b; color: #ffcf72; }
         body.night-mode { background-color: #000308 !important; }
+
+        /* Pantalla de inicio */
+        @keyframes splash-in { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: scale(1); } }
+        @keyframes splash-bar { from { width: 0; } to { width: 100%; } }
+        @keyframes splash-pulse { 0%, 100% { opacity: .55; transform: scale(.95); } 50% { opacity: 1; transform: scale(1.05); } }
+        .splash-logo { animation: splash-in 1s ease-out both; }
+        .splash-bar { animation: splash-bar 2.4s ease-in-out forwards; }
+        .splash-glow { animation: splash-pulse 2.6s ease-in-out infinite; }
     </style>
 </head>
 <body class="flex flex-col justify-between p-2 text-xs select-none">
+
+    <!-- ==================== PANTALLA DE INICIO (logo) ==================== -->
+    <div id="splash" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-dash-bg" style="transition:opacity .7s ease">
+        <div class="splash-glow absolute w-[520px] h-[520px] rounded-full" style="background:radial-gradient(circle,rgba(245,183,0,.16),rgba(0,240,255,.06) 45%,transparent 70%)"></div>
+        <img src="assets/logo.png" alt="Golden Dragon" class="splash-logo relative max-h-56 max-w-[55%] object-contain" onerror="this.nextElementSibling.classList.remove('hidden'); this.remove()">
+        <div class="splash-logo hidden relative font-orbitron font-black text-6xl tracking-[0.18em]" style="color:#f5b700;text-shadow:0 0 24px rgba(245,183,0,.5)">GOLDEN DRAGON</div>
+        <div class="relative font-orbitron font-bold text-dash-cyan text-xl tracking-[0.5em] mt-4">XML6609</div>
+        <div class="relative text-dash-muted text-sm tracking-widest mt-1">TRANSPORTE ESCOLAR</div>
+        <div class="relative w-72 h-1 bg-dash-border/60 rounded-full mt-10 overflow-hidden"><div class="splash-bar h-full bg-dash-cyan rounded-full"></div></div>
+    </div>
 
     <!-- ==================== 1. TOP HEADER BAR ==================== -->
     <header class="cyber-panel px-3 py-2 flex items-center justify-between gap-2 h-[52px]">
@@ -210,17 +228,9 @@
 
             <!-- Bus Blueprint Outline Card -->
             <div class="p-2 bg-dash-panel/80 border border-dash-border rounded-lg text-center">
-                <svg class="w-full h-12 text-dash-cyan mx-auto opacity-80" viewBox="0 0 160 70" fill="none" stroke="currentColor" stroke-width="1.2">
-                    <rect x="10" y="15" width="140" height="35" rx="6" fill="#010610" stroke="#00f0ff" />
-                    <line x1="20" y1="20" x2="140" y2="20" stroke="#00f0ff" stroke-dasharray="2 2"/>
-                    <line x1="30" y1="20" x2="30" y2="38" stroke="#00f0ff"/>
-                    <line x1="50" y1="20" x2="50" y2="38" stroke="#00f0ff"/>
-                    <line x1="70" y1="20" x2="70" y2="38" stroke="#00f0ff"/>
-                    <line x1="90" y1="20" x2="90" y2="38" stroke="#00f0ff"/>
-                    <line x1="110" y1="20" x2="110" y2="38" stroke="#00f0ff"/>
-                    <circle cx="35" cy="50" r="6" fill="#010610" stroke="#00f0ff" stroke-width="2"/>
-                    <circle cx="125" cy="50" r="6" fill="#010610" stroke="#00f0ff" stroke-width="2"/>
-                </svg>
+                <!-- Logo de la marca: se carga de assets/logo.png; si no existe, se muestra el texto -->
+                <img src="assets/logo.png" alt="Golden Dragon" class="brand-logo h-14 w-full object-contain mx-auto mb-1" onerror="this.nextElementSibling.classList.remove('hidden'); this.remove()">
+                <div class="hidden font-orbitron font-black text-sm tracking-widest leading-tight mb-1" style="color:#f5b700;text-shadow:0 0 10px rgba(245,183,0,.45)">GOLDEN<br>DRAGON</div>
                 <div class="font-orbitron font-bold text-white text-[11px] leading-tight">Golden Dragon</div>
                 <div class="text-dash-cyan font-bold text-[10px]">XML6609</div>
                 <div class="text-dash-muted text-[9px]">18 pasajeros</div>
@@ -1455,6 +1465,20 @@
             renderReg();
             closeCargaModal();
         }
+
+        // Pantalla de inicio
+        (function () {
+            const t0 = Date.now(); let gone = false;
+            const hide = () => {
+                if (gone) return; gone = true;
+                const sp = $('splash'); if (!sp) return;
+                sp.style.opacity = '0'; setTimeout(() => sp.remove(), 800);
+            };
+            const whenReady = () => setTimeout(hide, Math.max(0, 2500 - (Date.now() - t0)));
+            if (document.readyState === 'complete') whenReady(); else window.addEventListener('load', whenReady);
+            setTimeout(hide, 6000);
+            $('splash').addEventListener('click', hide); // tocar para saltar
+        })();
 
         // ==========================================
         // ARRANQUE
