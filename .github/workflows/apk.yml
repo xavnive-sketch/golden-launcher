@@ -32,6 +32,16 @@ jobs:
       - name: Preparar archivo
         run: cp android/app/build/outputs/apk/release/app-release.apk golden-launcher.apk
 
+      - name: Verificar contenido del APK
+        run: |
+          unzip -l golden-launcher.apk | grep -E 'assets/www/' | awk '{print $1, $4}' | head -40
+          for f in index.html bus3d.js assets/autoline_bus.glb vendor/three.min.js vendor/GLTFLoader.js \
+                   vendor/meshopt_decoder.js vendor/tailwind.css vendor/leaflet.js vendor/lucide.min.js vendor/fonts/fonts.css; do
+            unzip -l golden-launcher.apk "assets/www/$f" > /dev/null || { echo "FALTA assets/www/$f"; exit 1; }
+          done
+          ls -la golden-launcher.apk
+          echo "APK verificado"
+
       - uses: actions/upload-artifact@v4
         with:
           name: golden-launcher-apk
