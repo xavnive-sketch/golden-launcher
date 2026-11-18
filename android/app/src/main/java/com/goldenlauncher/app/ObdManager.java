@@ -28,9 +28,13 @@ class ObdManager {
         double apply(int[] b);
     }
 
-    private static final String[] PIDS = {"0C", "0D", "05", "5C", "0B", "33", "11", "06", "07", "2F", "42", "1F", "A6"};
-    private static final String[] KEYS = {"rpm", "speed", "temp", "oil", "map", "baro", "throttle", "stft", "ltft", "fuel", "volts", "runtime", "odo"};
-    private static final int[] SIZES = {2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 4};
+    // Gasolina y diésel: 04 carga, 0F temp. admisión, 10 MAF, 46 temp. ambiente, 49 pedal del acelerador,
+    // 5E consumo de combustible (L/h) — los diésel suelen enviar estos aunque no envíen 11/06/07.
+    private static final String[] PIDS = {"0C", "0D", "05", "5C", "0B", "33", "11", "06", "07", "2F", "42", "1F", "A6",
+            "04", "0F", "10", "46", "49", "5E"};
+    private static final String[] KEYS = {"rpm", "speed", "temp", "oil", "map", "baro", "throttle", "stft", "ltft", "fuel", "volts", "runtime", "odo",
+            "load", "iat", "maf", "amb", "pedal", "fuel_rate"};
+    private static final int[] SIZES = {2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 4, 1, 1, 2, 1, 1, 2};
     private static final Fn[] FNS = {
             b -> Math.round((b[0] * 256 + b[1]) / 4.0),
             b -> b[0],
@@ -44,9 +48,15 @@ class ObdManager {
             b -> Math.round(b[0] * 100 / 255.0),
             b -> Math.round((b[0] * 256 + b[1]) / 100.0) / 10.0,
             b -> b[0] * 256 + b[1],
-            b -> Math.round((((long) b[0] << 24) | (b[1] << 16) | (b[2] << 8) | b[3]) / 10.0)
+            b -> Math.round((((long) b[0] << 24) | (b[1] << 16) | (b[2] << 8) | b[3]) / 10.0),
+            b -> Math.round(b[0] * 100 / 255.0),
+            b -> b[0] - 40,
+            b -> Math.round((b[0] * 256 + b[1])) / 100.0,
+            b -> b[0] - 40,
+            b -> Math.round(b[0] * 1000 / 255.0) / 10.0,
+            b -> Math.round((b[0] * 256 + b[1]) / 2.0) / 10.0
     };
-    private static final String FAST = "0C0D11";
+    private static final java.util.List<String> FAST = java.util.Arrays.asList("0C", "0D", "11", "49", "04", "5E");
     private static final long DTC_EVERY_MS = 30000;
 
     private final Context ctx;
@@ -198,11 +208,29 @@ class ObdManager {
         JSONObject data = new JSONObject();
         long last = System.currentTimeMillis(), lastDtc = 0;
         int n = 0;
+        // Preguntar al vehículo qué datos envía: así solo se leen esos (más rápido) y el resto se marca N/D
+        java.util.Set<String> sup = elm.supportedPids();
+        if (sup.isEmpty()) {
+            sup = null;
+            log("El vehículo no informó sus PIDs soportados: se probarán todos");
+        } else {
+            StringBuilder have = new StringBuilder();
+            for (int i = 0; i < PIDS.length; i++) if (sup.contains(PIDS[i])) have.append(KEYS[i]).append(' ');
+            log("PIDs soportados: " + sup.size() + " · útiles: " + have.toString().trim());
+        }
+        JSONArray nd = new JSONArray();
+        if (sup != null) {
+            for (int i = 0; i < PIDS.length; i++) if (!sup.contains(PIDS[i])) nd.put(KEYS[i]);
+            if (!sup.contains("11") && sup.contains("49")) nd = remove(nd, "throttle"); // se usa el pedal
+        }
+        boolean adapterVolts = sup != null && !sup.contains("42");
+        if (adapterVolts) nd = remove(nd, "volts");
         while (running) {
             n++;
             for (int i = 0; i < PIDS.length; i++) {
                 String pid = PIDS[i];
                 if (!FAST.contains(pid) && n % 5 != 0) continue;
+                if (sup != null && !sup.contains(pid)) continue;
                 int[] f = fail.get(pid);
                 long nowS = System.currentTimeMillis() / 1000;
                 if (f != null && f[0] >= 3 && nowS - f[1] < 60) continue; // no soportado: reintentar en 1 min
@@ -219,6 +247,17 @@ class ObdManager {
                     } catch (JSONException ignored) {
                     }
                 }
+            }
+            if (adapterVolts && n % 5 == 1) {
+                try {
+                    Double v = elm.batteryVoltage();
+                    if (v != null) data.put("volts", v);
+                } catch (IOException | JSONException ignored) {
+                }
+            }
+            try {
+                if (!data.has("throttle") && data.has("pedal")) data.put("throttle", data.get("pedal"));
+            } catch (JSONException ignored) {
             }
             if (n == 1) {
                 log("✓ Primera lectura del vehículo: " + (data.length() == 0 ? "ningún dato (el vehículo no respondió a los PID)" : data.toString()));
@@ -240,6 +279,7 @@ class ObdManager {
                 out.put("trip", Math.round(tripKm * 10) / 10.0);
                 out.put("trip_time", (long) tripS);
                 out.put("vmax", (long) vmax);
+                out.put("_nd", nd);
                 JSONArray dtc = null;
                 if (now - lastDtc > DTC_EVERY_MS) {
                     lastDtc = now;
@@ -255,6 +295,12 @@ class ObdManager {
             }
             sleep(200);
         }
+    }
+
+    private static JSONArray remove(JSONArray a, String v) {
+        JSONArray r = new JSONArray();
+        for (int i = 0; i < a.length(); i++) if (!v.equals(a.optString(i))) r.put(a.opt(i));
+        return r;
     }
 
     private static void sleep(long ms) {
