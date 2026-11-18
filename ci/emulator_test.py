@@ -116,6 +116,7 @@ def _run_density(dpi, obd_test, info):
     key = str(dpi)
     adb('shell', 'am', 'force-stop', PKG, check=False)
     adb('shell', 'wm', 'density', key)
+    time.sleep(10)  # dejar que el sistema se reacomode tras el cambio de densidad
     adb('logcat', '-c', check=False)
     adb('shell', 'am', 'start', '-n', PKG + '/.MainActivity')
     time.sleep(8)

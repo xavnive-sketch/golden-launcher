@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Golden Dragon XML6609 Dashboard</title>
     <!-- Librerías locales (vendor/) — funcionan sin internet -->
     <link rel="stylesheet" href="vendor/fonts/fonts.css">
@@ -27,7 +27,8 @@
             background-color: #010610;
         }
         body {
-            position: absolute;
+            /* fixed: el lienzo no agranda el área de la página, así el WebView no "aleja" la vista */
+            position: fixed;
             left: 0;
             top: 0;
             width: 1280px;
