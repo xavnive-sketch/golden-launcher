@@ -31,10 +31,10 @@ class ObdManager {
     // Gasolina y diésel: 04 carga, 0F temp. admisión, 10 MAF, 46 temp. ambiente, 49 pedal del acelerador,
     // 5E consumo de combustible (L/h) — los diésel suelen enviar estos aunque no envíen 11/06/07.
     private static final String[] PIDS = {"0C", "0D", "05", "5C", "0B", "33", "11", "06", "07", "2F", "42", "1F", "A6",
-            "04", "0F", "10", "46", "49", "5E"};
+            "04", "0F", "10", "46", "49", "5E", "23", "2C", "31"};
     private static final String[] KEYS = {"rpm", "speed", "temp", "oil", "map", "baro", "throttle", "stft", "ltft", "fuel", "volts", "runtime", "odo",
-            "load", "iat", "maf", "amb", "pedal", "fuel_rate"};
-    private static final int[] SIZES = {2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 4, 1, 1, 2, 1, 1, 2};
+            "load", "iat", "maf", "amb", "pedal", "fuel_rate", "rail", "egr", "dist_clr"};
+    private static final int[] SIZES = {2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 4, 1, 1, 2, 1, 1, 2, 2, 1, 2};
     private static final Fn[] FNS = {
             b -> Math.round((b[0] * 256 + b[1]) / 4.0),
             b -> b[0],
@@ -54,7 +54,10 @@ class ObdManager {
             b -> Math.round((b[0] * 256 + b[1])) / 100.0,
             b -> b[0] - 40,
             b -> Math.round(b[0] * 1000 / 255.0) / 10.0,
-            b -> Math.round((b[0] * 256 + b[1]) / 2.0) / 10.0
+            b -> Math.round((b[0] * 256 + b[1]) / 2.0) / 10.0,
+            b -> Math.round((b[0] * 256 + b[1])) / 10.0,          // 23 presión del riel: x10 kPa -> bar
+            b -> Math.round(b[0] * 1000 / 255.0) / 10.0,          // 2C EGR comandado (%)
+            b -> b[0] * 256 + b[1]                                 // 31 km desde el borrado de códigos
     };
     private static final java.util.List<String> FAST = java.util.Arrays.asList("0C", "0D", "11", "49", "04", "5E");
     private static final long DTC_EVERY_MS = 30000;

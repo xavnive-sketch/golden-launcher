@@ -495,6 +495,12 @@
                 <label id="o-url-box" class="block text-sm text-dash-muted mb-1">URL del puente
                     <input id="o-url" placeholder="/obd" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
                 </label>
+                <label class="block text-sm text-dash-muted mb-1">Combustible del motor
+                    <select id="o-fueltype" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
+                        <option value="DIESEL">Diésel</option>
+                        <option value="GASOLINA">Gasolina</option>
+                    </select>
+                </label>
                 <label class="block text-sm text-dash-muted mb-1">Capacidad del tanque (L)
                     <input id="o-tank" type="number" min="1" placeholder="70" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
                 </label>
@@ -547,8 +553,8 @@
                     <div id="t-temp" class="font-orbitron font-bold text-white text-2xl">--</div>
                 </div>
                 <div class="bg-dash-panel border border-dash-border p-2 rounded flex flex-col items-center justify-center gap-1">
-                    <i data-lucide="flame" class="w-8 h-8 text-dash-cyan"></i>
-                    <div class="text-[11px] text-dash-muted font-bold uppercase">Temp Aceite</div>
+                    <span id="t-top2-icon"><i data-lucide="flame" class="w-8 h-8 text-dash-cyan"></i></span>
+                    <div id="t-top2-label" class="text-[11px] text-dash-muted font-bold uppercase">Temp Aceite</div>
                     <div id="t-oil" class="font-orbitron font-bold text-white text-2xl">--</div>
                 </div>
             </div>
@@ -564,22 +570,10 @@
                 </div>
             </div>
         </div>
-        <div class="grid grid-cols-5 gap-2 mb-2 flex-1">
-            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="gauge" class="w-7 h-7 text-dash-cyan"></i> Presión Múltiple</div><div id="t-map" class="font-orbitron font-bold text-white text-2xl">-- kPa</div></div>
-            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="move-horizontal" class="w-7 h-7 text-dash-cyan"></i> Pos. Acelerador</div><div id="t-throttle" class="font-orbitron font-bold text-white text-2xl">--%</div></div>
-            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="fuel" class="w-7 h-7 text-dash-cyan"></i> Econ. Instantánea</div><div id="t-econ" class="font-orbitron font-bold text-white text-2xl">-- km/L</div></div>
-            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="cpu" class="w-7 h-7 text-dash-cyan"></i> Carga Motor</div><div id="t-load" class="font-orbitron font-bold text-white text-2xl">--%</div></div>
-            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="wind" class="w-7 h-7 text-dash-cyan"></i> Temp. Admisión</div><div id="t-iat" class="font-orbitron font-bold text-white text-2xl">--°C</div></div>
-        </div>
-        <div class="grid grid-cols-5 gap-2 flex-1">
-            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="fuel" class="w-7 h-7 text-dash-cyan"></i> Combustible</div><div id="t-fuel" class="font-orbitron font-bold text-white text-2xl">--%</div><div class="text-[10px] text-dash-muted">Rango: <span id="t-range">--</span> km</div></div>
-            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="wind" class="w-7 h-7 text-dash-cyan"></i> Turbo Boost</div><div id="t-boost" class="font-orbitron font-bold text-white text-2xl">-- kPa</div></div>
-            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="battery-charging" class="w-7 h-7 text-dash-cyan"></i> Voltaje Batería</div><div id="t-volts" class="font-orbitron font-bold text-white text-2xl">-- V</div></div>
-            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="timer" class="w-7 h-7 text-dash-cyan"></i> Tiempo Total</div><div id="t-rtime" class="font-orbitron font-bold text-white text-2xl">-- h</div></div>
-            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="gauge" class="w-7 h-7 text-dash-cyan"></i> Vel. Máxima</div><div id="t-vmax" class="font-orbitron font-bold text-white text-2xl">-- km/h</div><div class="text-[10px] text-dash-muted">Promedio: <span id="t-avgspd">--</span> km/h</div></div>
-        </div>
+        <!-- Tarjetas automáticas: se muestran primero los datos que el vehículo SÍ envía -->
+        <div id="t-tiles" class="grid grid-cols-5 grid-rows-2 gap-2 flex-[2] min-h-0"></div>
         <div class="mt-2 text-[11px] text-dash-muted bg-dash-panel border border-dash-border p-2 rounded">
-            📡 Valores OBD-II en vivo desde el adaptador. «N/D» = tu vehículo no envía ese dato · «--» = sin conexión. Consumo: km/L en marcha, L/h detenido.
+            📡 Valores OBD-II en vivo. Las tarjetas se ordenan solas: primero los datos que tu vehículo envía. «N/D» = el vehículo no envía ese dato · «--» = sin conexión.
         </div>
     </div>
 
@@ -830,16 +824,68 @@
             ['t-iat', 'iat', '°C'], ['t-oil', 'oil', '°C'],
             ['m-fuel', 'fuel', '%'], ['t-fuel', 'fuel', '%'],
             ['t-rpm', 'rpm', ''], ['t-speed', 'speed', ''], ['t-map', 'map', ' kPa'],
-            ['t-throttle', 'throttle', '%'], ['t-boost', 'boost', ' bar'], ['t-vmax', 'vmax', ' km/h']
+            ['t-throttle', 'throttle', '%'], ['t-boost', 'boost', ' bar'], ['t-vmax', 'vmax', ' km/h'],
+            ['t-maf', 'maf', ' g/s'], ['t-rail', 'rail', ' bar'], ['t-egr', 'egr', '%'], ['t-amb', 'amb', '°C'],
+            ['t-baro', 'baro', ' kPa'], ['t-dist_clr', 'dist_clr', ' km'], ['t-trip', 'trip', ' km']
         ];
         // App Android (APK): el OBD se lee por Bluetooth desde Java (window.GLNative)
         const NATIVE = !!window.GLNative;
-        function obdCfg() { return Object.assign({ mode: NATIVE ? 'bt' : 'bridge', url: '/obd', tank: 70, ref: 8, oil: 5000, btAddr: null, btName: null, btKind: 'auto' }, lsGet(OBD_KEY, {})); }
+        function obdCfg() {
+            const cg = lsGet('cargas', []);
+            return Object.assign({ mode: NATIVE ? 'bt' : 'bridge', url: '/obd', tank: 70, ref: 8, oil: 5000, btAddr: null, btName: null, btKind: 'auto',
+                fuelType: cg.length && cg[cg.length - 1].tipo ? cg[cg.length - 1].tipo : 'DIESEL' }, lsGet(OBD_KEY, {}));
+        }
+
+        // Tarjetas del Tablero en orden de prioridad; se muestran las 10 primeras que el vehículo envía
+        const TILES = [
+            { k: 'econ', icon: 'fuel', label: 'Consumo' },
+            { k: 'load', icon: 'cpu', label: 'Carga motor' },
+            { k: 'volts', icon: 'battery-charging', label: 'Voltaje batería' },
+            { k: 'map', icon: 'gauge', label: 'Presión múltiple' },
+            { k: 'throttle', icon: 'move-horizontal', label: 'Acelerador' },
+            { k: 'fuel', icon: 'fuel', label: 'Combustible', sub: 'Rango: <span id="t-range">--</span> km' },
+            { k: 'boost', icon: 'wind', label: 'Turbo', needs: ['map', 'baro'] },
+            { k: 'iat', icon: 'thermometer', label: 'Temp. admisión' },
+            { k: 'maf', icon: 'wind', label: 'Flujo de aire (MAF)' },
+            { k: 'rail', icon: 'gauge-circle', label: 'Presión del riel' },
+            { k: 'egr', icon: 'refresh-cw', label: 'EGR' },
+            { k: 'amb', icon: 'sun', label: 'Temp. ambiente' },
+            { k: 'baro', icon: 'mountain', label: 'Presión atmosférica' },
+            { k: 'dist_clr', icon: 'route', label: 'Km desde borrado DTC' },
+            { k: 'runtime', id: 't-rtime', icon: 'timer', label: 'Motor encendido' },
+            { k: 'trip', icon: 'route', label: 'Viaje actual', always: true },
+            { k: 'vmax', icon: 'gauge', label: 'Vel. máxima', sub: 'Promedio: <span id="t-avgspd">--</span> km/h', always: true }
+        ];
+        let lastTileSig = null;
+        function fuelIsGas() { return obdCfg().fuelType === 'GASOLINA'; }
+        function renderTiles(nd) {
+            const gas = fuelIsGas();
+            const avail = (t) => {
+                if (t.always) return true;
+                if (t.k === 'econ') return !nd.has('fuel_rate') || (gas && !nd.has('maf'));
+                if (t.needs) return t.needs.every(k => !nd.has(k));
+                return !nd.has(t.k);
+            };
+            // Tarjeta superior: temp. de aceite, o carga del motor si el vehículo no envía aceite
+            const topLoad = nd.has('oil') && !nd.has('load');
+            $('t-top2-label').textContent = topLoad ? 'Carga motor' : 'Temp Aceite';
+            setIcon('t-top2-icon', topLoad ? 'cpu' : 'flame', 'w-8 h-8 text-dash-cyan');
+            $('t-top2-label').nextElementSibling.id = topLoad ? 't-load' : 't-oil';
+            const pool = TILES.filter(t => !(topLoad && t.k === 'load'));
+            const pick = pool.filter(avail).concat(pool.filter(t => !avail(t))).slice(0, 10);
+            $('t-tiles').innerHTML = pick.map(t => '<div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1">' +
+                '<div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="' + t.icon + '" class="w-7 h-7 text-dash-cyan"></i> ' + t.label + '</div>' +
+                '<div id="' + (t.id || 't-' + t.k) + '" class="font-orbitron font-bold text-white text-2xl">--</div>' +
+                (t.sub ? '<div class="text-[10px] text-dash-muted">' + t.sub + '</div>' : '') + '</div>').join('');
+            lucide.createIcons();
+        }
 
         function applyObdii(data) {
             if (!data) return;
             S.obd.data = data; S.obd.ts = Date.now(); S.obd.shown = true;
             const nd = new Set(Array.isArray(data._nd) ? data._nd : []);   // datos que el vehículo no envía
+            const sig = [...nd].sort().join(',') + '|' + obdCfg().fuelType;
+            if (sig !== lastTileSig) { lastTileSig = sig; renderTiles(nd); }
             const tr = num(data.trip);
             if (tr !== null && S.obd.mode !== 'sim') { if (lastTripObd !== null) addKm(tr - lastTripObd); lastTripObd = tr; }
             OBD_FIELDS.forEach(([id, k, suf]) => {
@@ -848,7 +894,7 @@
                 } else setText(id, data[k], suf);
             });
             // Consumo instantáneo: con el caudal de combustible (PID 5E) o, en gasolina, con el MAF
-            const cg = lsGet('cargas', []), diesel = !cg.length || (cg[cg.length - 1].tipo || 'DIESEL') === 'DIESEL';
+            const diesel = !fuelIsGas();
             let rate = num(data.fuel_rate);
             if (rate === null && !diesel && num(data.maf) !== null) rate = num(data.maf) * 3600 / (14.7 * 745);
             const sp = num(data.speed);
@@ -858,7 +904,8 @@
             else if (nd.has('fuel_rate') && (diesel || nd.has('maf'))) { $('t-econ').textContent = 'N/D'; $('t-econ').title = 'Tu vehículo no envía el consumo'; }
             else setText('t-econ', null, ' km/L');
             setText('t-odo', fmtKm(num(data.odo)), ' km');
-            setText('t-rtime', fmtDur(num(data.runtime)), '');
+            if (num(data.runtime) === null && nd.has('runtime')) { const e = $('t-rtime'); if (e) e.textContent = 'N/D'; }
+            else setText('t-rtime', fmtDur(num(data.runtime)), '');
             const n = new Date(); setText('t-upd', pad(n.getHours()) + ':' + pad(n.getMinutes()) + ':' + pad(n.getSeconds()), '');
             const temp = num(data.temp), fuel = num(data.fuel), rpm = num(data.rpm), spd = num(data.speed);
             $('m-temp-bar').style.width = temp === null ? '0%' : Math.max(0, Math.min(100, temp / 120 * 100)) + '%';
@@ -956,13 +1003,14 @@
             if (!NATIVE && c.mode === 'bt') c.mode = 'bridge';
             $('o-mode').value = c.mode; $('o-url').value = c.url;
             $('o-dev').textContent = c.btName ? c.btName + ' (' + c.btAddr + ')' : 'ninguno';
-            $('o-mode').onchange = updObdForm; updObdForm(); $('o-tank').value = c.tank || ''; $('o-ref').value = c.ref || ''; $('o-oil').value = c.oil || '';
+            $('o-mode').onchange = updObdForm; updObdForm(); $('o-tank').value = c.tank || ''; $('o-ref').value = c.ref || ''; $('o-oil').value = c.oil || ''; $('o-fueltype').value = c.fuelType === 'GASOLINA' ? 'GASOLINA' : 'DIESEL';
         }
         function saveObd() {
             const tank = num($('o-tank').value), ref = num($('o-ref').value), oil = num($('o-oil').value);
             const prev = obdCfg();
             lsSet(OBD_KEY, { mode: $('o-mode').value, url: $('o-url').value.trim() || '/obd', tank: tank && tank > 0 ? tank : null, ref: ref && ref > 0 ? ref : null, oil: oil && oil > 0 ? oil : null,
-                btAddr: prev.btAddr, btName: prev.btName, btKind: prev.btKind });
+                btAddr: prev.btAddr, btName: prev.btName, btKind: prev.btKind, fuelType: $('o-fueltype').value });
+            lastTileSig = null;
             $('o-stat').textContent = '✓ Guardado';
             startObd();
         }
@@ -1493,6 +1541,7 @@
             if (!$('c-fecha').value) $('c-fecha').value = new Date().toISOString().slice(0, 10);
             try { const u = localStorage.getItem('moUnidad'); if (u) $('c-unidad').value = u; } catch (e) {}
             updUnidad();
+            $('c-tipo').value = obdCfg().fuelType === 'GASOLINA' ? 'GASOLINA' : 'DIESEL';
             const o = estOdo().v; if (!$('c-odo').value && o) $('c-odo').placeholder = 'Ej. ' + Math.round(o);
             $('c-msg').textContent = '';
         }
@@ -1543,6 +1592,7 @@
         // ==========================================
         document.querySelectorAll(NATIVE ? '.web-only-txt' : '.native-only-txt').forEach(e => e.remove());
         if (NATIVE) { try { $('app-ver').textContent = 'v2.3.0 · app ' + GLNative.version(); } catch (e) {} }
+        renderTiles(new Set());
         renderReg();
         loadObdForm();
         startObd();
