@@ -4,7 +4,7 @@ import socketserver
 
 VALUES = {  # PID -> bytes de respuesta (hex)
     '04': '4C', '05': '78', '0C': '0C2C', '0D': '32', '0F': '41', '10': '0190', '0B': '8C', '33': '65',
-    '1F': '0E10', '42': '', '46': '3A', '49': '33', '5E': '0064',
+    '1F': '0E10', '42': '', '46': '3A', '49': '33', '5E': '0064', '23': '0C80', '2C': '40', '31': '0FA0',
 }
 VALUES = {k: v for k, v in VALUES.items() if v}
 SUPPORTED = set(int(k, 16) for k in VALUES)
