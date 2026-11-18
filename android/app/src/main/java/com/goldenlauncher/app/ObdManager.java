@@ -11,6 +11,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayDeque;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +57,17 @@ class ObdManager {
     private volatile Link link;
     private String target = null;
     private double tripKm = 0, tripS = 0, vmax = 0;
+    private final ArrayDeque<String> log = new ArrayDeque<>();
+    private static final String[] PROTOS = {"Automático", "SAE J1850 PWM", "SAE J1850 VPW", "ISO 9141-2", "ISO 14230 KWP (5 baud)",
+            "ISO 14230 KWP (rápido)", "CAN 11 bit 500k", "CAN 29 bit 500k", "CAN 11 bit 250k", "CAN 29 bit 250k", "SAE J1939 CAN", "USER1 CAN", "USER2 CAN"};
+
+    /** Registro de conexión visible en Diagnóstico (últimas 40 líneas). */
+    void log(String s) {
+        synchronized (log) {
+            log.addLast(new SimpleDateFormat("HH:mm:ss", java.util.Locale.ROOT).format(new Date()) + "  " + s);
+            while (log.size() > 40) log.removeFirst();
+        }
+    }
 
     ObdManager(Context ctx) {
         this.ctx = ctx.getApplicationContext();
@@ -77,6 +91,9 @@ class ObdManager {
                 Object prevDtc = state.opt("dtc");
                 s.put("dtc", dtc != null ? dtc : (ecu && prevDtc != null ? prevDtc : JSONObject.NULL));
                 s.put("ts", System.currentTimeMillis() / 1000.0);
+                synchronized (log) {
+                    s.put("log", new JSONArray(log));
+                }
                 state = s;
             } catch (JSONException ignored) {
             }
@@ -87,6 +104,9 @@ class ObdManager {
         String key = address + "|" + kind;
         if (running && key.equals(target)) return;
         stop();
+        synchronized (log) {
+            log.clear();
+        }
         target = key;
         running = true;
         worker = new Thread(() -> loop(address, kind), "obd-worker");
@@ -114,6 +134,13 @@ class ObdManager {
         if (ad == null) throw new IOException("Esta radio no tiene Bluetooth");
         if (!ad.isEnabled()) throw new IOException("El Bluetooth está apagado");
         BluetoothDevice dev = ad.getRemoteDevice(address);
+        try {
+            int t = dev.getType(), b = dev.getBondState();
+            log("Dispositivo: " + dev.getName() + " · tipo " + (t == 1 ? "clásico" : t == 2 ? "BLE" : t == 3 ? "doble" : "desconocido")
+                    + " · " + (b == BluetoothDevice.BOND_BONDED ? "emparejado" : "NO emparejado"));
+        } catch (SecurityException e) {
+            log("Sin permiso para leer el dispositivo Bluetooth");
+        }
         if ("ble".equals(kind) || dev.getType() == BluetoothDevice.DEVICE_TYPE_LE) return new BleLink(ctx, dev);
         return new ClassicLink(ad, dev);
     }
@@ -124,24 +151,33 @@ class ObdManager {
             Link l = null;
             try {
                 setState(false, false, "Conectando con el adaptador…", null, null);
+                log("Conectando con " + address + " (modo " + kind + (tryBleNext ? ", probando BLE" : "") + ")");
                 l = tryBleNext ? new BleLink(ctx, getDevice(address)) : makeLink(address, kind);
                 link = l;
+                log("Abriendo " + l.describe() + "…");
                 l.open();
-                Elm327 elm = new Elm327(l);
+                log("✓ Conectado al adaptador. Iniciando ELM327…");
+                Elm327 elm = new Elm327(l, this::log);
                 elm.init();
+                int pi = elm.protocol.isEmpty() ? -1 : Character.digit(elm.protocol.charAt(0), 16);
+                log("✓ Adaptador listo · protocolo del vehículo: " + (pi >= 0 && pi < PROTOS.length ? PROTOS[pi] : elm.protocol));
                 setState(true, false, null, null, null);
                 poll(elm);
             } catch (Elm327.EngineOff e) {
+                log("✗ El adaptador responde, pero el vehículo no (UNABLE TO CONNECT). ¿Contacto encendido / motor en marcha?");
                 setState(true, false, "Adaptador OK, pero la ECU no responde (¿motor apagado?)", null, null);
                 sleep(3000);
             } catch (SecurityException e) {
+                log("✗ Falta el permiso de Bluetooth");
                 setState(false, false, "Falta el permiso de Bluetooth (dalo en los ajustes de la app)", null, null);
                 sleep(5000);
             } catch (Exception e) {
                 // En modo automático: si el clásico falla, probar BLE en el siguiente intento
                 if ("auto".equals(kind)) tryBleNext = !tryBleNext;
                 String m = e.getMessage();
-                setState(false, false, m == null || m.isEmpty() ? e.getClass().getSimpleName() : m, null, null);
+                m = m == null || m.isEmpty() ? e.getClass().getSimpleName() : m;
+                log("✗ " + m);
+                setState(false, false, m, null, null);
                 sleep(5000);
             } finally {
                 if (l != null) l.close();
@@ -184,6 +220,10 @@ class ObdManager {
                     }
                 }
             }
+            if (n == 1) {
+                log("✓ Primera lectura del vehículo: " + (data.length() == 0 ? "ningún dato (el vehículo no respondió a los PID)" : data.toString()));
+                elm.verbose = false; // no llenar el registro con cada lectura
+            }
             long now = System.currentTimeMillis();
             double dt = (now - last) / 1000.0;
             last = now;
@@ -205,6 +245,7 @@ class ObdManager {
                     lastDtc = now;
                     try {
                         List<String> codes = elm.readDtc();
+                        if (n == 1) log("Códigos de avería: " + (codes.isEmpty() ? "ninguno" : codes.toString()));
                         dtc = new JSONArray(codes);
                     } catch (IOException | RuntimeException ignored) {
                     }

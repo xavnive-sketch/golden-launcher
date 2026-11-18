@@ -61,7 +61,7 @@ class DeviceScanner {
     private final BroadcastReceiver classicRx = new BroadcastReceiver() {
         @Override
         public void onReceive(Context c, Intent i) {
-            if (BluetoothDevice.ACTION_FOUND.equals(i.getAction())) {
+            if (BluetoothDevice.ACTION_FOUND.equals(i.getAction()) || BluetoothDevice.ACTION_NAME_CHANGED.equals(i.getAction())) {
                 BluetoothDevice d = i.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 if (d != null) add(d, "classic");
             }
@@ -101,8 +101,11 @@ class DeviceScanner {
         } catch (SecurityException e) {
             name = null;
         }
-        if (name == null || name.trim().isEmpty()) return; // sin nombre: casi nunca es un adaptador
         String addr = d.getAddress();
+        if (name == null || name.trim().isEmpty()) {
+            if ("ble".equals(seenAs)) return;           // BLE sin nombre: hay muchos alrededor, casi nunca es el adaptador
+            name = "Sin nombre (" + addr + ")";
+        }
         boolean bonded;
         try {
             bonded = d.getBondState() == BluetoothDevice.BOND_BONDED;
@@ -118,7 +121,8 @@ class DeviceScanner {
             o.put("obd", looksObd(name));
             boolean isNew;
             synchronized (found) {
-                isNew = !found.containsKey(addr);
+                JSONObject prev = found.get(addr);
+                isNew = prev == null || !prev.optString("name").equals(name);
                 found.put(addr, o);
             }
             if (isNew) publish(false);
@@ -165,6 +169,7 @@ class DeviceScanner {
         }
         try {
             IntentFilter f = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+            f.addAction(BluetoothDevice.ACTION_NAME_CHANGED);
             if (Build.VERSION.SDK_INT >= 33) ctx.registerReceiver(classicRx, f, Context.RECEIVER_EXPORTED);
             else ctx.registerReceiver(classicRx, f);
             receiverOn = true;

@@ -151,7 +151,7 @@ def _run_density(dpi, obd_test, info):
         info['obd'] = cdp.ev("""(() => ({ fresco: obdFresh(), modo: S.obd.mode, error: S.obd.error, dtc: S.obd.dtc,
             datos: S.obd.data, estado: document.getElementById('status-label').textContent,
             rpm: document.getElementById('t-rpm').textContent, temp: document.getElementById('m-temp').textContent,
-            diag: document.getElementById('d-obd').textContent + ' · ' + document.getElementById('d-obd-sub').textContent }))()""")
+            diag: document.getElementById('d-obd').textContent + ' · ' + document.getElementById('d-obd-sub').textContent, registro: (S.obd.log || []).slice(-14) }))()""")
         if not ok:
             results['ok'] = False
         cdp.ev("setPage('tablero')")

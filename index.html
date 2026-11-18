@@ -675,6 +675,13 @@
             <div class="text-[11px] text-dash-muted font-bold uppercase mb-1">Códigos de avería (DTC)</div>
             <div id="d-dtc-list" class="text-dash-muted">--</div>
         </div>
+        <div class="mt-3 bg-dash-panel border border-dash-border p-2 rounded">
+            <div class="flex items-center justify-between mb-1">
+                <div class="text-[11px] text-dash-muted font-bold uppercase">Registro de conexión</div>
+                <button onclick="startObd()" class="px-3 py-1.5 border border-dash-cyan/60 text-dash-cyan font-bold text-xs rounded-lg hover:bg-dash-cyan/10">🔄 REINTENTAR CONEXIÓN</button>
+            </div>
+            <pre id="d-log" class="text-[11px] leading-snug text-dash-text font-mono whitespace-pre-wrap max-h-56 overflow-y-auto">--</pre>
+        </div>
     </div>
 
     <!-- ==================== PÁGINA: J.A.R.V.I.S. (consola completa) ==================== -->
@@ -886,6 +893,7 @@
                 }
                 S.obd.connected = !!j.connected; S.obd.ecu = !!j.ecu; S.obd.error = j.error || null;
                 S.obd.dtc = Array.isArray(j.dtc) ? j.dtc : S.obd.dtc;
+                S.obd.log = Array.isArray(j.log) ? j.log : null;
                 if (j.connected && j.ecu && j.data) applyObdii(j.data);
             } catch (e) {
                 S.obd.connected = false; S.obd.ecu = false; S.obd.dtc = null;
@@ -1064,6 +1072,14 @@
                 $('d-dtc').textContent = o.dtc.length; setTone($('d-dtc'), 'amber');
                 $('d-dtc-list').innerHTML = o.dtc.map(c => '<span class="inline-block font-orbitron font-bold text-dash-amber border border-dash-amber/60 rounded px-2 py-0.5 mr-1 mb-1">' + esc(c) + '</span>').join('') +
                     '<div class="text-dash-muted mt-1">Consulta el significado del código en el manual del vehículo o con tu mecánico.</div>';
+            }
+            const lg = $('d-log');
+            if (lg) {
+                const lines = o.log && o.log.length ? o.log : [o.mode === 'bt' && !NATIVE ? 'El Bluetooth solo funciona en la app (APK).'
+                    : o.mode === 'bt' && !obdCfg().btAddr ? 'Sin adaptador elegido: ve a Ajustes → OBD-II → Buscar adaptadores.'
+                    : o.mode === 'off' ? 'OBD-II desactivado en Ajustes.' : (o.error || 'Esperando…')];
+                const txt = lines.join('\n');
+                if (lg.textContent !== txt) { lg.textContent = txt; lg.scrollTop = lg.scrollHeight; }
             }
             $('d-gps').textContent = gf ? 'En vivo' : (S.gps.err || 'Sin señal'); setTone($('d-gps'), gf ? 'green' : 'muted');
             $('d-gps-sub').textContent = gf ? '±' + Math.round(S.gps.acc) + ' m' : '';
