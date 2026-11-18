@@ -903,7 +903,7 @@
             if (num(data.econ) !== null) setText('t-econ', data.econ, ' km/L');
             else if (rate !== null && rate > 0.1 && sp > 3) setText('t-econ', (sp / rate).toFixed(1), ' km/L');
             else if (rate !== null) setText('t-econ', rate.toFixed(1), ' L/h');
-            else if (nd.has('fuel_rate') && (diesel || nd.has('maf'))) { $('t-econ').textContent = 'N/D'; $('t-econ').title = 'Tu vehículo no envía el consumo'; }
+            else if (nd.has('fuel_rate') && (diesel || nd.has('maf'))) { const ec = $('t-econ'); if (ec) { ec.textContent = 'N/D'; ec.title = 'Tu vehículo no envía el consumo'; } }
             else setText('t-econ', null, ' km/L');
             setText('t-odo', fmtKm(num(data.odo)), ' km');
             if (num(data.runtime) === null && nd.has('runtime')) { const e = $('t-rtime'); if (e) e.textContent = 'N/D'; }
@@ -959,7 +959,10 @@
                 S.obd.connected = !!j.connected; S.obd.ecu = !!j.ecu; S.obd.error = j.error || null;
                 S.obd.dtc = Array.isArray(j.dtc) ? j.dtc : S.obd.dtc;
                 S.obd.log = Array.isArray(j.log) ? j.log : null;
-                if (j.connected && j.ecu && j.data) applyObdii(j.data);
+                if (j.connected && j.ecu && j.data) {
+                    try { applyObdii(j.data); }
+                    catch (err) { S.obd.ts = Date.now(); console.error('Error al mostrar datos OBD:', err); }
+                }
             } catch (e) {
                 S.obd.connected = false; S.obd.ecu = false; S.obd.dtc = null;
                 S.obd.error = e.name === 'AbortError' ? 'El puente no responde' : (e.message || 'Error');
