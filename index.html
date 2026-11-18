@@ -495,21 +495,23 @@
                 <label id="o-url-box" class="block text-sm text-dash-muted mb-1">URL del puente
                     <input id="o-url" placeholder="/obd" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
                 </label>
+                <div class="grid grid-cols-2 gap-x-2">
                 <label class="block text-sm text-dash-muted mb-1">Combustible del motor
-                    <select id="o-fueltype" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
-                        <option value="DIESEL">Diésel</option>
-                        <option value="GASOLINA">Gasolina</option>
-                    </select>
-                </label>
-                <label class="block text-sm text-dash-muted mb-1">Capacidad del tanque (L)
-                    <input id="o-tank" type="number" min="1" placeholder="70" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
-                </label>
-                <label class="block text-sm text-dash-muted mb-1">Consumo de referencia (km/L)
-                    <input id="o-ref" type="number" min="1" step="0.1" placeholder="8" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
-                </label>
-                <label class="block text-sm text-dash-muted">Cambio de aceite cada (km)
-                    <input id="o-oil" type="number" min="500" step="500" placeholder="5000" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
-                </label>
+                        <select id="o-fueltype" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
+                            <option value="DIESEL">Diésel</option>
+                            <option value="GASOLINA">Gasolina</option>
+                        </select>
+                    </label>
+                    <label class="block text-sm text-dash-muted mb-1">Capacidad del tanque (L)
+                        <input id="o-tank" type="number" min="1" placeholder="70" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
+                    </label>
+                    <label class="block text-sm text-dash-muted mb-1">Consumo de referencia (km/L)
+                        <input id="o-ref" type="number" min="1" step="0.1" placeholder="8" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
+                    </label>
+                    <label class="block text-sm text-dash-muted">Cambio de aceite cada (km)
+                        <input id="o-oil" type="number" min="500" step="500" placeholder="5000" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
+                    </label>
+                </div>
                 <button onclick="saveObd()" class="w-full mt-2 py-3 bg-dash-cyan/10 hover:bg-dash-cyan/20 border border-dash-cyan/60 text-dash-cyan font-bold text-sm rounded-lg">GUARDAR</button>
                 <div id="o-stat" class="text-dash-cyan text-sm mt-2"></div>
                 <div id="o-live" class="text-dash-muted text-sm mt-1"></div>
