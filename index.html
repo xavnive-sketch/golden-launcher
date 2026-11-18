@@ -327,10 +327,10 @@
                         </div>
                         <div class="bg-dash-panel border border-dash-border p-1 rounded-md">
                             <div class="text-[11px] text-dash-muted flex items-center justify-center gap-1">
-                                <i data-lucide="flame" class="w-6 h-6 text-dash-cyan"></i>
-                                <span>Temp. Aceite</span>
+                                <i data-lucide="cpu" class="w-6 h-6 text-dash-cyan"></i>
+                                <span>Carga Motor</span>
                             </div>
-                            <div id="val-oil" class="font-orbitron font-bold text-white text-base">--°C</div>
+                            <div id="val-load" class="font-orbitron font-bold text-white text-base">--%</div>
                         </div>
                         <div class="bg-dash-panel border border-dash-border p-1 rounded-md">
                             <div class="text-[11px] text-dash-muted flex items-center justify-center gap-1">
@@ -565,21 +565,21 @@
             </div>
         </div>
         <div class="grid grid-cols-5 gap-2 mb-2 flex-1">
-            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="gauge" class="w-7 h-7 text-dash-cyan"></i> Presión Múltiple</div><div id="t-map" class="font-orbitron font-bold text-white text-base">-- kPa</div></div>
-            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="move-horizontal" class="w-7 h-7 text-dash-cyan"></i> Pos. Acelerador</div><div id="t-throttle" class="font-orbitron font-bold text-white text-base">--%</div></div>
-            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="fuel" class="w-7 h-7 text-dash-cyan"></i> Econ. Instantánea</div><div id="t-econ" class="font-orbitron font-bold text-white text-base">-- km/L</div></div>
-            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="percent" class="w-7 h-7 text-dash-cyan"></i> STFT</div><div id="t-stft" class="font-orbitron font-bold text-white text-base">--%</div></div>
-            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="percent" class="w-7 h-7 text-dash-cyan"></i> LTFT</div><div id="t-ltft" class="font-orbitron font-bold text-white text-base">--%</div></div>
+            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="gauge" class="w-7 h-7 text-dash-cyan"></i> Presión Múltiple</div><div id="t-map" class="font-orbitron font-bold text-white text-2xl">-- kPa</div></div>
+            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="move-horizontal" class="w-7 h-7 text-dash-cyan"></i> Pos. Acelerador</div><div id="t-throttle" class="font-orbitron font-bold text-white text-2xl">--%</div></div>
+            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="fuel" class="w-7 h-7 text-dash-cyan"></i> Econ. Instantánea</div><div id="t-econ" class="font-orbitron font-bold text-white text-2xl">-- km/L</div></div>
+            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="cpu" class="w-7 h-7 text-dash-cyan"></i> Carga Motor</div><div id="t-load" class="font-orbitron font-bold text-white text-2xl">--%</div></div>
+            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="wind" class="w-7 h-7 text-dash-cyan"></i> Temp. Admisión</div><div id="t-iat" class="font-orbitron font-bold text-white text-2xl">--°C</div></div>
         </div>
         <div class="grid grid-cols-5 gap-2 flex-1">
-            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="fuel" class="w-7 h-7 text-dash-cyan"></i> Combustible</div><div id="t-fuel" class="font-orbitron font-bold text-white text-base">--%</div><div class="text-[10px] text-dash-muted">Rango: <span id="t-range">--</span> km</div></div>
-            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="wind" class="w-7 h-7 text-dash-cyan"></i> Turbo Boost</div><div id="t-boost" class="font-orbitron font-bold text-white text-base">-- kPa</div></div>
-            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="milestone" class="w-7 h-7 text-dash-cyan"></i> Odómetro</div><div id="t-odo" class="font-orbitron font-bold text-white text-base">-- km</div></div>
-            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="timer" class="w-7 h-7 text-dash-cyan"></i> Tiempo Total</div><div id="t-rtime" class="font-orbitron font-bold text-white text-base">-- h</div></div>
-            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="gauge" class="w-7 h-7 text-dash-cyan"></i> Vel. Máxima</div><div id="t-vmax" class="font-orbitron font-bold text-white text-base">-- km/h</div><div class="text-[10px] text-dash-muted">Promedio: <span id="t-avgspd">--</span> km/h</div></div>
+            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="fuel" class="w-7 h-7 text-dash-cyan"></i> Combustible</div><div id="t-fuel" class="font-orbitron font-bold text-white text-2xl">--%</div><div class="text-[10px] text-dash-muted">Rango: <span id="t-range">--</span> km</div></div>
+            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="wind" class="w-7 h-7 text-dash-cyan"></i> Turbo Boost</div><div id="t-boost" class="font-orbitron font-bold text-white text-2xl">-- kPa</div></div>
+            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="battery-charging" class="w-7 h-7 text-dash-cyan"></i> Voltaje Batería</div><div id="t-volts" class="font-orbitron font-bold text-white text-2xl">-- V</div></div>
+            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="timer" class="w-7 h-7 text-dash-cyan"></i> Tiempo Total</div><div id="t-rtime" class="font-orbitron font-bold text-white text-2xl">-- h</div></div>
+            <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1"><div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="gauge" class="w-7 h-7 text-dash-cyan"></i> Vel. Máxima</div><div id="t-vmax" class="font-orbitron font-bold text-white text-2xl">-- km/h</div><div class="text-[10px] text-dash-muted">Promedio: <span id="t-avgspd">--</span> km/h</div></div>
         </div>
         <div class="mt-2 text-[11px] text-dash-muted bg-dash-panel border border-dash-border p-2 rounded">
-            📡 Valores OBD-II en vivo desde el adaptador ELM327 (ver Ajustes). «--» = sin conexión o el vehículo no reporta ese dato.
+            📡 Valores OBD-II en vivo desde el adaptador. «N/D» = tu vehículo no envía ese dato · «--» = sin conexión. Consumo: km/L en marcha, L/h detenido.
         </div>
     </div>
 
@@ -674,6 +674,13 @@
         <div class="mt-3 text-[12px] bg-dash-panel border border-dash-border p-2 rounded">
             <div class="text-[11px] text-dash-muted font-bold uppercase mb-1">Códigos de avería (DTC)</div>
             <div id="d-dtc-list" class="text-dash-muted">--</div>
+        </div>
+        <div class="mt-3 bg-dash-panel border border-dash-border p-2 rounded">
+            <div class="flex items-center justify-between mb-1">
+                <div class="text-[11px] text-dash-muted font-bold uppercase">Registro de conexión</div>
+                <button onclick="startObd()" class="px-3 py-1.5 border border-dash-cyan/60 text-dash-cyan font-bold text-xs rounded-lg hover:bg-dash-cyan/10">🔄 REINTENTAR CONEXIÓN</button>
+            </div>
+            <pre id="d-log" class="text-[11px] leading-snug text-dash-text font-mono whitespace-pre-wrap max-h-56 overflow-y-auto">--</pre>
         </div>
     </div>
 
@@ -819,11 +826,11 @@
         const OBD_KEY = 'moObdV1';
         const OBD_FIELDS = [ // [id, clave, sufijo]
             ['val-speed', 'speed', ' km/h'], ['val-rpm', 'rpm', ''], ['m-temp', 'temp', '°C'], ['t-temp', 'temp', '°C'],
-            ['val-volts', 'volts', ' V'], ['val-oil', 'oil', '°C'], ['t-oil', 'oil', '°C'],
+            ['val-volts', 'volts', ' V'], ['t-volts', 'volts', ' V'], ['val-load', 'load', '%'], ['t-load', 'load', '%'],
+            ['t-iat', 'iat', '°C'], ['t-oil', 'oil', '°C'],
             ['m-fuel', 'fuel', '%'], ['t-fuel', 'fuel', '%'],
             ['t-rpm', 'rpm', ''], ['t-speed', 'speed', ''], ['t-map', 'map', ' kPa'],
-            ['t-throttle', 'throttle', '%'], ['t-econ', 'econ', ' km/L'], ['t-stft', 'stft', '%'],
-            ['t-ltft', 'ltft', '%'], ['t-boost', 'boost', ' bar'], ['t-vmax', 'vmax', ' km/h']
+            ['t-throttle', 'throttle', '%'], ['t-boost', 'boost', ' bar'], ['t-vmax', 'vmax', ' km/h']
         ];
         // App Android (APK): el OBD se lee por Bluetooth desde Java (window.GLNative)
         const NATIVE = !!window.GLNative;
@@ -832,9 +839,24 @@
         function applyObdii(data) {
             if (!data) return;
             S.obd.data = data; S.obd.ts = Date.now(); S.obd.shown = true;
+            const nd = new Set(Array.isArray(data._nd) ? data._nd : []);   // datos que el vehículo no envía
             const tr = num(data.trip);
             if (tr !== null && S.obd.mode !== 'sim') { if (lastTripObd !== null) addKm(tr - lastTripObd); lastTripObd = tr; }
-            OBD_FIELDS.forEach(([id, k, suf]) => setText(id, data[k], suf));
+            OBD_FIELDS.forEach(([id, k, suf]) => {
+                if ((data[k] === undefined || data[k] === null) && (nd.has(k) || (k === 'boost' && (nd.has('map') || nd.has('baro'))))) {
+                    const el = $(id); if (el) { el.textContent = 'N/D'; el.title = 'Tu vehículo no envía este dato'; }
+                } else setText(id, data[k], suf);
+            });
+            // Consumo instantáneo: con el caudal de combustible (PID 5E) o, en gasolina, con el MAF
+            const cg = lsGet('cargas', []), diesel = !cg.length || (cg[cg.length - 1].tipo || 'DIESEL') === 'DIESEL';
+            let rate = num(data.fuel_rate);
+            if (rate === null && !diesel && num(data.maf) !== null) rate = num(data.maf) * 3600 / (14.7 * 745);
+            const sp = num(data.speed);
+            if (num(data.econ) !== null) setText('t-econ', data.econ, ' km/L');
+            else if (rate !== null && rate > 0.1 && sp > 3) setText('t-econ', (sp / rate).toFixed(1), ' km/L');
+            else if (rate !== null) setText('t-econ', rate.toFixed(1), ' L/h');
+            else if (nd.has('fuel_rate') && (diesel || nd.has('maf'))) { $('t-econ').textContent = 'N/D'; $('t-econ').title = 'Tu vehículo no envía el consumo'; }
+            else setText('t-econ', null, ' km/L');
             setText('t-odo', fmtKm(num(data.odo)), ' km');
             setText('t-rtime', fmtDur(num(data.runtime)), '');
             const n = new Date(); setText('t-upd', pad(n.getHours()) + ':' + pad(n.getMinutes()) + ':' + pad(n.getSeconds()), '');
@@ -850,6 +872,7 @@
             S.obd.data = {}; S.obd.shown = false;
             OBD_FIELDS.forEach(([id, , suf]) => setText(id, null, suf));
             ['t-odo', 't-rtime'].forEach(id => setText(id, null, id === 't-odo' ? ' km' : ''));
+            setText('t-econ', null, ' km/L');
             $('m-temp-bar').style.width = '0%'; $('m-fuel-bar').style.width = '0%';
             $('tab-gauge-rpm').style.strokeDashoffset = 314; $('tab-gauge-speed').style.strokeDashoffset = 314;
             refreshOdo();
@@ -886,6 +909,7 @@
                 }
                 S.obd.connected = !!j.connected; S.obd.ecu = !!j.ecu; S.obd.error = j.error || null;
                 S.obd.dtc = Array.isArray(j.dtc) ? j.dtc : S.obd.dtc;
+                S.obd.log = Array.isArray(j.log) ? j.log : null;
                 if (j.connected && j.ecu && j.data) applyObdii(j.data);
             } catch (e) {
                 S.obd.connected = false; S.obd.ecu = false; S.obd.dtc = null;
@@ -914,6 +938,8 @@
                 v.map = Math.round(35 + v.throttle * 2.2);
                 v.boost = +((v.map - v.baro) / 100).toFixed(2);
                 v.stft = +walk(v.stft, -4, 4, 1).toFixed(1);
+                v.load = Math.round(18 + v.throttle * 1.4); v.iat = Math.round(walk(v.iat || 34, 30, 45, 1));
+                v.fuel_rate = +(0.8 + v.throttle * 0.12).toFixed(1);
                 v.trip += v.speed * dt / 3600; v.odo += v.speed * dt / 3600;
                 v.fuel = Math.max(5, v.fuel - v.speed * dt / 3600 * 0.15);
                 v.runtime += dt; v.trip_time += dt; v.vmax = Math.max(v.vmax, v.speed);
@@ -1064,6 +1090,14 @@
                 $('d-dtc').textContent = o.dtc.length; setTone($('d-dtc'), 'amber');
                 $('d-dtc-list').innerHTML = o.dtc.map(c => '<span class="inline-block font-orbitron font-bold text-dash-amber border border-dash-amber/60 rounded px-2 py-0.5 mr-1 mb-1">' + esc(c) + '</span>').join('') +
                     '<div class="text-dash-muted mt-1">Consulta el significado del código en el manual del vehículo o con tu mecánico.</div>';
+            }
+            const lg = $('d-log');
+            if (lg) {
+                const lines = o.log && o.log.length ? o.log : [o.mode === 'bt' && !NATIVE ? 'El Bluetooth solo funciona en la app (APK).'
+                    : o.mode === 'bt' && !obdCfg().btAddr ? 'Sin adaptador elegido: ve a Ajustes → OBD-II → Buscar adaptadores.'
+                    : o.mode === 'off' ? 'OBD-II desactivado en Ajustes.' : (o.error || 'Esperando…')];
+                const txt = lines.join('\n');
+                if (lg.textContent !== txt) { lg.textContent = txt; lg.scrollTop = lg.scrollHeight; }
             }
             $('d-gps').textContent = gf ? 'En vivo' : (S.gps.err || 'Sin señal'); setTone($('d-gps'), gf ? 'green' : 'muted');
             $('d-gps-sub').textContent = gf ? '±' + Math.round(S.gps.acc) + ' m' : '';

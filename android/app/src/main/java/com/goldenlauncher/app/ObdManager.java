@@ -11,6 +11,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayDeque;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,9 +28,13 @@ class ObdManager {
         double apply(int[] b);
     }
 
-    private static final String[] PIDS = {"0C", "0D", "05", "5C", "0B", "33", "11", "06", "07", "2F", "42", "1F", "A6"};
-    private static final String[] KEYS = {"rpm", "speed", "temp", "oil", "map", "baro", "throttle", "stft", "ltft", "fuel", "volts", "runtime", "odo"};
-    private static final int[] SIZES = {2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 4};
+    // Gasolina y diésel: 04 carga, 0F temp. admisión, 10 MAF, 46 temp. ambiente, 49 pedal del acelerador,
+    // 5E consumo de combustible (L/h) — los diésel suelen enviar estos aunque no envíen 11/06/07.
+    private static final String[] PIDS = {"0C", "0D", "05", "5C", "0B", "33", "11", "06", "07", "2F", "42", "1F", "A6",
+            "04", "0F", "10", "46", "49", "5E"};
+    private static final String[] KEYS = {"rpm", "speed", "temp", "oil", "map", "baro", "throttle", "stft", "ltft", "fuel", "volts", "runtime", "odo",
+            "load", "iat", "maf", "amb", "pedal", "fuel_rate"};
+    private static final int[] SIZES = {2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 4, 1, 1, 2, 1, 1, 2};
     private static final Fn[] FNS = {
             b -> Math.round((b[0] * 256 + b[1]) / 4.0),
             b -> b[0],
@@ -41,9 +48,15 @@ class ObdManager {
             b -> Math.round(b[0] * 100 / 255.0),
             b -> Math.round((b[0] * 256 + b[1]) / 100.0) / 10.0,
             b -> b[0] * 256 + b[1],
-            b -> Math.round((((long) b[0] << 24) | (b[1] << 16) | (b[2] << 8) | b[3]) / 10.0)
+            b -> Math.round((((long) b[0] << 24) | (b[1] << 16) | (b[2] << 8) | b[3]) / 10.0),
+            b -> Math.round(b[0] * 100 / 255.0),
+            b -> b[0] - 40,
+            b -> Math.round((b[0] * 256 + b[1])) / 100.0,
+            b -> b[0] - 40,
+            b -> Math.round(b[0] * 1000 / 255.0) / 10.0,
+            b -> Math.round((b[0] * 256 + b[1]) / 2.0) / 10.0
     };
-    private static final String FAST = "0C0D11";
+    private static final java.util.List<String> FAST = java.util.Arrays.asList("0C", "0D", "11", "49", "04", "5E");
     private static final long DTC_EVERY_MS = 30000;
 
     private final Context ctx;
@@ -54,6 +67,17 @@ class ObdManager {
     private volatile Link link;
     private String target = null;
     private double tripKm = 0, tripS = 0, vmax = 0;
+    private final ArrayDeque<String> log = new ArrayDeque<>();
+    private static final String[] PROTOS = {"Automático", "SAE J1850 PWM", "SAE J1850 VPW", "ISO 9141-2", "ISO 14230 KWP (5 baud)",
+            "ISO 14230 KWP (rápido)", "CAN 11 bit 500k", "CAN 29 bit 500k", "CAN 11 bit 250k", "CAN 29 bit 250k", "SAE J1939 CAN", "USER1 CAN", "USER2 CAN"};
+
+    /** Registro de conexión visible en Diagnóstico (últimas 40 líneas). */
+    void log(String s) {
+        synchronized (log) {
+            log.addLast(new SimpleDateFormat("HH:mm:ss", java.util.Locale.ROOT).format(new Date()) + "  " + s);
+            while (log.size() > 40) log.removeFirst();
+        }
+    }
 
     ObdManager(Context ctx) {
         this.ctx = ctx.getApplicationContext();
@@ -77,6 +101,9 @@ class ObdManager {
                 Object prevDtc = state.opt("dtc");
                 s.put("dtc", dtc != null ? dtc : (ecu && prevDtc != null ? prevDtc : JSONObject.NULL));
                 s.put("ts", System.currentTimeMillis() / 1000.0);
+                synchronized (log) {
+                    s.put("log", new JSONArray(log));
+                }
                 state = s;
             } catch (JSONException ignored) {
             }
@@ -87,6 +114,9 @@ class ObdManager {
         String key = address + "|" + kind;
         if (running && key.equals(target)) return;
         stop();
+        synchronized (log) {
+            log.clear();
+        }
         target = key;
         running = true;
         worker = new Thread(() -> loop(address, kind), "obd-worker");
@@ -114,6 +144,13 @@ class ObdManager {
         if (ad == null) throw new IOException("Esta radio no tiene Bluetooth");
         if (!ad.isEnabled()) throw new IOException("El Bluetooth está apagado");
         BluetoothDevice dev = ad.getRemoteDevice(address);
+        try {
+            int t = dev.getType(), b = dev.getBondState();
+            log("Dispositivo: " + dev.getName() + " · tipo " + (t == 1 ? "clásico" : t == 2 ? "BLE" : t == 3 ? "doble" : "desconocido")
+                    + " · " + (b == BluetoothDevice.BOND_BONDED ? "emparejado" : "NO emparejado"));
+        } catch (SecurityException e) {
+            log("Sin permiso para leer el dispositivo Bluetooth");
+        }
         if ("ble".equals(kind) || dev.getType() == BluetoothDevice.DEVICE_TYPE_LE) return new BleLink(ctx, dev);
         return new ClassicLink(ad, dev);
     }
@@ -124,24 +161,33 @@ class ObdManager {
             Link l = null;
             try {
                 setState(false, false, "Conectando con el adaptador…", null, null);
+                log("Conectando con " + address + " (modo " + kind + (tryBleNext ? ", probando BLE" : "") + ")");
                 l = tryBleNext ? new BleLink(ctx, getDevice(address)) : makeLink(address, kind);
                 link = l;
+                log("Abriendo " + l.describe() + "…");
                 l.open();
-                Elm327 elm = new Elm327(l);
+                log("✓ Conectado al adaptador. Iniciando ELM327…");
+                Elm327 elm = new Elm327(l, this::log);
                 elm.init();
+                int pi = elm.protocol.isEmpty() ? -1 : Character.digit(elm.protocol.charAt(0), 16);
+                log("✓ Adaptador listo · protocolo del vehículo: " + (pi >= 0 && pi < PROTOS.length ? PROTOS[pi] : elm.protocol));
                 setState(true, false, null, null, null);
                 poll(elm);
             } catch (Elm327.EngineOff e) {
+                log("✗ El adaptador responde, pero el vehículo no (UNABLE TO CONNECT). ¿Contacto encendido / motor en marcha?");
                 setState(true, false, "Adaptador OK, pero la ECU no responde (¿motor apagado?)", null, null);
                 sleep(3000);
             } catch (SecurityException e) {
+                log("✗ Falta el permiso de Bluetooth");
                 setState(false, false, "Falta el permiso de Bluetooth (dalo en los ajustes de la app)", null, null);
                 sleep(5000);
             } catch (Exception e) {
                 // En modo automático: si el clásico falla, probar BLE en el siguiente intento
                 if ("auto".equals(kind)) tryBleNext = !tryBleNext;
                 String m = e.getMessage();
-                setState(false, false, m == null || m.isEmpty() ? e.getClass().getSimpleName() : m, null, null);
+                m = m == null || m.isEmpty() ? e.getClass().getSimpleName() : m;
+                log("✗ " + m);
+                setState(false, false, m, null, null);
                 sleep(5000);
             } finally {
                 if (l != null) l.close();
@@ -162,11 +208,29 @@ class ObdManager {
         JSONObject data = new JSONObject();
         long last = System.currentTimeMillis(), lastDtc = 0;
         int n = 0;
+        // Preguntar al vehículo qué datos envía: así solo se leen esos (más rápido) y el resto se marca N/D
+        java.util.Set<String> sup = elm.supportedPids();
+        if (sup.isEmpty()) {
+            sup = null;
+            log("El vehículo no informó sus PIDs soportados: se probarán todos");
+        } else {
+            StringBuilder have = new StringBuilder();
+            for (int i = 0; i < PIDS.length; i++) if (sup.contains(PIDS[i])) have.append(KEYS[i]).append(' ');
+            log("PIDs soportados: " + sup.size() + " · útiles: " + have.toString().trim());
+        }
+        JSONArray nd = new JSONArray();
+        if (sup != null) {
+            for (int i = 0; i < PIDS.length; i++) if (!sup.contains(PIDS[i])) nd.put(KEYS[i]);
+            if (!sup.contains("11") && sup.contains("49")) nd = remove(nd, "throttle"); // se usa el pedal
+        }
+        boolean adapterVolts = sup != null && !sup.contains("42");
+        if (adapterVolts) nd = remove(nd, "volts");
         while (running) {
             n++;
             for (int i = 0; i < PIDS.length; i++) {
                 String pid = PIDS[i];
                 if (!FAST.contains(pid) && n % 5 != 0) continue;
+                if (sup != null && !sup.contains(pid)) continue;
                 int[] f = fail.get(pid);
                 long nowS = System.currentTimeMillis() / 1000;
                 if (f != null && f[0] >= 3 && nowS - f[1] < 60) continue; // no soportado: reintentar en 1 min
@@ -184,6 +248,21 @@ class ObdManager {
                     }
                 }
             }
+            if (adapterVolts && n % 5 == 1) {
+                try {
+                    Double v = elm.batteryVoltage();
+                    if (v != null) data.put("volts", v);
+                } catch (IOException | JSONException ignored) {
+                }
+            }
+            try {
+                if (!data.has("throttle") && data.has("pedal")) data.put("throttle", data.get("pedal"));
+            } catch (JSONException ignored) {
+            }
+            if (n == 1) {
+                log("✓ Primera lectura del vehículo: " + (data.length() == 0 ? "ningún dato (el vehículo no respondió a los PID)" : data.toString()));
+                elm.verbose = false; // no llenar el registro con cada lectura
+            }
             long now = System.currentTimeMillis();
             double dt = (now - last) / 1000.0;
             last = now;
@@ -200,11 +279,13 @@ class ObdManager {
                 out.put("trip", Math.round(tripKm * 10) / 10.0);
                 out.put("trip_time", (long) tripS);
                 out.put("vmax", (long) vmax);
+                out.put("_nd", nd);
                 JSONArray dtc = null;
                 if (now - lastDtc > DTC_EVERY_MS) {
                     lastDtc = now;
                     try {
                         List<String> codes = elm.readDtc();
+                        if (n == 1) log("Códigos de avería: " + (codes.isEmpty() ? "ninguno" : codes.toString()));
                         dtc = new JSONArray(codes);
                     } catch (IOException | RuntimeException ignored) {
                     }
@@ -214,6 +295,12 @@ class ObdManager {
             }
             sleep(200);
         }
+    }
+
+    private static JSONArray remove(JSONArray a, String v) {
+        JSONArray r = new JSONArray();
+        for (int i = 0; i < a.length(); i++) if (!v.equals(a.optString(i))) r.put(a.opt(i));
+        return r;
     }
 
     private static void sleep(long ms) {

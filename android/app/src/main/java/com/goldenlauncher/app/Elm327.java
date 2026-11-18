@@ -3,6 +3,8 @@ package com.goldenlauncher.app;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.List;
 import java.util.Locale;
 
@@ -14,11 +16,19 @@ class Elm327 {
         }
     }
 
-    private final Link link;
-    boolean isCan = true;
+    interface Logger {
+        void log(String s);
+    }
 
-    Elm327(Link link) {
+    private final Link link;
+    private final Logger logger;
+    boolean isCan = true;
+    boolean verbose = true;   // registra cada comando y respuesta (solo al conectar y en la 1.ª lectura)
+    String protocol = "?";
+
+    Elm327(Link link, Logger logger) {
         this.link = link;
+        this.logger = logger;
     }
 
     List<String> cmd(String c, long timeoutMs) throws IOException {
@@ -31,6 +41,10 @@ class Elm327 {
             if (l.isEmpty() || l.equalsIgnoreCase(c) || l.startsWith("SEARCHING")) continue;
             out.add(l);
         }
+        if (verbose && logger != null) {
+            String r = String.join(" | ", out);
+            logger.log(c + " → " + (r.isEmpty() ? "(vacío)" : r.length() > 60 ? r.substring(0, 60) + "…" : r));
+        }
         return out;
     }
 
@@ -42,6 +56,7 @@ class Elm327 {
         for (String l : cmd("ATDPN", 3000)) p.append(l);
         String proto = p.toString().trim().toUpperCase(Locale.ROOT);
         if (proto.startsWith("A")) proto = proto.substring(1);
+        protocol = proto;
         isCan = !proto.isEmpty() && "6789ABC".indexOf(proto.charAt(0)) >= 0;
     }
 
@@ -65,6 +80,45 @@ class Elm327 {
                 }
                 return b;
             }
+        }
+        return null;
+    }
+
+    /**
+     * PIDs de modo 01 que el vehículo dice soportar (consultas 0100, 0120, 0140…).
+     * Devuelve un conjunto vacío si el vehículo no responde a estas consultas.
+     */
+    Set<String> supportedPids() throws IOException {
+        Set<String> s = new LinkedHashSet<>();
+        for (int base = 0; base <= 0xC0; base += 0x20) {
+            String b = String.format(Locale.ROOT, "%02X", base);
+            List<String> lines = cmd("01" + b, 8000);
+            String joined = String.join(" ", lines).toUpperCase(Locale.ROOT);
+            if (joined.contains("UNABLE TO CONNECT")) throw new EngineOff();
+            long mask = 0;
+            for (String l : lines) {                       // varias ECU pueden responder: se suman
+                l = l.replace(" ", "").toUpperCase(Locale.ROOT);
+                int i = l.indexOf("41" + b);
+                if (i >= 0 && l.length() >= i + 12) {
+                    try {
+                        mask |= Long.parseLong(l.substring(i + 4, i + 12), 16);
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
+            }
+            if (mask == 0) break;
+            for (int k = 0; k < 32; k++)
+                if (((mask >> (31 - k)) & 1) == 1) s.add(String.format(Locale.ROOT, "%02X", base + k + 1));
+            if (!s.contains(String.format(Locale.ROOT, "%02X", base + 0x20))) break;
+        }
+        return s;
+    }
+
+    /** Voltaje de la batería medido por el propio adaptador (pin 16), o null. */
+    Double batteryVoltage() throws IOException {
+        for (String l : cmd("ATRV", 3000)) {
+            java.util.regex.Matcher m = java.util.regex.Pattern.compile("(\\d+(?:\\.\\d+)?)\\s*V").matcher(l.toUpperCase(Locale.ROOT));
+            if (m.find()) return Double.parseDouble(m.group(1));
         }
         return null;
     }
