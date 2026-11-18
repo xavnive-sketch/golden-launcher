@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Golden Dragon XML6609 Dashboard</title>
     <!-- Librerías locales (vendor/) — funcionan sin internet -->
     <link rel="stylesheet" href="vendor/fonts/fonts.css">
@@ -16,12 +16,26 @@
             box-sizing: border-box;
             user-select: none;
         }
-        html, body {
-            height: 100vh;
+        /* Lienzo fijo de 1280x720 (resolución de la radio) que se escala para llenar la pantalla:
+           se ve idéntico aunque Android use otra densidad (p. ej. 1024x600 u 853x480 lógicos). */
+        html {
             width: 100vw;
+            height: 100vh;
             margin: 0;
             padding: 0;
             overflow: hidden;
+            background-color: #010610;
+        }
+        body {
+            /* fixed: el lienzo no agranda el área de la página, así el WebView no "aleja" la vista */
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 1280px;
+            height: 720px;
+            margin: 0;
+            overflow: hidden;
+            transform-origin: 0 0;
             background-color: #010610;
             color: #d0e8ff;
             font-family: 'Rajdhani', sans-serif;
@@ -110,6 +124,17 @@
     </style>
 </head>
 <body class="flex flex-col justify-between p-2 text-xs select-none">
+    <script>
+        // Escala el lienzo de 1280x720 a la pantalla real, centrado
+        (function () {
+            function fit() {
+                var w = window.innerWidth, h = window.innerHeight, s = Math.min(w / 1280, h / 720);
+                document.body.style.transform = 'translate(' + ((w - 1280 * s) / 2) + 'px,' + ((h - 720 * s) / 2) + 'px) scale(' + s + ')';
+            }
+            fit();
+            window.addEventListener('resize', fit);
+        })();
+    </script>
 
     <!-- ==================== PANTALLA DE INICIO (logo) ==================== -->
     <div id="splash" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-dash-bg" style="transition:opacity .7s ease">
@@ -187,7 +212,7 @@
     </header>
 
     <!-- ==================== 2. MAIN DASHBOARD CONTENT ==================== -->
-    <div class="grid grid-cols-12 gap-2 my-1 flex-grow h-[calc(100vh-100px)]">
+    <div class="grid grid-cols-12 gap-2 my-1 flex-grow min-h-0">
 
         <!-- ===== LEFT SIDEBAR MENU (2 COLS) ===== -->
         <aside class="col-span-2 cyber-panel p-2 flex flex-col justify-between">
