@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.GeolocationPermissions;
+import android.webkit.RenderProcessGoneDetail;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
@@ -37,6 +38,7 @@ public class MainActivity extends Activity {
     private WebView web;
     private NativeBridge bridge;
     private boolean locationAtStart;
+    private static int renderRestarts = 0;
 
     @SuppressLint({"SetJavaScriptEnabled", "JavascriptInterface"})
     @Override
@@ -69,6 +71,22 @@ public class MainActivity extends Activity {
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
                 return loader.shouldInterceptRequest(request.getUrl());
+            }
+
+            // Si el motor del WebView se cae (p. ej. falta de memoria), reiniciar la pantalla en vez de cerrar la app
+            @Override
+            public boolean onRenderProcessGone(WebView view, RenderProcessGoneDetail detail) {
+                Log.e("GoldenLauncher", "El WebView se detuvo (crash=" + (Build.VERSION.SDK_INT >= 26 && detail.didCrash()) + "); reiniciando");
+                if (view == web) {
+                    web = null;
+                    try {
+                        ((android.view.ViewGroup) view.getParent()).removeView(view);
+                        view.destroy();
+                    } catch (Exception ignored) {
+                    }
+                    if (renderRestarts++ < 3) recreate(); else finish();
+                }
+                return true;
             }
 
             @Override
@@ -141,7 +159,7 @@ public class MainActivity extends Activity {
         // Si se acaba de dar el permiso de ubicación, recargar para que el GPS de la página arranque
         if (!locationAtStart && has(Manifest.permission.ACCESS_FINE_LOCATION)) {
             locationAtStart = true;
-            web.reload();
+            if (web != null) web.reload();
         }
     }
 
@@ -166,19 +184,19 @@ public class MainActivity extends Activity {
     @Override
     public void onBackPressed() {
         // Atrás = volver a Inicio (no cerrar la app)
-        web.evaluateJavascript("typeof setPage==='function'&&setPage('inicio')", null);
+        if (web != null) web.evaluateJavascript("typeof setPage==='function'&&setPage('inicio')", null);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        web.evaluateJavascript("try{lsSet(KMF_KEY,kmSinceFill)}catch(e){}", null);
+        if (web != null) web.evaluateJavascript("try{lsSet(KMF_KEY,kmSinceFill)}catch(e){}", null);
     }
 
     @Override
     protected void onDestroy() {
         bridge.shutdown();
-        web.destroy();
+        if (web != null) web.destroy();
         super.onDestroy();
     }
 }

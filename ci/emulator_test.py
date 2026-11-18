@@ -101,6 +101,19 @@ def run_density(dpi, obd_test):
     key = str(dpi)
     info = {'paginas': {}}
     results['densidades'][key] = info
+    try:
+        _run_density(dpi, obd_test, info)
+    except Exception as e:
+        results['ok'] = False
+        info['excepcion'] = repr(e)
+        try:
+            screencap(f'd{dpi}-99-error.png')
+        except Exception:
+            pass
+
+
+def _run_density(dpi, obd_test, info):
+    key = str(dpi)
     adb('shell', 'am', 'force-stop', PKG, check=False)
     adb('shell', 'wm', 'density', key)
     adb('logcat', '-c', check=False)
@@ -114,7 +127,7 @@ def run_density(dpi, obd_test):
         time.sleep(1)
     time.sleep(6)                                # dar tiempo al modelo 3D
     info['nativo'] = cdp.ev("typeof GLNative==='object' && GLNative.version()")
-    info['viewport'] = cdp.ev("innerWidth+'x'+innerHeight+' dpr='+devicePixelRatio")
+    info['viewport'] = cdp.ev("innerWidth+'x'+innerHeight+' dpr='+devicePixelRatio+' screen='+screen.width+'x'+screen.height+' outer='+outerWidth+'x'+outerHeight+' escala='+document.body.style.transform")
     for i, pg in enumerate(PAGES, 1):
         cdp.ev(f"setPage('{pg}')")
         time.sleep(2.5 if pg in ('inicio', 'mapa') else 1.2)
@@ -153,7 +166,7 @@ def run_density(dpi, obd_test):
         time.sleep(4)
         screencap(f'd{dpi}-23-noche.png')
         cdp.ev("toggleNight()")
-    log = adb('logcat', '-d', '-s', 'GoldenLauncher:D', 'AndroidRuntime:E', capture=True, check=False)
+    log = adb('logcat', '-d', '-s', 'GoldenLauncher:D', 'AndroidRuntime:E', 'chromium:E', capture=True, check=False)
     with open(os.path.join(OUT, f'logcat-d{dpi}.txt'), 'w') as f:
         f.write(log)
     errs = [l for l in log.splitlines() if 'Uncaught' in l or 'FATAL' in l]
@@ -165,8 +178,14 @@ def run_density(dpi, obd_test):
 
 def main():
     fake = subprocess.Popen([sys.executable, os.path.join(os.path.dirname(__file__), 'fake_elm.py')])
+    full = open(os.path.join(OUT, 'logcat-completo.txt'), 'w')
+    logcat = None
     try:
         adb('wait-for-device')
+        # Registro completo de Android (para ver cualquier cierre de la app)
+        logcat = subprocess.Popen(['adb', 'logcat', '-v', 'time', '*:W', 'GoldenLauncher:D', 'ActivityManager:I'], stdout=full, stderr=subprocess.STDOUT)
+        # Descartar el aviso de "pantalla completa" de Android para que no tape las capturas
+        adb('shell', 'settings', 'put', 'secure', 'immersive_mode_confirmations', 'confirmed', check=False)
         adb('install', '-r', '-g', APK)
         adb('shell', 'wm', 'size', '1280x720')
         run_density(160, obd_test=True)
@@ -180,6 +199,9 @@ def main():
             pass
     finally:
         fake.terminate()
+        if logcat:
+            logcat.terminate()
+        full.close()
         with open(os.path.join(OUT, 'resultados.json'), 'w') as f:
             json.dump(results, f, indent=1, ensure_ascii=False)
         print(json.dumps(results, indent=1, ensure_ascii=False))
