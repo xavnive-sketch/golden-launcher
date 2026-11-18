@@ -3,6 +3,8 @@ name: APK
 # Compila la app Android en cada cambio. En main, además publica el APK en "Releases"
 # para descargarlo directo desde la radio:
 #   https://github.com/xavnive-sketch/golden-launcher/releases/latest/download/golden-launcher.apk
+# En las ramas de trabajo, además lo prueba en un emulador (pantalla 1280x720) y sube las capturas
+# a la rama "ci-capturas".
 on:
   push:
     branches: [main, 'claude/**']
@@ -27,25 +29,29 @@ jobs:
           gradle-version: '8.9'
 
       - name: Compilar APK
-        run: gradle -p android assembleRelease --no-daemon --stacktrace
+        run: gradle -p android assembleRelease assembleDebug --no-daemon --stacktrace
 
-      - name: Preparar archivo
-        run: cp android/app/build/outputs/apk/release/app-release.apk golden-launcher.apk
+      - name: Preparar archivos
+        run: |
+          cp android/app/build/outputs/apk/release/app-release.apk golden-launcher.apk
+          cp android/app/build/outputs/apk/debug/app-debug.apk golden-launcher-debug.apk
 
       - name: Verificar contenido del APK
         run: |
           unzip -l golden-launcher.apk | grep -E 'assets/www/' | awk '{print $1, $4}' | head -40
-          for f in index.html bus3d.js assets/autoline_bus.glb vendor/three.min.js vendor/GLTFLoader.js \
+          for f in index.html bus3d.js assets/autoline_bus.glb assets/logo.png vendor/three.min.js vendor/GLTFLoader.js \
                    vendor/meshopt_decoder.js vendor/tailwind.css vendor/leaflet.js vendor/lucide.min.js vendor/fonts/fonts.css; do
             unzip -l golden-launcher.apk "assets/www/$f" > /dev/null || { echo "FALTA assets/www/$f"; exit 1; }
           done
-          ls -la golden-launcher.apk
+          ls -la golden-launcher.apk golden-launcher-debug.apk
           echo "APK verificado"
 
       - uses: actions/upload-artifact@v4
         with:
           name: golden-launcher-apk
-          path: golden-launcher.apk
+          path: |
+            golden-launcher.apk
+            golden-launcher-debug.apk
 
       - name: Publicar en Releases
         if: github.ref == 'refs/heads/main'
@@ -59,3 +65,48 @@ jobs:
             APK de Golden Launcher (compilación ${{ github.run_number }}).
             Descarga directa en la radio:
             https://github.com/${{ github.repository }}/releases/latest/download/golden-launcher.apk
+
+  emulador:
+    needs: build
+    if: github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: golden-launcher-apk
+
+      - name: Habilitar KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Dependencias de la prueba
+        run: pip install websocket-client
+
+      - name: Probar en el emulador
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: python3 ci/emulator_test.py golden-launcher-debug.apk
+
+      - name: Subir capturas y APK a la rama ci-capturas
+        if: always()
+        run: |
+          mkdir -p shots
+          cp golden-launcher.apk shots/ 2>/dev/null || true
+          cd shots
+          git init -q
+          git checkout -q -b ci-capturas
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Capturas del emulador (compilación ${{ github.run_number }}, ${{ github.sha }})"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" ci-capturas
