@@ -227,6 +227,8 @@ class ObdManager {
             if (!sup.contains("11") && sup.contains("49")) nd = remove(nd, "throttle"); // se usa el pedal
         }
         boolean adapterVolts = sup != null && !sup.contains("42");
+        boolean noThrottle = sup == null ? true : !sup.contains("11");
+        double pedalMin = 100, pedalMax = 0;
         if (adapterVolts) nd = remove(nd, "volts");
         while (running) {
             n++;
@@ -259,7 +261,15 @@ class ObdManager {
                 }
             }
             try {
-                if (!data.has("throttle") && data.has("pedal")) data.put("throttle", data.get("pedal"));
+                // Sin sensor de mariposa: usar el pedal (PID 49). Su valor absoluto no va de 0 a 100
+                // (en reposo suele marcar 15-20 %), así que se escala entre el mínimo visto y ~55 puntos más.
+                if (noThrottle && data.has("pedal") && (sup != null || fail.containsKey("11"))) {
+                    double p = data.getDouble("pedal");
+                    pedalMin = Math.min(pedalMin, p);
+                    pedalMax = Math.max(pedalMax, Math.max(p, pedalMin + 55));
+                    double rel = (p - pedalMin) / (pedalMax - pedalMin) * 100.0;
+                    data.put("throttle", Math.round(Math.max(0, Math.min(100, rel)) * 10) / 10.0);
+                }
             } catch (JSONException ignored) {
             }
             if (n == 1) {
@@ -270,12 +280,12 @@ class ObdManager {
             double dt = (now - last) / 1000.0;
             last = now;
             try {
-                if (data.has("speed") && dt < 5) {
+                if (data.has("speed") && dt < 30) {
                     double spd = data.getDouble("speed");
                     tripKm += spd * dt / 3600.0;
                     vmax = Math.max(vmax, spd);
                 }
-                if (data.optDouble("rpm", 0) > 0 && dt < 5) tripS += dt;
+                if (data.optDouble("rpm", 0) > 0 && dt < 30) tripS += dt;
                 if (data.has("map") && data.has("baro"))
                     data.put("boost", Math.round((data.getDouble("map") - data.getDouble("baro"))) / 100.0);
                 JSONObject out = new JSONObject(data.toString());

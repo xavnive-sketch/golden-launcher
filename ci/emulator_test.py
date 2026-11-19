@@ -23,7 +23,7 @@ APK = sys.argv[1] if len(sys.argv) > 1 else 'golden-launcher-debug.apk'
 PKG = 'com.goldenlauncher.app'
 OUT = 'shots'
 os.makedirs(OUT, exist_ok=True)
-PAGES = ['inicio', 'tablero', 'mapa', 'autonomia', 'registro', 'diagnostico', 'jarvis', 'ajustes']
+PAGES = ['inicio', 'tablero', 'mapa', 'musica', 'autonomia', 'registro', 'diagnostico', 'jarvis', 'ajustes']
 results = {'ok': True, 'densidades': {}}
 
 AUDIT = r"""(() => {
