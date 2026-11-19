@@ -32,22 +32,27 @@ class ClassicLink extends Link {
         } catch (Exception ignored) {
         }
         IOException last = null;
-        for (int attempt = 0; attempt < 3 && socket == null; attempt++) {
+        // Se empieza por el método que funcionó la última vez. Tras un corte de energía del adaptador
+        // (apagar/encender el vehículo) la búsqueda SDP suele fallar; el canal directo (método 2) no la usa.
+        for (int k = 0; k < 3 && socket == null; k++) {
+            int method = (preferred + k) % 3;
             BluetoothSocket s = null;
             try {
-                if (attempt == 0) s = device.createRfcommSocketToServiceRecord(SPP);
-                else if (attempt == 1) s = device.createInsecureRfcommSocketToServiceRecord(SPP);
+                if (k > 0) sleepQuiet(700); // dar tiempo a Android a liberar el socket anterior
+                if (method == 0) s = device.createRfcommSocketToServiceRecord(SPP);
+                else if (method == 1) s = device.createInsecureRfcommSocketToServiceRecord(SPP);
                 else {
                     Method m = device.getClass().getMethod("createRfcommSocket", int.class);
                     s = (BluetoothSocket) m.invoke(device, 1);
                 }
                 s.connect();
                 socket = s;
+                preferred = method;
             } catch (IOException e) {
-                last = e;
+                last = new IOException("método " + method + ": " + e.getMessage());
                 closeQuietly(s);
             } catch (Exception e) {
-                last = new IOException(e.getMessage());
+                last = new IOException("método " + method + ": " + e.getMessage());
                 closeQuietly(s);
             }
         }
@@ -87,6 +92,22 @@ class ClassicLink extends Link {
     @Override
     String describe() {
         return "Bluetooth clásico";
+    }
+
+    /** Método de conexión que funcionó la última vez (se recuerda entre reconexiones). */
+    static volatile int preferred = 0;
+
+    /** Tras perder la conexión, empezar por el canal directo, que no depende de la búsqueda SDP. */
+    static void preferDirect() {
+        preferred = 2;
+    }
+
+    private static void sleepQuiet(long ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     private static void closeQuietly(BluetoothSocket s) {
