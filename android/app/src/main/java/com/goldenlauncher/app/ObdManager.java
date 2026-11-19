@@ -160,6 +160,8 @@ class ObdManager {
 
     private void loop(String address, String kind) {
         boolean tryBleNext = false;
+        int fails = 0;
+        final long[] BACKOFF = {2000, 3000, 5000, 8000, 12000, 15000};
         while (running) {
             Link l = null;
             try {
@@ -173,6 +175,7 @@ class ObdManager {
                 Elm327 elm = new Elm327(l, this::log);
                 elm.init();
                 int pi = elm.protocol.isEmpty() ? -1 : Character.digit(elm.protocol.charAt(0), 16);
+                fails = 0;
                 log("✓ Adaptador listo · protocolo del vehículo: " + (pi >= 0 && pi < PROTOS.length ? PROTOS[pi] : elm.protocol));
                 setState(true, false, null, null, null);
                 poll(elm);
@@ -189,9 +192,12 @@ class ObdManager {
                 if ("auto".equals(kind)) tryBleNext = !tryBleNext;
                 String m = e.getMessage();
                 m = m == null || m.isEmpty() ? e.getClass().getSimpleName() : m;
-                log("✗ " + m);
+                long wait = BACKOFF[Math.min(fails, BACKOFF.length - 1)];
+                fails++;
+                ClassicLink.preferDirect();
+                log("✗ " + m + " · reintento " + fails + " en " + (wait / 1000) + " s");
                 setState(false, false, m, null, null);
-                sleep(5000);
+                sleep(wait);
             } finally {
                 if (l != null) l.close();
                 link = null;
