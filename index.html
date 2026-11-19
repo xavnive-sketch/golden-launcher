@@ -185,8 +185,8 @@
         <div class="flex items-center gap-4 text-xs font-semibold">
             <!-- Date & Clock -->
             <div class="text-right border-r border-dash-border pr-3">
-                <div id="header-date" class="text-[10px] text-dash-muted uppercase font-orbitron">--</div>
-                <div id="header-clock" class="text-lg font-orbitron font-extrabold text-white text-glow leading-none">11:38</div>
+                <div id="header-date" class="text-[11px] text-dash-muted uppercase font-orbitron leading-none mb-0.5">--</div>
+                <div id="header-clock" class="text-[32px] font-orbitron font-extrabold text-white text-glow leading-none">--:--</div>
             </div>
 
             <!-- Weather -->
@@ -216,43 +216,47 @@
 
         <!-- ===== LEFT SIDEBAR MENU (2 COLS) ===== -->
         <aside class="col-span-2 cyber-panel p-2 flex flex-col justify-between">
-            <nav class="space-y-1.5">
-                <button onclick="setPage('inicio')" data-page="inicio" class="nav-btn w-full flex items-center gap-3 px-3 py-3 rounded-lg text-base bg-dash-cyan/20 border border-dash-cyan text-dash-cyan font-bold font-orbitron shadow-[0_0_10px_rgba(0,240,255,0.2)]">
+            <nav class="space-y-1">
+                <button onclick="setPage('inicio')" data-page="inicio" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-base bg-dash-cyan/20 border border-dash-cyan text-dash-cyan font-bold font-orbitron shadow-[0_0_10px_rgba(0,240,255,0.2)]">
                     <i data-lucide="home" class="w-7 h-7"></i>
                     <span>Inicio</span>
                 </button>
-                <button onclick="setPage('tablero')" data-page="tablero" class="nav-btn w-full flex items-center gap-3 px-3 py-3 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
+                <button onclick="setPage('tablero')" data-page="tablero" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
                     <i data-lucide="gauge" class="w-7 h-7"></i>
                     <span>Tablero</span>
                 </button>
-                <button onclick="setPage('mapa')" data-page="mapa" class="nav-btn w-full flex items-center gap-3 px-3 py-3 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
+                <button onclick="setPage('mapa')" data-page="mapa" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
                     <i data-lucide="map" class="w-7 h-7"></i>
                     <span>Mapa</span>
                 </button>
-                <button onclick="setPage('autonomia')" data-page="autonomia" class="nav-btn w-full flex items-center gap-3 px-3 py-3 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
+                <button onclick="setPage('musica')" data-page="musica" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
+                    <i data-lucide="music" class="w-7 h-7"></i>
+                    <span>Música</span>
+                </button>
+                <button onclick="setPage('autonomia')" data-page="autonomia" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
                     <i data-lucide="battery-full" class="w-7 h-7"></i>
                     <span>Autonomía</span>
                 </button>
-                <button onclick="setPage('registro')" data-page="registro" class="nav-btn w-full flex items-center gap-3 px-3 py-3 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
+                <button onclick="setPage('registro')" data-page="registro" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
                     <i data-lucide="clipboard-list" class="w-7 h-7"></i>
                     <span>Registro</span>
                 </button>
-                <button onclick="setPage('diagnostico')" data-page="diagnostico" class="nav-btn w-full flex items-center gap-3 px-3 py-3 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
+                <button onclick="setPage('diagnostico')" data-page="diagnostico" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
                     <i data-lucide="activity" class="w-7 h-7"></i>
                     <span>Diagnóstico</span>
                 </button>
-                <button onclick="setPage('jarvis')" data-page="jarvis" class="nav-btn w-full flex items-center gap-3 px-3 py-3 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
+                <button onclick="setPage('jarvis')" data-page="jarvis" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
                     <i data-lucide="bot" class="w-7 h-7"></i>
                     <span>J.A.R.V.I.S.</span>
                 </button>
-                <button onclick="setPage('ajustes')" data-page="ajustes" class="nav-btn w-full flex items-center gap-3 px-3 py-3 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
+                <button onclick="setPage('ajustes')" data-page="ajustes" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
                     <i data-lucide="settings" class="w-7 h-7"></i>
                     <span>Ajustes</span>
                 </button>
             </nav>
 
-            <!-- Bus Blueprint Outline Card -->
-            <div class="p-2 bg-dash-panel/80 border border-dash-border rounded-lg text-center">
+            <!-- Logo: al tocarlo abre el cajón de apps instaladas -->
+            <div onclick="openApps()" class="p-2 bg-dash-panel/80 border border-dash-border rounded-lg text-center cursor-pointer hover:border-dash-cyan active:scale-95 transition" title="Ver apps instaladas">
                 <!-- Logo de la marca: se carga de assets/logo.png; si no existe, se muestra el texto -->
                 <img src="assets/logo.png" alt="Golden Dragon" class="brand-logo h-16 w-full object-contain mx-auto mb-1.5" style="filter:drop-shadow(0 0 6px rgba(0,240,255,.3))" onerror="this.nextElementSibling.classList.remove('hidden'); this.remove()">
                 <div class="hidden font-orbitron font-black text-sm tracking-widest leading-tight mb-1" style="color:#f5b700;text-shadow:0 0 10px rgba(245,183,0,.45)">GOLDEN<br>DRAGON</div>
@@ -603,23 +607,12 @@
                 </div>
             </div>
             <div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col">
-                <div class="text-[11px] text-dash-muted font-bold uppercase mb-2">Historial de Alcance</div>
-                <svg class="w-full flex-1" viewBox="0 0 200 80" preserveAspectRatio="none">
-                    <defs>
-                        <linearGradient id="aGrad" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.45"/>
-                            <stop offset="100%" stop-color="#00f0ff" stop-opacity="0"/>
-                        </linearGradient>
-                    </defs>
-                    <line x1="0" y1="10" x2="200" y2="10" stroke="#092038" stroke-width="0.5"/>
-                    <line x1="0" y1="30" x2="200" y2="30" stroke="#092038" stroke-width="0.5"/>
-                    <line x1="0" y1="50" x2="200" y2="50" stroke="#092038" stroke-width="0.5"/>
-                    <line x1="0" y1="70" x2="200" y2="70" stroke="#092038" stroke-width="0.5"/>
-                    <path id="a-area" d="" fill="url(#aGrad)"/>
-                    <path id="a-line" d="" fill="none" stroke="#00f0ff" stroke-width="2"/>
-                    <circle id="a-dot" cx="-10" cy="66" r="3" fill="#00f0ff"/>
-                </svg>
-                <div class="flex justify-between text-[9px] text-dash-muted mt-1"><span>Más antiguo</span><span class="text-dash-cyan">Actual</span></div>
+                <div class="flex justify-between items-baseline mb-1">
+                    <div class="text-[11px] text-dash-muted font-bold uppercase">Combustible desde la última carga</div>
+                    <div id="a-chart-note" class="text-[10px] text-dash-muted"></div>
+                </div>
+                <svg id="a-chart" class="w-full flex-1 min-h-0" viewBox="0 0 300 110"></svg>
+                <div class="flex justify-between text-[10px] text-dash-muted mt-1"><span>Última carga (0 km)</span><span id="a-chart-mid" class="text-dash-cyan"></span><span id="a-chart-end">Vacío</span></div>
             </div>
         </div>
         <div class="grid grid-cols-3 gap-2 mb-2">
@@ -677,6 +670,48 @@
                 <button onclick="startObd()" class="px-3 py-1.5 border border-dash-cyan/60 text-dash-cyan font-bold text-xs rounded-lg hover:bg-dash-cyan/10">🔄 REINTENTAR CONEXIÓN</button>
             </div>
             <pre id="d-log" class="text-[11px] leading-snug text-dash-text font-mono whitespace-pre-wrap max-h-56 overflow-y-auto">--</pre>
+        </div>
+    </div>
+
+    <!-- ==================== PÁGINA: MÚSICA ==================== -->
+    <div id="page-musica" class="hidden col-span-10 cyber-panel p-2 h-full flex flex-col overflow-hidden">
+        <h2 class="font-orbitron font-bold text-white text-sm tracking-wider mb-2 pb-1.5 border-b border-dash-border">MÚSICA</h2>
+        <div class="grid grid-cols-12 gap-2 flex-1 min-h-0">
+            <div class="col-span-7 bg-dash-panel border border-dash-border rounded-lg p-4 flex flex-col min-h-0">
+                <div class="flex gap-5 flex-1 min-h-0 items-center">
+                    <div class="w-56 h-56 shrink-0 rounded-xl overflow-hidden border border-dash-border bg-dash-bg flex items-center justify-center" style="box-shadow:0 0 30px rgba(0,240,255,.12)">
+                        <img id="mu-art" class="w-full h-full object-cover hidden" alt="">
+                        <i id="mu-art-ph" data-lucide="disc-3" class="w-24 h-24 text-dash-border"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div id="mu-app" class="text-sm text-dash-cyan font-bold uppercase tracking-wider">Sin reproducción</div>
+                        <div id="mu-title" class="font-orbitron font-bold text-white text-3xl leading-tight mt-1 line-clamp-2">Abre una fuente de música</div>
+                        <div id="mu-artist" class="text-lg text-dash-text mt-1 truncate">Spotify, radio u otra app de la derecha</div>
+                        <div class="mt-5">
+                            <div class="h-1.5 w-full bg-dash-border/60 rounded-full overflow-hidden"><div id="mu-bar" class="h-full bg-dash-cyan rounded-full" style="width:0%"></div></div>
+                            <div class="flex justify-between text-xs text-dash-muted mt-1 font-mono"><span id="mu-pos">0:00</span><span id="mu-dur">--:--</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-center gap-6 mt-3">
+                    <button onclick="musicCmd('prev')" class="w-16 h-16 rounded-full border border-dash-border text-white hover:border-dash-cyan flex items-center justify-center"><i data-lucide="skip-back" class="w-8 h-8"></i></button>
+                    <button onclick="musicCmd('toggle')" class="w-24 h-24 rounded-full bg-dash-cyan text-black flex items-center justify-center shadow-[0_0_25px_rgba(0,240,255,0.45)]"><span id="mu-play"><i data-lucide="play" class="w-11 h-11"></i></span></button>
+                    <button onclick="musicCmd('next')" class="w-16 h-16 rounded-full border border-dash-border text-white hover:border-dash-cyan flex items-center justify-center"><i data-lucide="skip-forward" class="w-8 h-8"></i></button>
+                    <div class="w-px h-12 bg-dash-border mx-2"></div>
+                    <button onclick="musicVol(-1)" class="w-14 h-14 rounded-full border border-dash-border text-white hover:border-dash-cyan flex items-center justify-center"><i data-lucide="volume-1" class="w-7 h-7"></i></button>
+                    <div class="w-28"><div class="h-2 bg-dash-border/60 rounded-full overflow-hidden"><div id="mu-vol" class="h-full bg-dash-cyan rounded-full" style="width:0%"></div></div><div id="mu-vol-txt" class="text-center text-xs text-dash-muted mt-1">Volumen</div></div>
+                    <button onclick="musicVol(1)" class="w-14 h-14 rounded-full border border-dash-border text-white hover:border-dash-cyan flex items-center justify-center"><i data-lucide="volume-2" class="w-7 h-7"></i></button>
+                </div>
+                <div id="mu-access" class="hidden mt-3 text-sm text-dash-amber bg-dash-bg border border-dash-amber/40 rounded-lg p-2 flex items-center gap-3">
+                    <span class="flex-1">Para ver la canción y la carátula, permite a Golden Launcher el <b>acceso a notificaciones</b> (una sola vez). Los botones funcionan igual sin él.</span>
+                    <button onclick="GLNative.openNotificationAccess()" class="px-3 py-2 border border-dash-amber/60 rounded-lg font-bold text-xs whitespace-nowrap">PERMITIR</button>
+                </div>
+            </div>
+            <div class="col-span-5 bg-dash-panel border border-dash-border rounded-lg p-3 flex flex-col min-h-0">
+                <div class="text-[11px] text-dash-muted font-bold uppercase mb-2">Fuentes de música</div>
+                <div id="mu-sources" class="grid grid-cols-2 gap-2 overflow-y-auto min-h-0 content-start"></div>
+                <button onclick="openApps()" class="mt-auto w-full py-3 border border-dash-border rounded-lg text-white font-bold text-sm hover:border-dash-cyan flex items-center justify-center gap-2"><i data-lucide="layout-grid" class="w-5 h-5 text-dash-cyan"></i> TODAS LAS APPS</button>
+            </div>
         </div>
     </div>
 
@@ -775,15 +810,16 @@
             document.querySelectorAll('.nav-btn').forEach(b => {
                 const active = b.dataset.page === n;
                 b.className = active
-                    ? "nav-btn w-full flex items-center gap-3 px-3 py-3 rounded-lg text-base bg-dash-cyan/20 border border-dash-cyan text-dash-cyan font-bold font-orbitron shadow-[0_0_10px_rgba(0,240,255,0.2)]"
-                    : "nav-btn w-full flex items-center gap-3 px-3 py-3 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold";
+                    ? "nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-base bg-dash-cyan/20 border border-dash-cyan text-dash-cyan font-bold font-orbitron shadow-[0_0_10px_rgba(0,240,255,0.2)]"
+                    : "nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold";
             });
-            ['inicio', 'tablero', 'mapa', 'autonomia', 'registro', 'diagnostico', 'jarvis', 'ajustes'].forEach(p => {
+            ['inicio', 'tablero', 'mapa', 'musica', 'autonomia', 'registro', 'diagnostico', 'jarvis', 'ajustes'].forEach(p => {
                 const el = $('page-' + p);
                 if (el) el.classList.toggle('hidden', p !== n);
             });
             // El mapa se crea al abrir la página (Leaflet falla dentro de display:none)
             if (n === 'mapa') setTimeout(initMapFull, 120);
+            if (n === 'musica') startMusic(); else stopMusic();
         }
 
         // ==========================================
@@ -806,12 +842,24 @@
         };
         const KMF_KEY = 'moKmSinceFill';
         let kmSinceFill = +lsGet(KMF_KEY, 0) || 0, lastTripObd = null, kmSaveT = 0;
+        // Viaje actual: se guarda en la radio y solo se reinicia tras 20 min con el vehículo apagado/detenido
+        const TRIP_KEY = 'moTripV1', TRIP_GAP = 20 * 60 * 1000;
+        let trip = lsGet(TRIP_KEY, null), tripSaveT = 0;
+        function tripTick(running) {
+            const now = Date.now();
+            if (running) {
+                if (!trip || now - trip.last > TRIP_GAP) trip = { start: now, last: now, km: 0 };
+                trip.last = now;
+            }
+            if (trip && now - tripSaveT > 10000) { tripSaveT = now; lsSet(TRIP_KEY, trip); }
+        }
         function addKm(d) {
             if (!(d > 0 && d < 5)) return;
+            if (trip && Date.now() - trip.last < TRIP_GAP) trip.km += d;
             kmSinceFill += d;
             if (Date.now() - kmSaveT > 10000) { kmSaveT = Date.now(); lsSet(KMF_KEY, kmSinceFill); }
         }
-        document.addEventListener('visibilitychange', () => lsSet(KMF_KEY, kmSinceFill));
+        document.addEventListener('visibilitychange', () => { lsSet(KMF_KEY, kmSinceFill); if (trip) lsSet(TRIP_KEY, trip); });
         window.addEventListener('pagehide', () => lsSet(KMF_KEY, kmSinceFill));
         const obdFresh = () => S.obd.ecu && Date.now() - S.obd.ts < 5000;
         const gpsFresh = () => S.gps.ok && Date.now() - S.gps.ts < 60000;
@@ -828,7 +876,7 @@
             ['t-rpm', 'rpm', ''], ['t-speed', 'speed', ''], ['t-map', 'map', ' kPa'],
             ['t-throttle', 'throttle', '%'], ['t-boost', 'boost', ' bar'], ['t-vmax', 'vmax', ' km/h'],
             ['t-maf', 'maf', ' g/s'], ['t-rail', 'rail', ' bar'], ['t-egr', 'egr', '%'], ['t-amb', 'amb', '°C'],
-            ['t-baro', 'baro', ' kPa'], ['t-dist_clr', 'dist_clr', ' km'], ['t-trip', 'trip', ' km']
+            ['t-baro', 'baro', ' kPa'], ['t-dist_clr', 'dist_clr', ' km']
         ];
         // App Android (APK): el OBD se lee por Bluetooth desde Java (window.GLNative)
         const NATIVE = !!window.GLNative;
@@ -1104,13 +1152,14 @@
             setIcon('net-icon', net.icon, 'w-5 h-5');
             setTone($('net-icon'), net.tone);
 
-            // Viaje: OBD si hay, si no GPS
-            let trip = null, ttime = null;
-            if (of && num(o.data.trip) !== null) { trip = num(o.data.trip); ttime = num(o.data.trip_time); }
-            else if (S.gps.tripStart) { trip = S.gps.tripKm; ttime = (Date.now() - S.gps.tripStart) / 1000; }
-            setText('m-trip', trip === null ? null : trip.toFixed(1), ' km');
-            setText('m-time', fmtDur(ttime), '');
-            setText('t-avgspd', trip !== null && ttime > 60 ? Math.round(trip / (ttime / 3600)) : null, '');
+            // Viaje: en marcha si el motor gira (OBD) o el GPS registra movimiento
+            const running = (of && num(o.data.rpm) > 0) || (gf && (S.gps.speed || 0) > 3);
+            tripTick(running);
+            const tKm = trip ? trip.km : null, tSec = trip ? ((running ? Date.now() : trip.last) - trip.start) / 1000 : null;
+            setText('m-trip', tKm === null ? null : tKm.toFixed(1), ' km');
+            setText('m-time', fmtDur(tSec), '');
+            setText('t-trip', tKm === null ? null : tKm.toFixed(1), ' km');
+            setText('t-avgspd', tKm !== null && tSec > 60 ? Math.round(tKm / (tSec / 3600)) : null, '');
 
             // Panel derecho: GPS y OBD
             $('m-gps').textContent = gf ? S.gps.lat.toFixed(4) + ', ' + S.gps.lon.toFixed(4) : 'GPS: ' + (S.gps.err || 'sin señal');
@@ -1482,7 +1531,8 @@
             if (odo !== null && last && last.odo > 0 && odo >= last.odo) return odo - last.odo;
             return kmSinceFill;
         }
-        let rangeHist = lsGet('moRangeHist', []), rangeHistT = 0;
+        // Historial del tanque desde la última carga: puntos [km recorridos, litros], uno cada 0,5 km
+        let fuelHist = lsGet('moFuelHist', { fill: null, pts: [] });
         function recalcAutonomia() {
             const cfg = obdCfg(), tank = num(cfg.tank), ref = num(cfg.ref);
             const { avg, last } = fuelStats();
@@ -1516,22 +1566,50 @@
                 : !last ? 'Registra una carga para empezar la predicción.'
                 : !tank ? 'Indica la capacidad del tanque en Ajustes.'
                 : 'Indica el consumo de referencia en Ajustes.';
-            if (range !== null && Date.now() - rangeHistT > 60000) {
-                rangeHistT = Date.now(); rangeHist.push(range);
-                if (rangeHist.length > 40) rangeHist.shift();
-                lsSet('moRangeHist', rangeHist);
+            if (last && liters !== null) {
+                if (fuelHist.fill !== last.ts) fuelHist = { fill: last.ts, pts: [] };
+                const kmNow = kmSinceLastFill(last), p = fuelHist.pts, lp = p[p.length - 1];
+                if (!lp || kmNow - lp[0] >= 0.5 || kmNow < lp[0]) {
+                    if (lp && kmNow < lp[0]) fuelHist.pts = [];
+                    fuelHist.pts.push([+kmNow.toFixed(1), +liters.toFixed(1)]);
+                    if (fuelHist.pts.length > 300) fuelHist.pts.splice(1, 1);
+                    lsSet('moFuelHist', fuelHist);
+                }
             }
+            S.chart = { tank, cons, liters, km: last ? kmSinceLastFill(last) : null, range };
             drawRangeHistory();
         }
         function drawRangeHistory() {
-            const area = $('a-area'), line = $('a-line'), dot = $('a-dot'), h = rangeHist;
-            if (h.length < 2) { line.setAttribute('d', ''); area.setAttribute('d', ''); dot.setAttribute('cx', -10); return; }
-            const W = 200, H = 80, n = h.length, min = Math.min(...h), span = (Math.max(...h) - min) || 1;
-            const pts = h.map((v, i) => [(i / (n - 1)) * W, H - 6 - ((v - min) / span) * (H - 16)]);
-            const d = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
-            line.setAttribute('d', d);
-            area.setAttribute('d', d + ' L' + W + ',' + H + ' L0,' + H + ' Z');
-            dot.setAttribute('cx', pts[n - 1][0]); dot.setAttribute('cy', pts[n - 1][1]);
+            const svg = $('a-chart'), c = S.chart || {};
+            if (!svg) return;
+            // Dibujar al tamaño real (sin estirar los textos)
+            const W = Math.round(svg.clientWidth) || 300, H = Math.round(svg.clientHeight) || 110, top = 10, bot = H - 4;
+            svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+            if (!c.tank || c.liters === null || c.liters === undefined || !c.cons) {
+                svg.innerHTML = '<text x="' + W / 2 + '" y="' + H / 2 + '" text-anchor="middle" fill="#4f759b" font-size="12">Registra una carga para ver el gráfico</text>';
+                $('a-chart-mid').textContent = ''; $('a-chart-end').textContent = 'Vacío'; $('a-chart-note').textContent = '';
+                return;
+            }
+            // Eje X: 0 km (carga) -> km donde se vaciaría; eje Y: 0 -> capacidad del tanque
+            const kmEnd = Math.max(c.km + c.liters * c.cons, 1);
+            const X = (km) => (km / kmEnd) * W, Y = (L) => bot - (Math.max(0, Math.min(c.tank, L)) / c.tank) * (bot - top);
+            const pts = (fuelHist.pts.length ? fuelHist.pts : [[c.km, c.liters]]).slice();
+            if (pts[pts.length - 1][0] < c.km) pts.push([c.km, c.liters]);
+            const line = pts.map((p, i) => (i ? 'L' : 'M') + X(p[0]).toFixed(1) + ',' + Y(p[1]).toFixed(1)).join(' ');
+            const cx = X(c.km), cy = Y(c.liters);
+            const grid = [0.25, 0.5, 0.75, 1].map(f => '<line x1="0" x2="' + W + '" y1="' + Y(c.tank * f).toFixed(1) + '" y2="' + Y(c.tank * f).toFixed(1) + '" stroke="#0d2d4d" stroke-width="0.5"/>' +
+                '<text x="2" y="' + (Y(c.tank * f) - 3).toFixed(1) + '" fill="#4f759b" font-size="10">' + Math.round(c.tank * f) + ' L</text>').join('');
+            const reserve = Y(c.tank * 0.15);
+            svg.innerHTML = '<defs><linearGradient id="aGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00f0ff" stop-opacity="0.4"/><stop offset="100%" stop-color="#00f0ff" stop-opacity="0"/></linearGradient></defs>' +
+                '<rect x="0" y="' + reserve.toFixed(1) + '" width="' + W + '" height="' + (bot - reserve).toFixed(1) + '" fill="#ffb700" opacity="0.07"/>' + grid +
+                '<line x1="0" x2="' + W + '" y1="' + bot + '" y2="' + bot + '" stroke="#0d2d4d" stroke-width="0.8"/>' +
+                '<path d="' + line + ' L' + cx.toFixed(1) + ',' + bot + ' L' + X(pts[0][0]).toFixed(1) + ',' + bot + ' Z" fill="url(#aGrad)"/>' +
+                '<path d="' + line + '" fill="none" stroke="#00f0ff" stroke-width="2" vector-effect="non-scaling-stroke"/>' +
+                '<line x1="' + cx.toFixed(1) + '" y1="' + cy.toFixed(1) + '" x2="' + W + '" y2="' + bot + '" stroke="#00f0ff" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.6" vector-effect="non-scaling-stroke"/>' +
+                '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="5" fill="#00f0ff"/>';
+            $('a-chart-mid').textContent = 'Hoy: ' + c.km.toFixed(0) + ' km · ' + c.liters.toFixed(1) + ' L';
+            $('a-chart-end').textContent = 'Vacío ≈ ' + Math.round(kmEnd) + ' km';
+            $('a-chart-note').textContent = 'línea punteada = proyección · franja ámbar = reserva';
         }
 
         // Modal "Registrar carga" (registro único de combustible; se guarda en litros)
@@ -1571,6 +1649,7 @@
                 estacion: $('c-est').value.trim(), lleno, litrosTras, ts: Date.now() });
             lsSet('cargas', cargas);
             kmSinceFill = 0; lsSet(KMF_KEY, 0);
+            fuelHist = { fill: null, pts: [] }; lsSet('moFuelHist', fuelHist);
             ['c-cantidad', 'c-precio', 'c-total', 'c-odo', 'c-est'].forEach(id => $(id).value = '');
             refreshOdo();
             recalcAutonomia();
@@ -1593,6 +1672,80 @@
         })();
 
         // ==========================================
+        // CAJÓN DE APPS
+        // ==========================================
+        // Solo si la app nativa trae estas funciones (versiones nuevas del APK)
+        const HAS_APPS = NATIVE && typeof GLNative.listApps === 'function' && typeof GLNative.mediaInfo === 'function';
+        let apps = [];
+        function openApps() {
+            $('apps-modal').classList.remove('hidden'); $('apps-modal').classList.add('flex');
+            $('apps-q').value = '';
+            if (!HAS_APPS) { $('apps-grid').innerHTML = '<div class="col-span-8 text-dash-muted text-center py-10 text-base">Las apps instaladas solo se pueden ver en la app (APK) de la radio.</div>'; return; }
+            if (!apps.length) $('apps-grid').innerHTML = '<div class="col-span-8 text-dash-muted text-center py-10 text-base">Cargando apps…</div>';
+            else renderApps();
+            GLNative.listApps();
+        }
+        function closeApps() { $('apps-modal').classList.add('hidden'); $('apps-modal').classList.remove('flex'); }
+        window.onNativeApps = function (list) { apps = list || []; renderApps(); renderMusicSources(); };
+        function renderApps() {
+            const q = ($('apps-q').value || '').trim().toLowerCase();
+            const l = apps.filter(a => !q || a.name.toLowerCase().includes(q));
+            $('apps-grid').innerHTML = l.length ? l.map(a => '<button data-pkg="' + esc(a.pkg) + '" class="app-btn flex flex-col items-center gap-2 p-3 rounded-xl border border-transparent hover:border-dash-cyan hover:bg-dash-panel active:scale-95 transition">' +
+                '<img src="' + a.icon + '" class="w-16 h-16 rounded-2xl" alt=""><span class="text-sm text-white text-center leading-tight w-full truncate">' + esc(a.name) + '</span></button>').join('')
+                : '<div class="col-span-8 text-dash-muted text-center py-10">Sin resultados</div>';
+            $('apps-grid').querySelectorAll('.app-btn').forEach(b => b.onclick = () => { if (GLNative.launchApp(b.dataset.pkg)) closeApps(); });
+        }
+
+        // ==========================================
+        // MÚSICA (controla Spotify, radio u otra app que esté sonando)
+        // ==========================================
+        const MUSIC_RX = /spotify|music|m[uú]sica|radio|\bfm\b|deezer|tunein|youtube|ytmusic|player|reproductor|audio|soundcloud|podcast|poweramp|vlc|tidal|amazon.*mp3|anghami|boomplay/i;
+        let musicTimer = null, musicAccessAsked = false;
+        function renderMusicSources() {
+            const box = $('mu-sources'); if (!box) return;
+            if (!HAS_APPS) { box.innerHTML = '<div class="col-span-2 text-sm text-dash-muted">Disponible en la app (APK) de la radio.</div>'; return; }
+            const l = apps.filter(a => MUSIC_RX.test(a.name) || MUSIC_RX.test(a.pkg))
+                .sort((a, b) => (/spotify/i.test(b.pkg) - /spotify/i.test(a.pkg)) || a.name.localeCompare(b.name));
+            box.innerHTML = l.length ? l.map(a => '<button data-pkg="' + esc(a.pkg) + '" class="mu-src flex items-center gap-3 p-2.5 rounded-lg border border-dash-border hover:border-dash-cyan bg-dash-bg text-left">' +
+                '<img src="' + a.icon + '" class="w-11 h-11 rounded-xl" alt=""><span class="text-sm text-white font-semibold leading-tight">' + esc(a.name) + '</span></button>').join('')
+                : '<div class="col-span-2 text-sm text-dash-muted">No encontré apps de música. Instala Spotify o usa la radio FM de la radio y aparecerán aquí.</div>';
+            box.querySelectorAll('.mu-src').forEach(b => b.onclick = () => GLNative.launchApp(b.dataset.pkg));
+        }
+        const mmss = (ms) => { if (!(ms > 0)) return '0:00'; const t = Math.floor(ms / 1000); return Math.floor(t / 60) + ':' + pad(t % 60); };
+        function musicPoll() {
+            if (!HAS_APPS) return;
+            let m; try { m = JSON.parse(GLNative.mediaInfo()); } catch (e) { return; }
+            $('mu-access').classList.toggle('hidden', !!m.access);
+            $('mu-vol').style.width = (m.volMax ? m.vol / m.volMax * 100 : 0) + '%';
+            $('mu-vol-txt').textContent = 'Volumen ' + (m.volMax ? Math.round(m.vol / m.volMax * 100) : '--') + '%';
+            const playing = m.playing !== undefined ? m.playing : !!m.anyPlaying;
+            setIcon('mu-play', playing ? 'pause' : 'play', 'w-11 h-11');
+            if (m.title !== undefined) {
+                $('mu-app').textContent = m.app || '';
+                $('mu-title').textContent = m.title || 'Sin título';
+                $('mu-artist').textContent = [m.artist, m.album].filter(Boolean).join(' · ');
+                $('mu-pos').textContent = mmss(m.pos); $('mu-dur').textContent = m.dur > 0 ? mmss(m.dur) : '--:--';
+                $('mu-bar').style.width = m.dur > 0 ? Math.min(100, m.pos / m.dur * 100) + '%' : '0%';
+            } else {
+                $('mu-app').textContent = playing ? 'Reproduciendo' : 'Sin reproducción';
+                $('mu-title').textContent = playing ? 'Música en curso' : 'Abre una fuente de música';
+                $('mu-artist').textContent = m.access ? 'Spotify, radio u otra app de la derecha' : 'Permite el acceso a notificaciones para ver la canción';
+                $('mu-bar').style.width = '0%'; $('mu-pos').textContent = '0:00'; $('mu-dur').textContent = '--:--';
+            }
+            const img = $('mu-art');
+            if (m.art) { if (img.src !== m.art) img.src = m.art; img.classList.remove('hidden'); $('mu-art-ph').classList.add('hidden'); }
+            else { img.classList.add('hidden'); $('mu-art-ph').classList.remove('hidden'); }
+        }
+        function startMusic() {
+            if (HAS_APPS) { if (!apps.length) GLNative.listApps(); else renderMusicSources(); }
+            else renderMusicSources();
+            musicPoll(); clearInterval(musicTimer); musicTimer = setInterval(musicPoll, 1000);
+        }
+        function stopMusic() { clearInterval(musicTimer); musicTimer = null; }
+        function musicCmd(a) { if (HAS_APPS) { GLNative.mediaControl(a); setTimeout(musicPoll, 400); } }
+        function musicVol(d) { if (HAS_APPS) { GLNative.mediaVolume(d); setTimeout(musicPoll, 200); } }
+
+        // ==========================================
         // ARRANQUE
         // ==========================================
         document.querySelectorAll(NATIVE ? '.web-only-txt' : '.native-only-txt').forEach(e => e.remove());
@@ -1605,6 +1758,17 @@
         recalcAutonomia();
     </script>
     <script src="bus3d.js"></script>
+
+    <!-- ==================== CAJÓN DE APPS ==================== -->
+    <div id="apps-modal" class="fixed inset-0 z-50 hidden flex-col p-5" style="background:rgba(1,6,16,.96)">
+        <div class="flex items-center gap-4 mb-4">
+            <img src="assets/logo.png" alt="" class="h-10">
+            <h3 class="font-orbitron font-bold text-white text-lg tracking-wider">APLICACIONES</h3>
+            <input id="apps-q" oninput="renderApps()" placeholder="Buscar…" class="ml-auto w-72 bg-dash-panel border border-dash-border rounded-lg px-3 py-2.5 text-white text-base outline-none focus:border-dash-cyan">
+            <button onclick="closeApps()" class="text-dash-muted hover:text-white text-5xl leading-none px-3">&times;</button>
+        </div>
+        <div id="apps-grid" class="grid grid-cols-8 gap-3 overflow-y-auto flex-1 min-h-0 content-start pr-1"></div>
+    </div>
 
     <!-- ==================== MODAL: REGISTRAR CARGA ==================== -->
     <div id="carga-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm">

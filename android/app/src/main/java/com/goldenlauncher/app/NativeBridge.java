@@ -14,12 +14,53 @@ class NativeBridge {
     private final WebView web;
     private final ObdManager obd;
     private final DeviceScanner scanner;
+    private final Media media;
 
     NativeBridge(MainActivity act, WebView web, ObdManager obd) {
         this.act = act;
         this.web = web;
         this.obd = obd;
         this.scanner = new DeviceScanner(act);
+        this.media = new Media(act);
+    }
+
+    // ---- Cajón de apps ----
+    @JavascriptInterface
+    public void listApps() {
+        new Thread(() -> {
+            String json = media.listApps().toString();
+            web.post(() -> web.evaluateJavascript("window.onNativeApps && window.onNativeApps(" + json + ")", null));
+        }, "list-apps").start();
+    }
+
+    @JavascriptInterface
+    public boolean launchApp(String pkg) {
+        try {
+            return media.launch(pkg);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // ---- Música ----
+    @JavascriptInterface
+    public String mediaInfo() {
+        return media.info().toString();
+    }
+
+    @JavascriptInterface
+    public void mediaControl(String action) {
+        media.control(action == null ? "toggle" : action);
+    }
+
+    @JavascriptInterface
+    public void mediaVolume(int dir) {
+        media.volume(dir);
+    }
+
+    @JavascriptInterface
+    public void openNotificationAccess() {
+        media.openNotificationAccess();
     }
 
     @JavascriptInterface
