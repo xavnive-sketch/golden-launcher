@@ -41,24 +41,36 @@
             font-family: 'Rajdhani', sans-serif;
         }
 
-        /* Sci-Fi Glass Panels */
+        /* ===== Rediseño 2026: paneles de vidrio, cian + dorado ===== */
+        :root { --gl-cyan: #00e5ff; --gl-gold: #f5b700; --gl-ok: #2ef2a4; --gl-line: rgba(120, 180, 255, .10); --gl-muted: #6f87a8; }
+        body {
+            background:
+                radial-gradient(900px 500px at 50% 60%, rgba(0, 229, 255, .09), transparent 60%),
+                radial-gradient(700px 400px at 50% 112%, rgba(245, 183, 0, .10), transparent 70%),
+                #04070f !important;
+        }
         .cyber-panel {
-            background: linear-gradient(135deg, rgba(6, 20, 38, 0.95) 0%, rgba(2, 10, 20, 0.98) 100%);
-            border: 1px solid #0e3459;
-            box-shadow: inset 0 0 15px rgba(0, 240, 255, 0.05), 0 4px 20px rgba(0, 0, 0, 0.8);
-            border-radius: 12px;
+            background: rgba(12, 22, 40, .72);
+            border: 1px solid var(--gl-line);
+            border-radius: 22px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04), 0 18px 45px rgba(0, 0, 0, .45);
             position: relative;
         }
-
-        .cyber-panel::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 10%;
-            right: 10%;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.5), transparent);
-        }
+        .cyber-panel .cyber-panel { border-radius: 18px; background: rgba(255, 255, 255, .025); box-shadow: none; }
+        .bg-dash-panel { background-color: rgba(255, 255, 255, .03) !important; border-radius: 16px !important; }
+        .border-dash-border { border-color: var(--gl-line) !important; }
+        .gl-label { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--gl-muted); font-weight: 700; }
+        .gl-track { height: 6px; border-radius: 6px; background: rgba(255, 255, 255, .07); overflow: hidden; }
+        .gl-fill { height: 100%; border-radius: 6px; background: linear-gradient(90deg, #00e5ff, #7af6ff); box-shadow: 0 0 12px rgba(0, 229, 255, .5); transition: width .6s; }
+        .gl-fill.g { background: linear-gradient(90deg, #2ef2a4, #f5b700); box-shadow: 0 0 12px rgba(46, 242, 164, .35); }
+        .gl-btn { width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--gl-line); display: flex; align-items: center; justify-content: center; color: #fff; }
+        .gl-btn.p { width: 50px; height: 50px; background: var(--gl-cyan); color: #00151a; border: 0; box-shadow: 0 0 22px rgba(0, 229, 255, .5); }
+        .gauge-arc { transition: stroke-dashoffset .6s ease; }
+        /* Dock inferior */
+        .dock-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; width: 112px; height: 68px; border-radius: 16px;
+                    color: var(--gl-muted); font-weight: 700; font-size: 13px; transition: background .2s, color .2s; }
+        .dock-btn.on { color: var(--gl-cyan); background: rgba(0, 229, 255, .08); box-shadow: inset 0 -3px 0 var(--gl-cyan); }
+        .dock-btn:active { transform: scale(.95); }
 
         .text-glow {
             text-shadow: 0 0 10px rgba(0, 240, 255, 0.7);
@@ -107,8 +119,8 @@
 
         /* MODO NOCHE */
         body.night-mode .cyber-panel,
-        body.night-mode header,
-        body.night-mode footer {
+        body.night-mode #topbar,
+        body.night-mode #dock {
             filter: brightness(0.55) saturate(0.8);
         }
         body.night-mode #btn-night { filter: none; background: #241b0b; border-color: #8a6b2b; color: #ffcf72; }
@@ -123,7 +135,7 @@
         .splash-glow { animation: splash-pulse 2.6s ease-in-out infinite; }
     </style>
 </head>
-<body class="flex flex-col justify-between p-2 text-xs select-none">
+<body class="flex flex-col px-6 py-3 gap-3 text-xs select-none">
     <script>
         // Escala el lienzo de 1280x720 a la pantalla real, centrado
         (function () {
@@ -146,261 +158,138 @@
         <div class="relative w-72 h-1 bg-dash-border/60 rounded-full mt-10 overflow-hidden"><div class="splash-bar h-full bg-dash-cyan rounded-full"></div></div>
     </div>
 
-    <!-- ==================== 1. TOP HEADER BAR ==================== -->
-    <header class="cyber-panel px-3 py-2 flex items-center justify-between gap-2 h-[52px]">
-        <!-- Brand & Vehicle Model -->
+    <!-- ==================== 1. BARRA SUPERIOR ==================== -->
+    <header id="topbar" class="relative flex items-center gap-4 h-[52px] shrink-0">
         <div class="flex items-center gap-3">
-            <div class="flex items-center gap-2">
-                <svg class="w-8 h-8 text-dash-cyan" viewBox="0 0 40 40" fill="none">
-                    <path d="M20 2L36 10V30 L20 38 L4 30 V10 Z" stroke="#00f0ff" stroke-width="2" fill="rgba(0,240,255,0.1)"/>
-                    <path d="M12 22 L20 12 L28 22 L20 30 Z" fill="#00f0ff"/>
-                </svg>
-                <div>
-                    <div class="font-orbitron font-black text-white text-sm tracking-wider leading-none">MACHINE</div>
-                    <div class="text-[9px] text-dash-cyan font-bold tracking-widest leading-none">OUTDOORS</div>
-                </div>
-            </div>
-
-            <div class="h-6 w-[1px] bg-dash-border"></div>
-
+            <img src="assets/logo.png" alt="Golden Dragon" class="h-10" style="filter:drop-shadow(0 0 8px rgba(245,183,0,.35))">
             <div>
-                <h1 class="font-orbitron font-bold text-white text-sm sm:text-base leading-tight flex items-center gap-2">
-                    Golden Dragon XML6609
-                </h1>
-                <div class="text-[10px] text-dash-cyan font-bold tracking-wider leading-none">TRANSPORTE ESCOLAR</div>
+                <div class="font-orbitron font-extrabold text-white text-[15px] tracking-wider leading-none">XML6609</div>
+                <div class="text-[10px] font-bold tracking-[0.3em] leading-none mt-1" style="color:#f5b700">TRANSPORTE ESCOLAR</div>
             </div>
         </div>
-
-        <!-- Status Badge -->
-        <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-dash-cyan/10 border border-dash-cyan/40">
+        <div class="flex items-center gap-2 px-4 py-2 rounded-full border border-dash-border" style="background:rgba(255,255,255,.04)">
             <span class="relative flex w-2.5 h-2.5">
                 <span id="status-ping" class="absolute inline-flex w-full h-full rounded-full bg-dash-muted opacity-75"></span>
                 <span id="status-dot" class="relative inline-flex w-2.5 h-2.5 rounded-full bg-dash-muted"></span>
             </span>
-            <span id="status-label" class="font-orbitron text-dash-muted font-bold text-xs">SIN DATOS</span>
-            <span id="status-sub" class="text-dash-muted text-[11px]">Conectando…</span>
+            <span id="status-label" class="font-orbitron text-dash-muted font-bold text-sm">SIN DATOS</span>
+            <span id="status-sub" class="text-dash-muted text-xs max-w-[190px] truncate">Conectando…</span>
         </div>
-
-        <!-- Clock, Weather, Networks -->
-        <div class="flex items-center gap-4 text-xs font-semibold">
-            <!-- Date & Clock -->
-            <div class="text-right border-r border-dash-border pr-3">
-                <div id="header-date" class="text-[11px] text-dash-muted uppercase font-orbitron leading-none mb-0.5">--</div>
-                <div id="header-clock" class="text-[32px] font-orbitron font-extrabold text-white text-glow leading-none">--:--</div>
-            </div>
-
-            <!-- Weather -->
-            <div class="flex items-center gap-1.5 border-r border-dash-border pr-3">
+        <div class="absolute left-1/2 -translate-x-1/2 text-center">
+            <div id="header-clock" class="font-orbitron font-extrabold text-white text-[40px] leading-none tracking-wide" style="text-shadow:0 0 22px rgba(0,229,255,.35)">--:--</div>
+            <div id="header-date" class="font-orbitron text-[11px] text-dash-muted uppercase tracking-[0.25em] mt-1">--</div>
+        </div>
+        <div class="ml-auto flex items-center gap-4 text-sm font-bold">
+            <div class="flex items-center gap-1.5">
                 <span id="weather-icon"><i data-lucide="cloud-off" class="w-6 h-6 text-dash-muted"></i></span>
-                <div>
-                    <div id="weather-temp" class="font-orbitron text-white font-bold text-xs">--°C</div>
-                    <div id="weather-place" class="text-[9px] text-dash-muted">Cargando clima…</div>
-                </div>
+                <div class="leading-none"><div id="weather-temp" class="font-orbitron text-white text-sm">--°C</div><div id="weather-place" class="text-[9px] text-dash-muted mt-0.5 max-w-[90px] truncate">Cargando clima…</div></div>
             </div>
-
-            <!-- Signals & Battery -->
-            <div class="flex items-center gap-2.5">
-                <span id="net-icon" class="text-dash-cyan"><i data-lucide="wifi" class="w-5 h-5"></i></span>
-                <span id="net-type" class="text-dash-cyan font-orbitron text-[10px] font-bold">--</span>
-                <div id="batt-box" class="flex items-center gap-1 bg-dash-panel border border-dash-border px-2 py-0.5 rounded" title="Batería de la radio">
-                    <span id="batt-icon"><i data-lucide="battery" class="w-5 h-5 text-dash-muted"></i></span>
-                    <span id="batt-pct" class="font-orbitron text-white text-xs">--%</span>
-                </div>
-                <button onclick="toggleNight()" id="btn-night" class="bg-dash-panel border border-dash-border px-2 py-0.5 rounded text-dash-cyan hover:text-white text-xs" title="Modo noche">☾</button>
+            <span id="foot-obd" class="flex items-center gap-1 text-dash-muted"><i data-lucide="bluetooth" class="w-5 h-5"></i>OBD</span>
+            <span id="foot-gps" class="flex items-center gap-1 text-dash-muted"><i data-lucide="navigation" class="w-5 h-5"></i>GPS</span>
+            <span id="foot-net" class="flex items-center gap-1 text-dash-muted"><span id="net-icon"><i data-lucide="wifi" class="w-5 h-5"></i></span><span id="net-type" class="text-[11px]">--</span></span>
+            <span id="foot-net-txt" class="hidden"></span>
+            <div id="batt-box" class="flex items-center gap-1" title="Batería de la radio">
+                <span id="batt-icon"><i data-lucide="battery" class="w-5 h-5 text-dash-muted"></i></span>
+                <span id="batt-pct" class="font-orbitron text-white text-xs">--%</span>
             </div>
+            <button onclick="toggleNight()" id="btn-night" class="w-10 h-10 rounded-full border border-dash-border text-dash-cyan text-lg" title="Modo noche">☾</button>
         </div>
     </header>
 
     <!-- ==================== 2. MAIN DASHBOARD CONTENT ==================== -->
-    <div class="grid grid-cols-12 gap-2 my-1 flex-grow min-h-0">
+    <div id="pages" class="relative flex-1 min-h-0">
 
-        <!-- ===== LEFT SIDEBAR MENU (2 COLS) ===== -->
-        <aside class="col-span-2 cyber-panel p-2 flex flex-col justify-between">
-            <nav class="space-y-1">
-                <button onclick="setPage('inicio')" data-page="inicio" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-base bg-dash-cyan/20 border border-dash-cyan text-dash-cyan font-bold font-orbitron shadow-[0_0_10px_rgba(0,240,255,0.2)]">
-                    <i data-lucide="home" class="w-7 h-7"></i>
-                    <span>Inicio</span>
-                </button>
-                <button onclick="setPage('tablero')" data-page="tablero" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
-                    <i data-lucide="gauge" class="w-7 h-7"></i>
-                    <span>Tablero</span>
-                </button>
-                <button onclick="setPage('mapa')" data-page="mapa" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
-                    <i data-lucide="map" class="w-7 h-7"></i>
-                    <span>Mapa</span>
-                </button>
-                <button onclick="setPage('musica')" data-page="musica" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
-                    <i data-lucide="music" class="w-7 h-7"></i>
-                    <span>Música</span>
-                </button>
-                <button onclick="setPage('autonomia')" data-page="autonomia" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
-                    <i data-lucide="battery-full" class="w-7 h-7"></i>
-                    <span>Autonomía</span>
-                </button>
-                <button onclick="setPage('registro')" data-page="registro" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
-                    <i data-lucide="clipboard-list" class="w-7 h-7"></i>
-                    <span>Registro</span>
-                </button>
-                <button onclick="setPage('diagnostico')" data-page="diagnostico" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
-                    <i data-lucide="activity" class="w-7 h-7"></i>
-                    <span>Diagnóstico</span>
-                </button>
-                <button onclick="setPage('jarvis')" data-page="jarvis" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
-                    <i data-lucide="bot" class="w-7 h-7"></i>
-                    <span>J.A.R.V.I.S.</span>
-                </button>
-                <button onclick="setPage('ajustes')" data-page="ajustes" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold">
-                    <i data-lucide="settings" class="w-7 h-7"></i>
-                    <span>Ajustes</span>
-                </button>
-            </nav>
 
-            <!-- Logo: al tocarlo abre el cajón de apps instaladas -->
-            <div onclick="openApps()" class="p-2 bg-dash-panel/80 border border-dash-border rounded-lg text-center cursor-pointer hover:border-dash-cyan active:scale-95 transition" title="Ver apps instaladas">
-                <!-- Logo de la marca: se carga de assets/logo.png; si no existe, se muestra el texto -->
-                <img src="assets/logo.png" alt="Golden Dragon" class="brand-logo h-16 w-full object-contain mx-auto mb-1.5" style="filter:drop-shadow(0 0 6px rgba(0,240,255,.3))" onerror="this.nextElementSibling.classList.remove('hidden'); this.remove()">
-                <div class="hidden font-orbitron font-black text-sm tracking-widest leading-tight mb-1" style="color:#f5b700;text-shadow:0 0 10px rgba(245,183,0,.45)">GOLDEN<br>DRAGON</div>
-                <div class="text-dash-cyan font-bold text-[11px] font-orbitron">XML6609</div>
-                <div class="text-dash-muted text-[9px]">18 pasajeros</div>
-                <div class="text-[8px] text-dash-muted italic mt-1 border-t border-dash-border/50 pt-1">
-                    Tu seguridad, nuestro destino
+
+        <!-- ===== INICIO ===== -->
+        <main id="page-inicio" class="absolute inset-0 grid gap-4" style="grid-template-columns:340px 1fr 340px">
+            <!-- Izquierda: velocímetro + barras -->
+            <div class="cyber-panel p-5 flex flex-col">
+                <div class="relative w-[270px] h-[270px] mx-auto">
+                    <svg class="absolute inset-0" viewBox="0 0 300 300">
+                        <defs>
+                            <linearGradient id="ggs" x1="0" x2="1"><stop offset="0" stop-color="#00e5ff"/><stop offset="1" stop-color="#7af6ff"/></linearGradient>
+                            <linearGradient id="ggr" x1="0" x2="1"><stop offset="0" stop-color="#f5b700"/><stop offset="1" stop-color="#ff7a00"/></linearGradient>
+                        </defs>
+                        <circle cx="150" cy="150" r="138" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="6" stroke-dasharray="650 1000" transform="rotate(135 150 150)" stroke-linecap="round"/>
+                        <circle id="i-rpm-arc" class="gauge-arc" cx="150" cy="150" r="138" fill="none" stroke="url(#ggr)" stroke-width="6" stroke-dasharray="0 1000" transform="rotate(135 150 150)" stroke-linecap="round"/>
+                        <circle cx="150" cy="150" r="118" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="14" stroke-dasharray="556 1000" transform="rotate(135 150 150)" stroke-linecap="round"/>
+                        <circle id="i-spd-arc" class="gauge-arc" cx="150" cy="150" r="118" fill="none" stroke="url(#ggs)" stroke-width="14" stroke-dasharray="0 1000" transform="rotate(135 150 150)" stroke-linecap="round" style="filter:drop-shadow(0 0 8px rgba(0,229,255,.6))"/>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <div id="i-speed" class="font-orbitron font-black text-white leading-none" style="font-size:86px">--</div>
+                        <div class="font-orbitron text-dash-muted text-xs tracking-[0.3em] mt-1">KM/H</div>
+                        <div class="font-orbitron font-bold text-[15px] mt-3" style="color:#f5b700"><span id="i-rpm">--</span> RPM</div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-x-4 gap-y-4 mt-auto">
+                    <div><div class="flex justify-between items-baseline"><span class="gl-label">Motor</span><span id="m-temp" class="font-orbitron font-extrabold text-white text-xl">--°C</span></div><div class="gl-track mt-1.5"><div id="m-temp-bar" class="gl-fill g" style="width:0%"></div></div></div>
+                    <div><div class="flex justify-between items-baseline"><span class="gl-label">Carga</span><span id="val-load" class="font-orbitron font-extrabold text-white text-xl">--%</span></div><div class="gl-track mt-1.5"><div id="i-load-bar" class="gl-fill" style="width:0%"></div></div></div>
+                    <div><div class="flex justify-between items-baseline"><span class="gl-label">Pedal</span><span id="i-pedal" class="font-orbitron font-extrabold text-white text-xl">--%</span></div><div class="gl-track mt-1.5"><div id="i-pedal-bar" class="gl-fill" style="width:0%"></div></div></div>
+                    <div><div class="flex justify-between items-baseline"><span class="gl-label">Batería</span><span id="val-volts" class="font-orbitron font-extrabold text-white text-xl">-- V</span></div><div class="gl-track mt-1.5"><div id="i-volts-bar" class="gl-fill g" style="width:0%"></div></div></div>
                 </div>
             </div>
-        </aside>
 
-        <!-- ===== CENTER & RIGHT MAIN DISPLAY GRID (10 COLS) ===== -->
-        <main class="col-span-10 grid grid-cols-10 gap-2 h-full" id="page-inicio">
-            <!-- ===== PÁGINA INICIO (dashboard principal) ===== -->
+            <!-- Centro: bus 3D + viaje -->
+            <div class="relative flex flex-col gap-4 min-w-0">
+                <div class="bus-3d-box relative flex-1 min-h-0 rounded-[22px] overflow-hidden">
+                    <div class="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 px-3.5 py-1 rounded-lg font-orbitron font-extrabold text-xs tracking-[0.25em]" style="color:#f5b700;border:1px solid rgba(245,183,0,.5);background:rgba(4,7,15,.8)">GOLDEN DRAGON</div>
+                </div>
+                <div class="cyber-panel h-[96px] shrink-0 grid grid-cols-4 items-center text-center">
+                    <div class="border-r border-dash-border"><div class="gl-label">Viaje</div><div id="m-trip" class="font-orbitron font-extrabold text-white text-2xl mt-1">-- km</div></div>
+                    <div class="border-r border-dash-border"><div class="gl-label">Tiempo</div><div id="m-time" class="font-orbitron font-extrabold text-white text-2xl mt-1">--:--</div></div>
+                    <div class="border-r border-dash-border"><div class="gl-label">Autonomía</div><div id="m-range" class="font-orbitron font-extrabold text-white text-2xl mt-1">-- km</div></div>
+                    <div><div id="val-odo-lbl" class="gl-label">Kilometraje</div><div id="val-odo" class="font-orbitron font-extrabold text-white text-lg mt-1.5">-- km</div></div>
+                </div>
+            </div>
 
-            <!-- UPPER COCKPIT: GAUGES, BUS PHOTO & VEHICLE STATUS (10 COLS GRID) -->
-            <section class="col-span-10 grid grid-cols-10 gap-2 h-full">
-                
-                <!-- GAUGES & BUS IMAGE (10 COLS) -->
-                <div class="col-span-7 cyber-panel p-2 flex flex-col justify-between">
-                    
-
-                    
-
-                        <!-- Center Bus Image -->
-                        
-
-                        
-
-                    <div class="flex flex-col items-center justify-center relative w-full">
-                            <div class="bus-3d-box relative w-full h-[340px] shrink-0 rounded-lg overflow-hidden border border-dash-border flex items-center justify-center shadow-inner">
-                                <div class="absolute bottom-2 bg-dash-bg/90 border border-dash-cyan/60 px-2 py-0.5 rounded-full z-20">
-                                    <span class="font-orbitron font-bold text-white text-[9px] tracking-wider">XML6609</span>
-                                </div>
-                            </div>
-                        </div>
-
-                    <!-- Tarjetas: mantenimiento, alertas y accesos rápidos -->
-                    <div class="grid grid-cols-3 gap-2 flex-1 my-2 min-h-0">
-                        <div class="bg-dash-panel border border-dash-border rounded-lg p-3 flex flex-col justify-between">
-                            <div class="flex items-center gap-2 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="wrench" class="w-6 h-6 text-dash-cyan"></i> Próximo cambio de aceite</div>
-                            <div><span id="mt-left" class="font-orbitron font-bold text-white text-2xl">--</span> <span id="mt-unit" class="text-dash-cyan font-orbitron text-sm">km</span></div>
-                            <div class="h-1.5 w-full bg-dash-border/50 rounded overflow-hidden"><div id="mt-bar" class="h-full bg-dash-cyan rounded" style="width:0%"></div></div>
-                            <div id="mt-sub" class="text-[11px] text-dash-muted">Registra el último cambio de aceite</div>
-                        </div>
-                        <div class="bg-dash-panel border border-dash-border rounded-lg p-3 flex flex-col">
-                            <div class="flex items-center gap-2 text-[11px] text-dash-muted font-bold uppercase mb-2"><i data-lucide="bell" class="w-6 h-6 text-dash-cyan"></i> Alertas</div>
-                            <div id="alert-list" class="flex-1 overflow-y-auto space-y-1 text-sm"><div class="text-dash-muted">--</div></div>
-                        </div>
-                        <div class="bg-dash-panel border border-dash-border rounded-lg p-3 flex flex-col gap-2 justify-center">
-                            <button onclick="openCargaModal()" class="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-dash-cyan/50 text-dash-cyan font-bold text-sm hover:bg-dash-cyan/10"><i data-lucide="fuel" class="w-6 h-6"></i> Registrar carga</button>
-                            <button onclick="setPage('registro')" class="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-dash-border text-white font-bold text-sm hover:bg-dash-border/40"><i data-lucide="wrench" class="w-6 h-6 text-dash-cyan"></i> Mantenimiento</button>
-                            <button onclick="toggleNight()" class="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-dash-border text-white font-bold text-sm hover:bg-dash-border/40"><i data-lucide="moon" class="w-6 h-6 text-dash-cyan"></i> Modo noche</button>
-                        </div>
+            <!-- Derecha: música, combustible, aceite, estado -->
+            <div class="flex flex-col gap-3 min-h-0">
+                <div class="cyber-panel p-3.5 flex gap-3.5 items-center">
+                    <div onclick="setPage('musica')" class="w-[86px] h-[86px] shrink-0 rounded-2xl overflow-hidden flex items-center justify-center cursor-pointer" style="background:linear-gradient(135deg,#123a5a,#08182b)">
+                        <img id="hm-art" class="w-full h-full object-cover hidden" alt="">
+                        <i id="hm-art-ph" data-lucide="music-2" class="w-10 h-10 text-dash-cyan"></i>
                     </div>
-
-                        <!-- Telemetry Sensors Bar -->
-                    <div class="grid grid-cols-5 gap-1 pt-1.5 border-t border-dash-border/60 text-center">
-                        <div class="bg-dash-panel border border-dash-border p-1 rounded-md">
-                            <div class="text-[11px] text-dash-muted flex items-center justify-center gap-1">
-                                <i data-lucide="gauge" class="w-6 h-6 text-dash-cyan"></i>
-                                <span>Velocidad</span>
-                            </div>
-                            <div id="val-speed" class="font-orbitron font-bold text-white text-base">-- km/h</div>
-                        </div>
-                        <div class="bg-dash-panel border border-dash-border p-1 rounded-md">
-                            <div class="text-[11px] text-dash-muted flex items-center justify-center gap-1">
-                                <i data-lucide="zap" class="w-6 h-6 text-dash-cyan"></i>
-                                <span>Voltaje Batería</span>
-                            </div>
-                            <div id="val-volts" class="font-orbitron font-bold text-white text-base">-- V</div>
-                        </div>
-                        <div class="bg-dash-panel border border-dash-border p-1 rounded-md">
-                            <div class="text-[11px] text-dash-muted flex items-center justify-center gap-1">
-                                <i data-lucide="cpu" class="w-6 h-6 text-dash-cyan"></i>
-                                <span>Carga Motor</span>
-                            </div>
-                            <div id="val-load" class="font-orbitron font-bold text-white text-base">--%</div>
-                        </div>
-                        <div class="bg-dash-panel border border-dash-border p-1 rounded-md">
-                            <div class="text-[11px] text-dash-muted flex items-center justify-center gap-1">
-                                <i data-lucide="activity" class="w-6 h-6 text-dash-cyan"></i>
-                                <span>RPM Motor</span>
-                            </div>
-                            <div id="val-rpm" class="font-orbitron font-bold text-white text-base">--</div>
-                        </div>
-                        <div class="bg-dash-panel border border-dash-border p-1 rounded-md">
-                            <div class="text-[11px] text-dash-muted flex items-center justify-center gap-1">
-                                <i data-lucide="milestone" class="w-6 h-6 text-dash-cyan"></i>
-                                <span id="val-odo-lbl">Kilometraje</span>
-                            </div>
-                            <div id="val-odo" class="font-orbitron font-bold text-white text-base">-- km</div>
+                    <div class="min-w-0 flex-1">
+                        <div id="hm-app" class="gl-label truncate" style="color:#1db954">Música</div>
+                        <div id="hm-title" class="text-white font-extrabold text-[17px] leading-tight truncate">Sin reproducción</div>
+                        <div id="hm-artist" class="text-dash-muted text-sm truncate">Toca la carátula para abrir</div>
+                        <div class="flex items-center gap-2.5 mt-2">
+                            <button onclick="musicCmd('prev')" class="gl-btn"><i data-lucide="skip-back" class="w-4 h-4"></i></button>
+                            <button onclick="musicCmd('toggle')" class="gl-btn p"><span id="hm-play"><i data-lucide="play" class="w-5 h-5"></i></span></button>
+                            <button onclick="musicCmd('next')" class="gl-btn"><i data-lucide="skip-forward" class="w-4 h-4"></i></button>
                         </div>
                     </div>
                 </div>
-
-                <!-- METRICS PANEL (derecha, estilo referencia) -->
-                <div class="col-span-3 cyber-panel p-2 flex flex-col justify-between gap-2">
-                    <div class="flex items-center justify-between bg-dash-panel border border-dash-border p-2 rounded">
-                        <div>
-                            <div class="text-[11px] text-dash-muted font-bold uppercase flex items-center gap-1"><i data-lucide="thermometer" class="w-6 h-6 text-dash-cyan"></i> Temperatura</div>
-                            <div id="m-temp" class="font-orbitron font-bold text-white text-lg">--°C</div>
-                        </div>
-                        <div class="w-14 h-1.5 bg-dash-border/50 rounded overflow-hidden"><div id="m-temp-bar" class="h-full bg-gradient-to-r from-dash-green to-dash-amber rounded" style="width:0%"></div></div>
+                <div class="cyber-panel px-4 py-3.5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(245,183,0,.1);color:#f5b700"><i data-lucide="fuel" class="w-5 h-5"></i></div>
+                        <div class="flex-1"><div class="gl-label">Combustible</div><div id="m-fuel" class="font-orbitron font-extrabold text-white text-2xl leading-none mt-1">--%</div></div>
                     </div>
-                    <div class="flex items-center justify-between bg-dash-panel border border-dash-border p-2 rounded">
-                        <div>
-                            <div class="text-[11px] text-dash-muted font-bold uppercase flex items-center gap-1"><i data-lucide="fuel" class="w-6 h-6 text-dash-cyan"></i> Autonomía Segura</div>
-                            <div id="m-range" class="font-orbitron font-bold text-white text-lg">-- km</div>
-                        </div>
-                        <i data-lucide="navigation" class="w-6 h-6 text-dash-cyan"></i>
-                    </div>
-                    <div class="flex items-center justify-between bg-dash-panel border border-dash-border p-2 rounded">
-                        <div>
-                            <div class="text-[11px] text-dash-muted font-bold uppercase flex items-center gap-1"><i data-lucide="gauge" class="w-6 h-6 text-dash-cyan"></i> Combustible</div>
-                            <div id="m-fuel" class="font-orbitron font-bold text-white text-lg">--%</div>
-                        </div>
-                        <div class="w-14 h-1.5 bg-dash-border/50 rounded overflow-hidden"><div id="m-fuel-bar" class="h-full bg-dash-cyan rounded" style="width:0%"></div></div>
-                    </div>
-                    <div class="flex items-center justify-between bg-dash-panel border border-dash-border p-2 rounded">
-                        <div>
-                            <div class="text-[11px] text-dash-muted font-bold uppercase flex items-center gap-1"><i data-lucide="route" class="w-6 h-6 text-dash-cyan"></i> Viaje Actual</div>
-                            <div id="m-trip" class="font-orbitron font-bold text-white text-lg">-- km</div>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-[10px] text-dash-muted uppercase">Tiempo</div>
-                            <div id="m-time" class="font-orbitron font-bold text-white text-base">--:--</div>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between bg-dash-panel border border-dash-border p-2 rounded">
-                        <div class="flex items-center gap-1 text-[11px] text-dash-cyan font-bold"><i data-lucide="crosshair" class="w-6 h-6"></i> <span id="m-gps">--.--, --.--</span></div>
-                        <div class="flex items-center gap-1 text-[11px] text-dash-green font-bold"><span id="m-obd">OBD: --</span></div>
-                    </div>
+                    <div class="gl-track mt-3"><div id="m-fuel-bar" class="gl-fill g" style="width:0%"></div></div>
                 </div>
-
-            </section>
-
-            
-
+                <div class="cyber-panel px-4 py-3.5 cursor-pointer" onclick="setPage('registro')">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(0,229,255,.08);color:#00e5ff"><i data-lucide="wrench" class="w-5 h-5"></i></div>
+                        <div class="flex-1 min-w-0"><div class="gl-label">Cambio de aceite</div><div class="leading-none mt-1"><span id="mt-left" class="font-orbitron font-extrabold text-white text-2xl">--</span> <span id="mt-unit" class="text-dash-muted text-sm">km</span></div></div>
+                    </div>
+                    <div class="gl-track mt-3"><div id="mt-bar" class="gl-fill" style="width:0%"></div></div>
+                    <div id="mt-sub" class="text-[11px] text-dash-muted mt-1.5 truncate">Registra el último cambio de aceite</div>
+                </div>
+                <div class="cyber-panel px-4 py-3 flex-1 min-h-0 flex flex-col">
+                    <div class="flex items-center gap-3 mb-1.5">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(46,242,164,.1);color:#2ef2a4"><i data-lucide="shield-check" class="w-5 h-5"></i></div>
+                        <div class="gl-label">Estado</div>
+                        <div class="ml-auto text-right leading-tight"><div id="m-obd" class="text-[11px] font-bold text-dash-muted">OBD: --</div><div id="m-gps" class="text-[10px] text-dash-muted">--</div></div>
+                    </div>
+                    <div id="alert-list" class="flex-1 overflow-y-auto space-y-1 text-sm min-h-0"><div class="text-dash-muted">--</div></div>
+                </div>
+            </div>
         </main>
     
 
     <!-- ==================== PÁGINA: REGISTRO ==================== -->
-    <div id="page-registro" class="hidden col-span-10 cyber-panel p-2 h-full flex flex-col overflow-hidden">
+    <div id="page-registro" class="hidden absolute inset-0 cyber-panel p-2 h-full flex flex-col overflow-hidden">
         <div class="grid grid-cols-12 gap-2 flex-grow h-full min-h-0">
             <!-- Lista -->
             <div class="col-span-7 cyber-panel p-2 flex flex-col overflow-y-auto">
@@ -459,7 +348,7 @@
     </div>
 
     <!-- ==================== PÁGINA: AJUSTES ==================== -->
-    <div id="page-ajustes" class="hidden col-span-10 cyber-panel p-2 h-full overflow-hidden">
+    <div id="page-ajustes" class="hidden absolute inset-0 cyber-panel p-2 h-full overflow-hidden">
         <div class="grid grid-cols-3 gap-2 h-full min-h-0">
             <div class="cyber-panel p-2 flex flex-col overflow-y-auto min-h-0">
                 <h2 class="font-orbitron font-bold text-white text-sm tracking-wider mb-3 pb-1.5 border-b border-dash-border">HERMES AGENT</h2>
@@ -529,69 +418,51 @@
                     <p>🔑 Si no marcas «Recordar», la clave se borra al cerrar el navegador. Si la marcas, queda guardada <b class="text-white">sin cifrar</b> en esta radio: usa una clave propia de la radio que puedas revocar.</p>
                     <p>📱 Vehículo: <b class="text-white">Golden Dragon XML6609</b> · Transporte escolar · 18 pasajeros.</p>
                     <p>📍 Ubicación base: <b class="text-dash-cyan">Guayaquil, Ecuador</b>.</p>
+                    <p>ℹ️ Versión: <b id="app-ver" class="text-white">v3.0</b></p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- ==================== PÁGINA: TABLERO (TABLERO GENERAL) ==================== -->
-    <div id="page-tablero" class="hidden col-span-10 cyber-panel p-2 h-full flex flex-col">
-        <div class="flex items-center justify-between mb-2 pb-1 border-b border-dash-border">
-            <h2 class="font-orbitron font-bold text-white text-xs tracking-wider">TABLERO GENERAL</h2>
-            <span class="text-[9px] text-dash-cyan font-semibold">ÚLT. ACTUALIZACIÓN <span id="t-upd">--:--:--</span> · TRANSMISIÓN MANUAL</span>
-        </div>
-        <div class="grid grid-cols-3 gap-2 mb-2 flex-[1.4]">
-            <div class="bg-dash-panel border border-dash-border p-2 rounded flex flex-col items-center justify-center relative">
-                <svg class="w-44 h-44" viewBox="0 0 120 120">
-                    <circle cx="60" cy="60" r="50" stroke="#0a1a2e" stroke-width="7" fill="none"/>
-                    <circle id="tab-gauge-rpm" cx="60" cy="60" r="50" stroke="#00f0ff" stroke-width="7" fill="none" stroke-dasharray="314" stroke-dashoffset="235" stroke-linecap="round"/>
-                    <circle cx="60" cy="60" r="44" stroke="#092038" stroke-width="2" fill="none"/>
+    <div id="page-tablero" class="hidden absolute inset-0 grid gap-4" style="grid-template-columns:1.4fr 4fr">
+        <!-- RPM + velocidad -->
+        <div class="cyber-panel p-4 flex flex-col items-center justify-center relative">
+            <div class="relative w-[300px] h-[300px] max-w-full">
+                <svg class="absolute inset-0 -rotate-90" viewBox="0 0 120 120">
+                    <defs><linearGradient id="tgr" x1="0" x2="1"><stop offset="0" stop-color="#f5b700"/><stop offset="1" stop-color="#ff7a00"/></linearGradient></defs>
+                    <circle cx="60" cy="60" r="50" stroke="rgba(255,255,255,.06)" stroke-width="6" fill="none"/>
+                    <circle id="tab-gauge-rpm" class="gauge-arc" cx="60" cy="60" r="50" stroke="url(#tgr)" stroke-width="6" fill="none" stroke-dasharray="314" stroke-dashoffset="314" stroke-linecap="round" style="filter:drop-shadow(0 0 4px rgba(245,183,0,.55))"/>
                 </svg>
-                <div class="absolute text-center">
-                    <div id="t-rpm" class="font-orbitron font-black text-white text-3xl">--</div>
-                    <div class="text-xs text-dash-muted font-bold">RPM</div>
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-                <div class="bg-dash-panel border border-dash-border p-2 rounded flex flex-col items-center justify-center gap-1">
-                    <i data-lucide="thermometer" class="w-8 h-8 text-dash-cyan"></i>
-                    <div class="text-[11px] text-dash-muted font-bold uppercase">Temp Refrigerante</div>
-                    <div id="t-temp" class="font-orbitron font-bold text-white text-2xl">--</div>
-                </div>
-                <div class="bg-dash-panel border border-dash-border p-2 rounded flex flex-col items-center justify-center gap-1">
-                    <span id="t-top2-icon"><i data-lucide="flame" class="w-8 h-8 text-dash-cyan"></i></span>
-                    <div id="t-top2-label" class="text-[11px] text-dash-muted font-bold uppercase">Temp Aceite</div>
-                    <div id="t-oil" class="font-orbitron font-bold text-white text-2xl">--</div>
-                </div>
-            </div>
-            <div class="bg-dash-panel border border-dash-border p-2 rounded flex flex-col items-center justify-center relative">
-                <svg class="w-44 h-44" viewBox="0 0 120 120">
-                    <circle cx="60" cy="60" r="50" stroke="#0a1a2e" stroke-width="7" fill="none"/>
-                    <circle id="tab-gauge-speed" cx="60" cy="60" r="50" stroke="#00f0ff" stroke-width="7" fill="none" stroke-dasharray="314" stroke-dashoffset="230" stroke-linecap="round"/>
-                    <circle cx="60" cy="60" r="44" stroke="#092038" stroke-width="2" fill="none"/>
+                <svg class="absolute inset-[30px] -rotate-90" viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="50" stroke="rgba(255,255,255,.05)" stroke-width="5" fill="none"/>
+                    <circle id="tab-gauge-speed" class="gauge-arc" cx="60" cy="60" r="50" stroke="#00e5ff" stroke-width="5" fill="none" stroke-dasharray="314" stroke-dashoffset="314" stroke-linecap="round" style="filter:drop-shadow(0 0 4px rgba(0,229,255,.6))"/>
                 </svg>
-                <div class="absolute text-center">
-                    <div id="t-speed" class="font-orbitron font-black text-white text-3xl">--</div>
-                    <div class="text-xs text-dash-muted font-bold">km/h</div>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <div id="t-rpm" class="font-orbitron font-black text-white leading-none text-[64px]">--</div>
+                    <div class="font-orbitron text-dash-muted text-xs tracking-[0.3em] mt-1">RPM</div>
+                    <div class="font-orbitron font-bold text-dash-cyan text-lg mt-2"><span id="t-speed">--</span> KM/H</div>
                 </div>
             </div>
+            <div class="grid grid-cols-2 gap-3 w-full mt-4">
+                <div class="text-center"><div class="gl-label">Motor</div><div id="t-temp" class="font-orbitron font-extrabold text-white text-2xl mt-1">--</div></div>
+                <div class="text-center flex flex-col items-center"><span id="t-top2-icon" class="hidden"><i data-lucide="flame" class="w-4 h-4"></i></span><div id="t-top2-label" class="gl-label">Temp Aceite</div><div id="t-oil" class="font-orbitron font-extrabold text-white text-2xl mt-1">--</div></div>
+            </div>
+            <div class="absolute bottom-3 right-4 text-[10px] text-dash-muted">Act. <span id="t-upd">--:--:--</span></div>
         </div>
-        <!-- Tarjetas automáticas: se muestran primero los datos que el vehículo SÍ envía -->
-        <div id="t-tiles" class="grid grid-cols-5 grid-rows-2 gap-2 flex-[2] min-h-0"></div>
-        <div class="mt-2 text-[11px] text-dash-muted bg-dash-panel border border-dash-border p-2 rounded">
-            📡 Valores OBD-II en vivo. Las tarjetas se ordenan solas: primero los datos que tu vehículo envía. «N/D» = el vehículo no envía ese dato · «--» = sin conexión.
-        </div>
+        <!-- Tarjetas automáticas (primero los datos que el vehículo envía) -->
+        <div id="t-tiles" class="grid grid-cols-4 grid-rows-2 gap-4 min-h-0"></div>
     </div>
 
     <!-- ==================== PÁGINA: MAPA ==================== -->
-    <div id="page-mapa" class="hidden col-span-10 cyber-panel p-2 h-full">
+    <div id="page-mapa" class="hidden absolute inset-0 cyber-panel p-2 h-full">
         <h2 class="font-orbitron font-bold text-white text-xs tracking-wider mb-2 pb-1 border-b border-dash-border">UBICACIÓN EN TIEMPO REAL</h2>
         <div id="map-note" class="text-[10px] text-dash-amber mb-1"></div>
         <div id="route-map-full" class="w-full h-[calc(100%-60px)] rounded-lg overflow-hidden border border-dash-border dark-sat-tiles"></div>
     </div>
 
     <!-- ==================== PÁGINA: AUTONOMÍA ==================== -->
-    <div id="page-autonomia" class="hidden col-span-10 cyber-panel p-2 h-full flex flex-col">
+    <div id="page-autonomia" class="hidden absolute inset-0 cyber-panel p-2 h-full flex flex-col">
         <div class="flex items-center justify-between mb-2 pb-1 border-b border-dash-border">
             <h2 class="font-orbitron font-bold text-white text-xs tracking-wider">AUTONOMÍA</h2>
             <span class="text-[9px] text-dash-cyan font-semibold">ESTIMACIÓN EN TIEMPO REAL</span>
@@ -652,7 +523,7 @@
     </div>
 
     <!-- ==================== PÁGINA: DIAGNÓSTICO ==================== -->
-    <div id="page-diagnostico" class="hidden col-span-10 cyber-panel p-2 h-full overflow-y-auto">
+    <div id="page-diagnostico" class="hidden absolute inset-0 cyber-panel p-2 h-full overflow-y-auto">
         <h2 class="font-orbitron font-bold text-white text-xs tracking-wider mb-2 pb-1 border-b border-dash-border">DIAGNÓSTICO</h2>
         <div class="grid grid-cols-4 gap-2 text-center">
             <div class="bg-dash-panel border border-dash-border p-3 rounded"><div class="text-[11px] text-dash-muted">OBD-II</div><div id="d-obd" class="font-orbitron font-bold text-dash-muted text-lg">--</div><div id="d-obd-sub" class="text-[10px] text-dash-muted"></div></div>
@@ -674,7 +545,7 @@
     </div>
 
     <!-- ==================== PÁGINA: MÚSICA ==================== -->
-    <div id="page-musica" class="hidden col-span-10 cyber-panel p-2 h-full flex flex-col overflow-hidden">
+    <div id="page-musica" class="hidden absolute inset-0 cyber-panel p-2 h-full flex flex-col overflow-hidden">
         <h2 class="font-orbitron font-bold text-white text-sm tracking-wider mb-2 pb-1.5 border-b border-dash-border">MÚSICA</h2>
         <div class="grid grid-cols-12 gap-2 flex-1 min-h-0">
             <div class="col-span-7 bg-dash-panel border border-dash-border rounded-lg p-4 flex flex-col min-h-0">
@@ -716,7 +587,7 @@
     </div>
 
     <!-- ==================== PÁGINA: J.A.R.V.I.S. (consola completa) ==================== -->
-    <div id="page-jarvis" class="hidden col-span-10 cyber-panel p-2 h-full">
+    <div id="page-jarvis" class="hidden absolute inset-0 cyber-panel p-2 h-full">
         <h2 class="font-orbitron font-black text-dash-cyan text-xs tracking-widest text-glow mb-2 pb-1 border-b border-dash-border">J.A.R.V.I.S.</h2>
         <div id="jarvis-console" class="bg-dash-bg border border-dash-border rounded p-2 h-[calc(100%-90px)] overflow-y-auto text-sm font-mono text-dash-cyan whitespace-pre-wrap">[SISTEMA] Asistente listo.
 [J.A.R.V.I.S.] Configura Hermes en Ajustes para respuestas reales.</div>
@@ -728,33 +599,21 @@
 
     </div>
 
-    <!-- ==================== 3. BOTTOM SYSTEM FOOTER ==================== -->
-    <footer class="cyber-panel px-3 py-1 flex items-center justify-between text-[10px] text-dash-muted h-[28px]">
-        <div class="flex items-center gap-2">
-            <span id="foot-dot" class="w-2 h-2 rounded-full bg-dash-muted"></span>
-            <span id="foot-sys" class="text-dash-text font-semibold">Iniciando…</span>
-        </div>
-
-        <div class="flex items-center gap-6 font-semibold">
-            <span id="foot-obd" class="flex items-center gap-1 text-dash-muted">
-                <i data-lucide="activity" class="w-5 h-5"></i> Datos OBD-II
-            </span>
-            <span id="foot-gps" class="flex items-center gap-1 text-dash-muted">
-                <i data-lucide="navigation" class="w-5 h-5"></i> GPS
-            </span>
-            <span id="foot-net" class="flex items-center gap-1 text-dash-muted">
-                <i data-lucide="radio" class="w-5 h-5"></i> <span id="foot-net-txt">Red</span>
-            </span>
-        </div>
-
-        <div class="flex items-center gap-3">
-            <span id="app-ver" class="font-mono text-[9px]">v2.3.0</span>
-            <div class="flex items-center gap-1">
-                <span class="font-orbitron font-bold text-white text-[9px]">MACHINE</span>
-                <span class="text-[8px] text-dash-cyan font-bold">OUTDOORS</span>
-            </div>
-        </div>
-    </footer>
+    <!-- ==================== 3. DOCK INFERIOR ==================== -->
+    <nav id="dock" class="cyber-panel h-[84px] shrink-0 flex items-center justify-around px-3">
+        <button onclick="setPage('inicio')" data-page="inicio" class="nav-btn dock-btn on"><i data-lucide="home" class="w-7 h-7"></i><span>Inicio</span></button>
+        <button onclick="setPage('tablero')" data-page="tablero" class="nav-btn dock-btn"><i data-lucide="gauge" class="w-7 h-7"></i><span>Tablero</span></button>
+        <button onclick="setPage('mapa')" data-page="mapa" class="nav-btn dock-btn"><i data-lucide="map" class="w-7 h-7"></i><span>Mapa</span></button>
+        <button onclick="setPage('musica')" data-page="musica" class="nav-btn dock-btn"><i data-lucide="music" class="w-7 h-7"></i><span>Música</span></button>
+        <button onclick="openApps()" class="dock-btn" style="color:#f5b700" title="Apps instaladas"><img src="assets/logo.png" alt="" class="h-8">Apps</button>
+        <button onclick="setPage('autonomia')" data-page="autonomia" class="nav-btn dock-btn"><i data-lucide="battery-medium" class="w-7 h-7"></i><span>Autonomía</span></button>
+        <button onclick="setPage('registro')" data-page="registro" class="nav-btn dock-btn"><i data-lucide="clipboard-list" class="w-7 h-7"></i><span>Registro</span></button>
+        <button onclick="setPage('diagnostico')" data-page="diagnostico" class="nav-btn dock-btn"><i data-lucide="activity" class="w-7 h-7"></i><span>Diagnóstico</span></button>
+        <button onclick="setPage('jarvis')" data-page="jarvis" class="nav-btn dock-btn"><i data-lucide="bot" class="w-7 h-7"></i><span>J.A.R.V.I.S.</span></button>
+        <button onclick="setPage('ajustes')" data-page="ajustes" class="nav-btn dock-btn"><i data-lucide="settings" class="w-7 h-7"></i><span>Ajustes</span></button>
+    </nav>
+    <!-- Compatibilidad con la lógica de estado (no visibles) -->
+    <div class="hidden"><span id="foot-dot"></span><span id="foot-sys"></span></div>
 
     <!-- ==================== LOGIC & SCRIPTING ==================== -->
     <script>
@@ -809,9 +668,7 @@
         function setPage(n) {
             document.querySelectorAll('.nav-btn').forEach(b => {
                 const active = b.dataset.page === n;
-                b.className = active
-                    ? "nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-base bg-dash-cyan/20 border border-dash-cyan text-dash-cyan font-bold font-orbitron shadow-[0_0_10px_rgba(0,240,255,0.2)]"
-                    : "nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-base text-dash-muted hover:text-white hover:bg-dash-border/40 font-semibold";
+                b.classList.toggle('on', active);
             });
             ['inicio', 'tablero', 'mapa', 'musica', 'autonomia', 'registro', 'diagnostico', 'jarvis', 'ajustes'].forEach(p => {
                 const el = $('page-' + p);
@@ -819,7 +676,7 @@
             });
             // El mapa se crea al abrir la página (Leaflet falla dentro de display:none)
             if (n === 'mapa') setTimeout(initMapFull, 120);
-            if (n === 'musica') startMusic(); else stopMusic();
+            if (n === 'musica' || n === 'inicio') startMusic(); else stopMusic();
         }
 
         // ==========================================
@@ -907,6 +764,22 @@
             { k: 'vmax', icon: 'gauge', label: 'Vel. máxima', sub: 'Promedio: <span id="t-avgspd">--</span> km/h', always: true }
         ];
         let lastTileSig = null;
+        // Mini gráficas de tendencia del Tablero: últimos 40 valores de cada tarjeta (uno cada ~2 s)
+        let sparkHist = {}, sparkT = 0;
+        function sparkTick() {
+            if (Date.now() - sparkT < 2000) return;
+            sparkT = Date.now();
+            document.querySelectorAll('#t-tiles svg[id^="sp-"]').forEach(svg => {
+                const id = svg.id.slice(3), el = $(id);
+                const v = el ? parseFloat(String(el.textContent).replace(',', '.')) : NaN;
+                if (isNaN(v)) return;
+                const h = sparkHist[id] = (sparkHist[id] || []).concat(v).slice(-40);
+                if (h.length < 2) return;
+                const mn = Math.min(...h), mx = Math.max(...h), sp = (mx - mn) || 1;
+                const d = h.map((x, i) => (i ? 'L' : 'M') + (i / (h.length - 1) * 100).toFixed(1) + ',' + (32 - (x - mn) / sp * 28).toFixed(1)).join(' ');
+                svg.innerHTML = '<path d="' + d + '" fill="none" stroke="#00e5ff" stroke-width="2" vector-effect="non-scaling-stroke" opacity=".85"/>';
+            });
+        }
         function fuelIsGas() { return obdCfg().fuelType === 'GASOLINA'; }
         function renderTiles(nd) {
             const gas = fuelIsGas();
@@ -922,11 +795,16 @@
             setIcon('t-top2-icon', topLoad ? 'cpu' : 'flame', 'w-8 h-8 text-dash-cyan');
             $('t-top2-label').nextElementSibling.id = topLoad ? 't-load' : 't-oil';
             const pool = TILES.filter(t => !(topLoad && t.k === 'load'));
-            const pick = pool.filter(avail).concat(pool.filter(t => !avail(t))).slice(0, 10);
-            $('t-tiles').innerHTML = pick.map(t => '<div class="bg-dash-panel border border-dash-border p-3 rounded flex flex-col justify-center gap-1">' +
-                '<div class="flex items-center gap-1 text-[11px] text-dash-muted font-bold uppercase"><i data-lucide="' + t.icon + '" class="w-7 h-7 text-dash-cyan"></i> ' + t.label + '</div>' +
-                '<div id="' + (t.id || 't-' + t.k) + '" class="font-orbitron font-bold text-white text-2xl">--</div>' +
-                (t.sub ? '<div class="text-[10px] text-dash-muted">' + t.sub + '</div>' : '') + '</div>').join('');
+            const pick = pool.filter(avail).concat(pool.filter(t => !avail(t))).slice(0, 8);
+            $('t-tiles').innerHTML = pick.map(t => {
+                const id = t.id || 't-' + t.k;
+                return '<div class="cyber-panel p-4 flex flex-col min-h-0">' +
+                    '<div class="flex items-center gap-2"><i data-lucide="' + t.icon + '" class="w-5 h-5 text-dash-cyan"></i><span class="gl-label">' + t.label + '</span></div>' +
+                    '<div id="' + id + '" class="font-orbitron font-black text-white text-[34px] leading-none mt-auto">--</div>' +
+                    (t.sub ? '<div class="text-[10px] text-dash-muted mt-1">' + t.sub + '</div>' : '') +
+                    '<svg id="sp-' + id + '" class="w-full h-9 mt-2 shrink-0" viewBox="0 0 100 36" preserveAspectRatio="none"></svg></div>';
+            }).join('');
+            sparkHist = {};
             lucide.createIcons();
         }
 
@@ -961,6 +839,15 @@
             $('m-temp-bar').style.width = temp === null ? '0%' : Math.max(0, Math.min(100, temp / 120 * 100)) + '%';
             $('m-fuel-bar').style.width = fuel === null ? '0%' : Math.min(100, fuel) + '%';
             $('tab-gauge-rpm').style.strokeDashoffset = 314 * (1 - Math.min(1, (rpm || 0) / 4000));
+            // Inicio: arcos (270°) de velocidad (0-120 km/h) y RPM (0-4000)
+            $('i-spd-arc').setAttribute('stroke-dasharray', (556 * Math.min(1, (spd || 0) / 120)).toFixed(1) + ' 1000');
+            $('i-rpm-arc').setAttribute('stroke-dasharray', (650 * Math.min(1, (rpm || 0) / 4000)).toFixed(1) + ' 1000');
+            setText('i-speed', spd, ''); setText('i-rpm', rpm === null ? null : rpm.toLocaleString('es-EC'), '');
+            const thr = num(data.throttle), ld = num(data.load), vt = num(data.volts);
+            setText('i-pedal', thr === null ? null : Math.round(thr), '%');
+            $('i-pedal-bar').style.width = (thr || 0) + '%'; $('i-load-bar').style.width = Math.min(100, ld || 0) + '%';
+            $('i-volts-bar').style.width = vt === null ? '0%' : Math.max(0, Math.min(100, (vt - 11) / 3.5 * 100)) + '%';
+            sparkTick();
             $('tab-gauge-speed').style.strokeDashoffset = 314 * (1 - Math.min(1, (spd || 0) / 120));
             refreshOdo();
             recalcAutonomia();
@@ -972,6 +859,9 @@
             setText('t-econ', null, ' km/L');
             $('m-temp-bar').style.width = '0%'; $('m-fuel-bar').style.width = '0%';
             $('tab-gauge-rpm').style.strokeDashoffset = 314; $('tab-gauge-speed').style.strokeDashoffset = 314;
+            $('i-spd-arc').setAttribute('stroke-dasharray', '0 1000'); $('i-rpm-arc').setAttribute('stroke-dasharray', '0 1000');
+            ['i-speed', 'i-rpm'].forEach(id => setText(id, null, '')); setText('i-pedal', null, '%');
+            ['i-pedal-bar', 'i-load-bar', 'i-volts-bar'].forEach(id => $(id).style.width = '0%');
             refreshOdo();
             recalcAutonomia();
         }
@@ -1595,6 +1485,7 @@
             const X = (km) => (km / kmEnd) * W, Y = (L) => bot - (Math.max(0, Math.min(c.tank, L)) / c.tank) * (bot - top);
             const pts = (fuelHist.pts.length ? fuelHist.pts : [[c.km, c.liters]]).slice();
             if (pts[pts.length - 1][0] < c.km) pts.push([c.km, c.liters]);
+            if (pts[0][0] > 0) pts.unshift([0, c.liters + c.km / c.cons]); // la línea siempre arranca en la última carga
             const line = pts.map((p, i) => (i ? 'L' : 'M') + X(p[0]).toFixed(1) + ',' + Y(p[1]).toFixed(1)).join(' ');
             const cx = X(c.km), cy = Y(c.liters);
             const grid = [0.25, 0.5, 0.75, 1].map(f => '<line x1="0" x2="' + W + '" y1="' + Y(c.tank * f).toFixed(1) + '" y2="' + Y(c.tank * f).toFixed(1) + '" stroke="#0d2d4d" stroke-width="0.5"/>' +
@@ -1712,9 +1603,20 @@
             box.querySelectorAll('.mu-src').forEach(b => b.onclick = () => GLNative.launchApp(b.dataset.pkg));
         }
         const mmss = (ms) => { if (!(ms > 0)) return '0:00'; const t = Math.floor(ms / 1000); return Math.floor(t / 60) + ':' + pad(t % 60); };
+        function homeMusic(m) {
+            const playing = m.playing !== undefined ? m.playing : !!m.anyPlaying;
+            setIcon('hm-play', playing ? 'pause' : 'play', 'w-5 h-5');
+            $('hm-app').textContent = m.app || (playing ? 'Reproduciendo' : 'Música');
+            $('hm-title').textContent = m.title || (playing ? 'Música en curso' : 'Sin reproducción');
+            $('hm-artist').textContent = m.title ? [m.artist, m.album].filter(Boolean).join(' · ') : 'Toca la carátula para abrir';
+            const img = $('hm-art');
+            if (m.art) { if (img.src !== m.art) img.src = m.art; img.classList.remove('hidden'); $('hm-art-ph').classList.add('hidden'); }
+            else { img.classList.add('hidden'); $('hm-art-ph').classList.remove('hidden'); }
+        }
         function musicPoll() {
             if (!HAS_APPS) return;
             let m; try { m = JSON.parse(GLNative.mediaInfo()); } catch (e) { return; }
+            homeMusic(m);
             $('mu-access').classList.toggle('hidden', !!m.access);
             $('mu-vol').style.width = (m.volMax ? m.vol / m.volMax * 100 : 0) + '%';
             $('mu-vol-txt').textContent = 'Volumen ' + (m.volMax ? Math.round(m.vol / m.volMax * 100) : '--') + '%';
@@ -1749,7 +1651,7 @@
         // ARRANQUE
         // ==========================================
         document.querySelectorAll(NATIVE ? '.web-only-txt' : '.native-only-txt').forEach(e => e.remove());
-        if (NATIVE) { try { $('app-ver').textContent = 'v2.3.0 · app ' + GLNative.version(); } catch (e) {} }
+        if (NATIVE) { try { $('app-ver').textContent = 'v3.0 · app ' + GLNative.version(); } catch (e) {} }
         renderTiles(new Set());
         renderReg();
         loadObdForm();
