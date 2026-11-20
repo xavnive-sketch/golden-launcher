@@ -1,0 +1,3 @@
+--------- beginning of main
+11-20 00:10:22.778  2594  2594 D GoldenLauncher: Warning: meshopt_decoder is using experimental SIMD support @https://appassets.androidplatform.net/assets/www/vendor/meshopt_decoder.js:28
+11-20 00:10:23.430  2594  2594 D GoldenLauncher: [bus3d] modelo GLB cargado · 1.90x0.75x0.75 · escala 3.156 @https://appassets.androidplatform.net/assets/www/bus3d.js:410

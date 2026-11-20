@@ -1,0 +1,150 @@
+{
+ "ok": true,
+ "densidades": {
+  "160": {
+   "paginas": {
+    "inicio": {
+     "viewport": "1280x720",
+     "problemas": []
+    },
+    "tablero": {
+     "viewport": "1280x720",
+     "problemas": []
+    },
+    "mapa": {
+     "viewport": "1280x720",
+     "problemas": []
+    },
+    "musica": {
+     "viewport": "1280x720",
+     "problemas": []
+    },
+    "autonomia": {
+     "viewport": "1280x720",
+     "problemas": []
+    },
+    "registro": {
+     "viewport": "1280x720",
+     "problemas": []
+    },
+    "diagnostico": {
+     "viewport": "1280x720",
+     "problemas": []
+    },
+    "jarvis": {
+     "viewport": "1280x720",
+     "problemas": []
+    },
+    "ajustes": {
+     "viewport": "1280x720",
+     "problemas": []
+    }
+   },
+   "nativo": "2.3.24",
+   "viewport": "1280x720 dpr=1 screen=1280x720 outer=1280x720 escala=translate(0px, 0px) scale(1)",
+   "obd": {
+    "fresco": true,
+    "modo": "bt",
+    "error": null,
+    "dtc": [
+     "P0133",
+     "U1300"
+    ],
+    "datos": {
+     "rpm": 779,
+     "speed": 50,
+     "load": 30,
+     "pedal": 20,
+     "fuel_rate": 5,
+     "volts": 13.8,
+     "throttle": 0,
+     "temp": 80,
+     "map": 140,
+     "baro": 101,
+     "runtime": 3600,
+     "iat": 25,
+     "maf": 4,
+     "amb": 18,
+     "rail": 320,
+     "egr": 25.1,
+     "dist_clr": 4000,
+     "boost": 0.39,
+     "trip": 0.1,
+     "trip_time": 4,
+     "vmax": 50,
+     "_nd": [
+      "oil",
+      "stft",
+      "ltft",
+      "fuel",
+      "odo"
+     ]
+    },
+    "estado": "EN RUTA",
+    "rpm": "779",
+    "temp": "80°C",
+    "diag": "Conectado · Bluetooth · ECU respondiendo",
+    "registro": [
+     "00:09:48  ATDPN → A6",
+     "00:09:48  ✓ Adaptador listo · protocolo del vehículo: CAN 11 bit 500k",
+     "00:09:48  0100 → 4100183B0003",
+     "00:09:48  0120 → 41202010A001",
+     "00:09:48  0140 → 414004800004",
+     "00:09:48  PIDs soportados: 17 · útiles: rpm speed temp map baro runtime load iat maf amb pedal fuel_rate rail egr dist_clr",
+     "00:09:48  010C → 410C0C2C",
+     "00:09:48  010D → 410D32",
+     "00:09:48  0104 → 41044C",
+     "00:09:48  0149 → 414933",
+     "00:09:48  015E → 415E0064",
+     "00:09:48  ATRV → 13.8V",
+     "00:09:48  ✓ Primera lectura del vehículo: {\"rpm\":779,\"speed\":50,\"load\":30,\"pedal\":20,\"fuel_rate\":5,\"volts\":13.8,\"throttle\":0}",
+     "00:09:48  Códigos de avería: [P0133, U1300]"
+    ]
+   },
+   "errores_js": []
+  },
+  "240": {
+   "paginas": {
+    "inicio": {
+     "viewport": "854x480",
+     "problemas": []
+    },
+    "tablero": {
+     "viewport": "854x480",
+     "problemas": []
+    },
+    "mapa": {
+     "viewport": "854x480",
+     "problemas": []
+    },
+    "musica": {
+     "viewport": "854x480",
+     "problemas": []
+    },
+    "autonomia": {
+     "viewport": "854x480",
+     "problemas": []
+    },
+    "registro": {
+     "viewport": "854x480",
+     "problemas": []
+    },
+    "diagnostico": {
+     "viewport": "854x480",
+     "problemas": []
+    },
+    "jarvis": {
+     "viewport": "854x480",
+     "problemas": []
+    },
+    "ajustes": {
+     "viewport": "854x480",
+     "problemas": []
+    }
+   },
+   "nativo": "2.3.24",
+   "viewport": "854x480 dpr=1.5 screen=854x480 outer=854x480 escala=translate(0.333333px, 0px) scale(0.666667)",
+   "errores_js": []
+  }
+ }
+}
