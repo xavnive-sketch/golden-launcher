@@ -206,6 +206,33 @@ class Media {
         am.dispatchMediaKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, code));
     }
 
+    /**
+     * Empieza a reproducir la música de una app SIN abrir su pantalla: si ya tiene una sesión
+     * multimedia se le envía "play"; si no, se le manda la tecla PLAY (Spotify y la mayoría de
+     * reproductores retoman lo último que sonaba). Devuelve "session" o "button".
+     */
+    String playApp(String pkg) {
+        if (hasNotificationAccess()) {
+            try {
+                MediaSessionManager m = (MediaSessionManager) ctx.getSystemService(Context.MEDIA_SESSION_SERVICE);
+                for (MediaController c : m.getActiveSessions(new ComponentName(ctx, MediaListener.class))) {
+                    if (pkg.equals(c.getPackageName())) {
+                        c.getTransportControls().play();
+                        return "session";
+                    }
+                }
+            } catch (SecurityException ignored) {
+            }
+        }
+        for (int action : new int[]{KeyEvent.ACTION_DOWN, KeyEvent.ACTION_UP}) {
+            Intent i = new Intent(Intent.ACTION_MEDIA_BUTTON);
+            i.setPackage(pkg);
+            i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(action, KeyEvent.KEYCODE_MEDIA_PLAY));
+            ctx.sendBroadcast(i);
+        }
+        return "button";
+    }
+
     void volume(int dir) {
         AudioManager am = (AudioManager) ctx.getSystemService(Context.AUDIO_SERVICE);
         am.adjustStreamVolume(AudioManager.STREAM_MUSIC, dir > 0 ? AudioManager.ADJUST_RAISE : AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);

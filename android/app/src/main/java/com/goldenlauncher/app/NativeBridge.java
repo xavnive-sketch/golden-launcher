@@ -54,6 +54,15 @@ class NativeBridge {
     }
 
     @JavascriptInterface
+    public String mediaPlayApp(String pkg) {
+        try {
+            return media.playApp(pkg);
+        } catch (Exception e) {
+            return "error";
+        }
+    }
+
+    @JavascriptInterface
     public void mediaVolume(int dir) {
         media.volume(dir);
     }

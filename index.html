@@ -428,7 +428,7 @@
     <div id="page-tablero" class="hidden absolute inset-0 grid gap-4" style="grid-template-columns:1.4fr 4fr">
         <!-- RPM + velocidad -->
         <div class="cyber-panel p-4 flex flex-col items-center justify-center relative">
-            <div class="relative w-[300px] h-[300px] max-w-full">
+            <div class="relative w-[300px] h-[300px] max-w-full cursor-pointer" onclick="openChart('rpm')" title="Ver gráfico">
                 <svg class="absolute inset-0 -rotate-90" viewBox="0 0 120 120">
                     <defs><linearGradient id="tgr" x1="0" x2="1"><stop offset="0" stop-color="#f5b700"/><stop offset="1" stop-color="#ff7a00"/></linearGradient></defs>
                     <circle cx="60" cy="60" r="50" stroke="rgba(255,255,255,.06)" stroke-width="6" fill="none"/>
@@ -441,14 +441,14 @@
                 <div class="absolute inset-0 flex flex-col items-center justify-center">
                     <div id="t-rpm" class="font-orbitron font-black text-white leading-none text-[64px]">--</div>
                     <div class="font-orbitron text-dash-muted text-xs tracking-[0.3em] mt-1">RPM</div>
-                    <div class="font-orbitron font-bold text-dash-cyan text-lg mt-2"><span id="t-speed">--</span> KM/H</div>
+                    <div class="font-orbitron font-bold text-dash-cyan text-lg mt-2" onclick="event.stopPropagation(); openChart('speed')"><span id="t-speed">--</span> KM/H</div>
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-3 w-full mt-4">
-                <div class="text-center"><div class="gl-label">Motor</div><div id="t-temp" class="font-orbitron font-extrabold text-white text-2xl mt-1">--</div></div>
-                <div class="text-center flex flex-col items-center"><span id="t-top2-icon" class="hidden"><i data-lucide="flame" class="w-4 h-4"></i></span><div id="t-top2-label" class="gl-label">Temp Aceite</div><div id="t-oil" class="font-orbitron font-extrabold text-white text-2xl mt-1">--</div></div>
+                <div class="text-center cursor-pointer" onclick="openChart('temp')"><div class="gl-label">Motor</div><div id="t-temp" class="font-orbitron font-extrabold text-white text-2xl mt-1">--</div></div>
+                <div class="text-center flex flex-col items-center cursor-pointer" onclick="openChart(document.getElementById('t-load') ? 'load' : 'oil')"><span id="t-top2-icon" class="hidden"><i data-lucide="flame" class="w-4 h-4"></i></span><div id="t-top2-label" class="gl-label">Temp Aceite</div><div id="t-oil" class="font-orbitron font-extrabold text-white text-2xl mt-1">--</div></div>
             </div>
-            <div class="absolute bottom-3 right-4 text-[10px] text-dash-muted">Act. <span id="t-upd">--:--:--</span></div>
+            <div class="absolute bottom-3 right-4 text-[10px] text-dash-muted">Toca un dato para ver su gráfico · Act. <span id="t-upd">--:--:--</span></div>
         </div>
         <!-- Tarjetas automáticas (primero los datos que el vehículo envía) -->
         <div id="t-tiles" class="grid grid-cols-4 grid-rows-2 gap-4 min-h-0"></div>
@@ -579,9 +579,18 @@
                 </div>
             </div>
             <div class="col-span-5 bg-dash-panel border border-dash-border rounded-lg p-3 flex flex-col min-h-0">
-                <div class="text-[11px] text-dash-muted font-bold uppercase mb-2">Fuentes de música</div>
-                <div id="mu-sources" class="grid grid-cols-2 gap-2 overflow-y-auto min-h-0 content-start"></div>
-                <button onclick="openApps()" class="mt-auto w-full py-3 border border-dash-border rounded-lg text-white font-bold text-sm hover:border-dash-cyan flex items-center justify-center gap-2"><i data-lucide="layout-grid" class="w-5 h-5 text-dash-cyan"></i> TODAS LAS APPS</button>
+                <div class="flex gap-2 mb-2">
+                    <button id="mu-tab-radio" onclick="setMuTab('radio')" class="flex-1 py-2.5 rounded-xl font-bold text-sm border border-dash-border">📻 Radio en línea</button>
+                    <button id="mu-tab-apps" onclick="setMuTab('apps')" class="flex-1 py-2.5 rounded-xl font-bold text-sm border border-dash-border">🎵 Mis apps</button>
+                </div>
+                <div id="mu-pane-radio" class="flex flex-col min-h-0 flex-1">
+                    <input id="mu-q" placeholder="Buscar emisora (ej. Tropicalida, Canela, Galaxia)…" class="w-full bg-dash-bg border border-dash-border rounded-xl px-3 py-2.5 text-white text-sm mb-2 outline-none focus:border-dash-cyan">
+                    <div id="mu-stations" class="flex-1 overflow-y-auto min-h-0 space-y-1.5 pr-1"></div>
+                </div>
+                <div id="mu-pane-apps" class="hidden flex flex-col min-h-0 flex-1">
+                    <div class="text-[11px] text-dash-muted mb-2">▶ reproduce en segundo plano y la controlas desde aquí · ↗ abre la app</div>
+                    <div id="mu-sources" class="flex-1 overflow-y-auto min-h-0 space-y-1.5 pr-1"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -798,7 +807,7 @@
             const pick = pool.filter(avail).concat(pool.filter(t => !avail(t))).slice(0, 8);
             $('t-tiles').innerHTML = pick.map(t => {
                 const id = t.id || 't-' + t.k;
-                return '<div class="cyber-panel p-4 flex flex-col min-h-0">' +
+                return '<div class="cyber-panel p-4 flex flex-col min-h-0 cursor-pointer active:scale-[.98] transition" onclick="openChart(\'' + t.k + '\')">' +
                     '<div class="flex items-center gap-2"><i data-lucide="' + t.icon + '" class="w-5 h-5 text-dash-cyan"></i><span class="gl-label">' + t.label + '</span></div>' +
                     '<div id="' + id + '" class="font-orbitron font-black text-white text-[34px] leading-none mt-auto">--</div>' +
                     (t.sub ? '<div class="text-[10px] text-dash-muted mt-1">' + t.sub + '</div>' : '') +
@@ -806,6 +815,35 @@
             }).join('');
             sparkHist = {};
             lucide.createIcons();
+        }
+
+        // ===== Historial de telemetría (para el gráfico en tiempo real) =====
+        // Se guarda en memoria desde que se abre la app: [hora, valor] por dato, hasta 1 h.
+        const TEL = {}, TEL_MAX = 3600;
+        const TEL_META = {
+            rpm: ['RPM', 'RPM', 'gauge'], speed: ['Velocidad', 'km/h', 'gauge'], temp: ['Temp. motor', '°C', 'thermometer'],
+            oil: ['Temp. aceite', '°C', 'flame'], load: ['Carga motor', '%', 'cpu'], throttle: ['Acelerador', '%', 'move-horizontal'],
+            volts: ['Voltaje batería', 'V', 'battery-charging'], maf: ['Flujo de aire (MAF)', 'g/s', 'wind'], rail: ['Presión del riel', 'bar', 'gauge-circle'],
+            egr: ['EGR', '%', 'refresh-cw'], baro: ['Presión atmosférica', 'kPa', 'mountain'], amb: ['Temp. ambiente', '°C', 'sun'],
+            iat: ['Temp. admisión', '°C', 'thermometer'], map: ['Presión múltiple', 'kPa', 'gauge'], boost: ['Turbo', 'bar', 'wind'],
+            fuel: ['Combustible', '%', 'fuel'], dist_clr: ['Km desde borrado DTC', 'km', 'route'], runtime: ['Motor encendido', 'min', 'timer'],
+            vmax: ['Velocidad máxima', 'km/h', 'gauge'], trip: ['Viaje actual', 'km', 'route'], econ: ['Consumo', '', 'fuel']
+        };
+        function telPush(k, v) {
+            if (v === null || v === undefined || isNaN(v)) return;
+            const h = TEL[k] || (TEL[k] = []);
+            h.push([Date.now(), +v]);
+            if (h.length > TEL_MAX) h.splice(0, h.length - TEL_MAX);
+        }
+        function telRecord(data) {
+            Object.keys(TEL_META).forEach(k => {
+                if (k === 'econ' || k === 'trip') return;
+                let v = num(data[k]); if (k === 'runtime' && v !== null) v = Math.round(v / 6) / 10;
+                telPush(k, v);
+            });
+            if (trip) telPush('trip', +trip.km.toFixed(2));
+            const ec = $('t-econ'); if (ec) { const v = parseFloat(ec.textContent); if (!isNaN(v)) { TEL_META.econ[1] = /L\/h/.test(ec.textContent) ? 'L/h' : 'km/L'; telPush('econ', v); } }
+            if (chartKey) drawChart();
         }
 
         function applyObdii(data) {
@@ -848,6 +886,7 @@
             $('i-pedal-bar').style.width = (thr || 0) + '%'; $('i-load-bar').style.width = Math.min(100, ld || 0) + '%';
             $('i-volts-bar').style.width = vt === null ? '0%' : Math.max(0, Math.min(100, (vt - 11) / 3.5 * 100)) + '%';
             sparkTick();
+            telRecord(data);
             $('tab-gauge-speed').style.strokeDashoffset = 314 * (1 - Math.min(1, (spd || 0) / 120));
             refreshOdo();
             recalcAutonomia();
@@ -1563,6 +1602,69 @@
         })();
 
         // ==========================================
+        // GRÁFICO EN TIEMPO REAL
+        // ==========================================
+        let chartKey = null, chartRange = 60;
+        function openChart(k) {
+            chartKey = k;
+            const m = TEL_META[k] || [k, '', 'activity'];
+            $('ch-label').textContent = m[0];
+            setIcon('ch-icon', m[2], 'w-7 h-7 text-dash-cyan');
+            $('chart-modal').classList.remove('hidden'); $('chart-modal').classList.add('flex');
+            document.querySelectorAll('.ch-r').forEach(b => b.onclick = () => { chartRange = +b.dataset.r; drawChart(); });
+            drawChart();
+        }
+        function closeChart() { chartKey = null; $('chart-modal').classList.add('hidden'); $('chart-modal').classList.remove('flex'); }
+        const fmtV = (v) => Math.abs(v) >= 100 ? Math.round(v).toLocaleString('es-EC') : (+v.toFixed(Math.abs(v) >= 10 ? 1 : 2)).toString();
+        function drawChart() {
+            if (!chartKey) return;
+            const m = TEL_META[chartKey] || [chartKey, '', 'activity'];
+            document.querySelectorAll('.ch-r').forEach(b => { const on = +b.dataset.r === chartRange; b.classList.toggle('bg-dash-cyan/20', on); b.classList.toggle('text-dash-cyan', on); b.classList.toggle('border-dash-cyan', on); });
+            const all = TEL[chartKey] || [], now = Date.now();
+            const h = chartRange ? all.filter(p => p[0] >= now - chartRange * 1000) : all;
+            $('ch-unit').textContent = m[1];
+            const cv = $('ch-canvas'), dpr = window.devicePixelRatio || 1;
+            const W = cv.clientWidth, H = cv.clientHeight;
+            if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+            const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H);
+            if (!h.length) {
+                ['ch-now', 'ch-min', 'ch-avg', 'ch-max'].forEach(id => $(id).textContent = '--');
+                c.fillStyle = '#6f87a8'; c.font = '16px Rajdhani'; c.textAlign = 'center';
+                c.fillText(obdFresh() ? 'Recopilando datos… el gráfico aparece en unos segundos' : 'Sin datos: conecta el OBD-II para registrar esta telemetría', W / 2, H / 2);
+                $('ch-foot').textContent = ''; return;
+            }
+            const vals = h.map(p => p[1]);
+            let mn = Math.min(...vals), mx = Math.max(...vals);
+            const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+            $('ch-now').textContent = fmtV(vals[vals.length - 1]); $('ch-min').textContent = fmtV(mn); $('ch-avg').textContent = fmtV(avg); $('ch-max').textContent = fmtV(mx);
+            if (mx - mn < 1e-6) { mn -= 1; mx += 1; }
+            const pad = (mx - mn) * 0.12; mn -= pad; mx += pad;
+            const L = 56, R = W - 12, T = 10, B = H - 26;
+            const t0 = chartRange ? now - chartRange * 1000 : h[0][0], t1 = now;
+            const X = (t) => L + (t - t0) / Math.max(1, t1 - t0) * (R - L), Y = (v) => B - (v - mn) / (mx - mn) * (B - T);
+            // cuadrícula
+            c.strokeStyle = 'rgba(120,180,255,.10)'; c.lineWidth = 1; c.fillStyle = '#6f87a8'; c.font = '12px Rajdhani'; c.textAlign = 'right'; c.textBaseline = 'middle';
+            for (let i = 0; i <= 4; i++) { const v = mn + (mx - mn) * i / 4, y = Y(v); c.beginPath(); c.moveTo(L, y); c.lineTo(R, y); c.stroke(); c.fillText(fmtV(v), L - 8, y); }
+            c.textAlign = 'center'; c.textBaseline = 'top';
+            for (let i = 0; i <= 5; i++) {
+                const t = t0 + (t1 - t0) * i / 5, ago = Math.round((t1 - t) / 1000);
+                c.fillText(i === 5 ? 'ahora' : ago >= 60 ? '-' + Math.floor(ago / 60) + ' min' + (ago % 60 ? ' ' + ago % 60 + ' s' : '') : '-' + ago + ' s', X(t), B + 8);
+            }
+            // área + línea
+            const g = c.createLinearGradient(0, T, 0, B); g.addColorStop(0, 'rgba(0,229,255,.35)'); g.addColorStop(1, 'rgba(0,229,255,0)');
+            c.beginPath(); h.forEach((p, i) => i ? c.lineTo(X(p[0]), Y(p[1])) : c.moveTo(X(p[0]), Y(p[1])));
+            c.lineTo(X(h[h.length - 1][0]), B); c.lineTo(X(h[0][0]), B); c.closePath(); c.fillStyle = g; c.fill();
+            c.beginPath(); h.forEach((p, i) => i ? c.lineTo(X(p[0]), Y(p[1])) : c.moveTo(X(p[0]), Y(p[1])));
+            c.strokeStyle = '#00e5ff'; c.lineWidth = 2.5; c.lineJoin = 'round'; c.shadowColor = 'rgba(0,229,255,.6)'; c.shadowBlur = 8; c.stroke(); c.shadowBlur = 0;
+            // promedio
+            c.setLineDash([6, 6]); c.strokeStyle = 'rgba(245,183,0,.55)'; c.lineWidth = 1.5; c.beginPath(); c.moveTo(L, Y(avg)); c.lineTo(R, Y(avg)); c.stroke(); c.setLineDash([]);
+            const lp = h[h.length - 1]; c.beginPath(); c.arc(X(lp[0]), Y(lp[1]), 5, 0, Math.PI * 2); c.fillStyle = '#00e5ff'; c.fill();
+            const d0 = new Date(all[0][0]);
+            $('ch-foot').textContent = 'Registrando desde las ' + pad2(d0.getHours()) + ':' + pad2(d0.getMinutes()) + ':' + pad2(d0.getSeconds()) + ' · ' + vals.length + ' lecturas en este rango · línea dorada = promedio';
+        }
+        const pad2 = (n) => String(n).padStart(2, '0');
+
+        // ==========================================
         // CAJÓN DE APPS
         // ==========================================
         // Solo si la app nativa trae estas funciones (versiones nuevas del APK)
@@ -1588,64 +1690,177 @@
         }
 
         // ==========================================
-        // MÚSICA (controla Spotify, radio u otra app que esté sonando)
+        // MÚSICA: radio en línea DENTRO de la app + control de Spotify/radio FM sin salir
         // ==========================================
         const MUSIC_RX = /spotify|music|m[uú]sica|radio|\bfm\b|deezer|tunein|youtube|ytmusic|player|reproductor|audio|soundcloud|podcast|poweramp|vlc|tidal|amazon.*mp3|anghami|boomplay/i;
-        let musicTimer = null, musicAccessAsked = false;
+        let musicTimer = null, muTab = lsGet('moMuTab', 'radio');
+        const mmss = (ms) => { if (!(ms > 0)) return '0:00'; const t = Math.floor(ms / 1000); return Math.floor(t / 60) + ':' + pad(t % 60); };
+        function setMuTab(t) {
+            muTab = t; lsSet('moMuTab', t);
+            const on = 'flex-1 py-2.5 rounded-xl font-bold text-sm border border-dash-cyan bg-dash-cyan/20 text-dash-cyan';
+            const off = 'flex-1 py-2.5 rounded-xl font-bold text-sm border border-dash-border text-dash-muted';
+            $('mu-tab-radio').className = t === 'radio' ? on : off; $('mu-tab-apps').className = t === 'apps' ? on : off;
+            $('mu-pane-radio').classList.toggle('hidden', t !== 'radio'); $('mu-pane-apps').classList.toggle('hidden', t !== 'apps');
+            if (t === 'radio') loadStations(); else renderMusicSources();
+        }
+
+        // ---- Radio en línea (directorio público Radio Browser) ----
+        const RB_HOSTS = ['de1.api.radio-browser.info', 'de2.api.radio-browser.info', 'fi1.api.radio-browser.info', 'nl1.api.radio-browser.info', 'at1.api.radio-browser.info'];
+        const radio = new Audio(); radio.preload = 'none';
+        const R = { list: lsGet('moRadioCache', []), favs: lsGet('moRadioFavs', []), station: lsGet('moRadioLast', null), state: 'idle', err: '', active: false, loadedQ: null };
+        async function rbFetch(path) {
+            for (const h of RB_HOSTS) {
+                try {
+                    const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 7000);
+                    const r = await fetch('https://' + h + path, { signal: ctl.signal }); clearTimeout(t);
+                    if (r.ok) return await r.json();
+                } catch (e) {}
+            }
+            throw new Error('sin conexión');
+        }
+        async function loadStations(q) {
+            q = (q === undefined ? $('mu-q').value : q).trim();
+            if (R.loadedQ === q && R.list.length) { renderStations(); return; }
+            renderStations(true);
+            try {
+                const base = '&hidebroken=true&order=clickcount&reverse=true&limit=60';
+                const list = q ? await rbFetch('/json/stations/search?name=' + encodeURIComponent(q) + '&countrycode=EC' + base)
+                    .then(l => l.length ? l : rbFetch('/json/stations/search?name=' + encodeURIComponent(q) + base))
+                    : await rbFetch('/json/stations/bycountrycodeexact/EC?' + base.slice(1));
+                R.list = list.map(x => ({ id: x.stationuuid, name: (x.name || '').trim(), url: x.url_resolved || x.url, logo: x.favicon || '', tags: (x.tags || '').split(',').slice(0, 2).join(' · '), city: x.state || '' }))
+                    .filter(x => x.url && x.name);
+                R.loadedQ = q;
+                if (!q) lsSet('moRadioCache', R.list);
+            } catch (e) { R.err = 'No se pudo cargar el directorio de radios (¿hay internet?).'; }
+            renderStations();
+        }
+        let qTimer = null;
+        document.addEventListener('input', (e) => { if (e.target && e.target.id === 'mu-q') { clearTimeout(qTimer); qTimer = setTimeout(() => loadStations(), 600); } });
+        function stationRow(x, fav) {
+            const cur = R.station && R.station.id === x.id;
+            const logo = x.logo ? '<img src="' + esc(x.logo) + '" class="relative w-full h-full object-cover" onerror="this.remove()" alt="">' : '';
+            return '<div class="st-row flex items-center gap-3 p-2 rounded-xl border ' + (cur ? 'border-dash-cyan bg-dash-cyan/10' : 'border-dash-border bg-dash-bg') + ' cursor-pointer" data-id="' + esc(x.id) + '">' +
+                '<div class="relative w-11 h-11 rounded-lg overflow-hidden shrink-0 flex items-center justify-center" style="background:#0c1a2e"><span class="absolute text-lg">📻</span>' + logo + '</div>' +
+                '<div class="flex-1 min-w-0"><div class="text-sm text-white font-bold truncate">' + esc(x.name) + '</div><div class="text-[11px] text-dash-muted truncate">' + esc([x.city, x.tags].filter(Boolean).join(' · ') || 'Radio') + '</div></div>' +
+                (cur && R.state === 'playing' ? '<span class="text-dash-cyan text-xs font-bold">EN VIVO</span>' : '') +
+                '<button class="st-fav w-9 h-9 text-xl" data-id="' + esc(x.id) + '" style="color:' + (fav ? '#f5b700' : '#3b4f6b') + '">★</button></div>';
+        }
+        function renderStations(loading) {
+            const box = $('mu-stations'); if (!box) return;
+            const favIds = new Set(R.favs.map(f => f.id));
+            const favs = R.favs.filter(f => !$('mu-q').value.trim() || f.name.toLowerCase().includes($('mu-q').value.trim().toLowerCase()));
+            const rest = R.list.filter(x => !favIds.has(x.id));
+            let html = '';
+            if (favs.length) html += '<div class="gl-label pt-1">Favoritas</div>' + favs.map(x => stationRow(x, true)).join('');
+            if (loading) html += '<div class="text-sm text-dash-muted py-3">Cargando emisoras…</div>';
+            else if (rest.length) html += '<div class="gl-label pt-2">' + ($('mu-q').value.trim() ? 'Resultados' : 'Populares en Ecuador') + '</div>' + rest.map(x => stationRow(x, false)).join('');
+            else if (!favs.length) html += '<div class="text-sm text-dash-muted py-3">' + (R.err || 'Sin resultados.') + '</div>';
+            box.innerHTML = html;
+            box.querySelectorAll('.st-row').forEach(el => el.onclick = (e) => {
+                if (e.target.closest('.st-fav')) return;
+                const x = R.list.concat(R.favs).find(s => s.id === el.dataset.id); if (x) playStation(x);
+            });
+            box.querySelectorAll('.st-fav').forEach(b => b.onclick = (e) => {
+                e.stopPropagation();
+                const id = b.dataset.id, i = R.favs.findIndex(f => f.id === id);
+                if (i >= 0) R.favs.splice(i, 1); else { const x = R.list.find(s => s.id === id); if (x) R.favs.unshift(x); }
+                lsSet('moRadioFavs', R.favs); renderStations();
+            });
+        }
+        function playStation(x) {
+            if (HAS_APPS) { try { GLNative.mediaControl('pause'); } catch (e) {} } // pausar Spotify u otra app
+            R.station = x; R.active = true; R.err = ''; R.state = 'loading'; lsSet('moRadioLast', x);
+            radio.src = x.url; radio.play().catch(() => { R.state = 'error'; R.err = 'No se pudo reproducir esta emisora.'; musicPoll(); });
+            renderStations(); musicPoll();
+        }
+        radio.addEventListener('playing', () => { R.state = 'playing'; renderStations(); musicPoll(); });
+        radio.addEventListener('waiting', () => { R.state = 'loading'; musicPoll(); });
+        radio.addEventListener('pause', () => { if (R.state !== 'error') R.state = 'paused'; renderStations(); musicPoll(); });
+        radio.addEventListener('error', () => { if (radio.src) { R.state = 'error'; R.err = 'La emisora no responde. Prueba otra.'; musicPoll(); } });
+        function radioStep(d) {
+            const l = R.favs.length && R.favs.some(f => R.station && f.id === R.station.id) ? R.favs : (R.list.length ? R.list : R.favs);
+            if (!l.length) return;
+            const i = Math.max(0, l.findIndex(s => R.station && s.id === R.station.id));
+            playStation(l[(i + d + l.length) % l.length]);
+        }
+
+        // ---- Apps de música (Spotify, radio FM…) sin salir de la app ----
         function renderMusicSources() {
             const box = $('mu-sources'); if (!box) return;
-            if (!HAS_APPS) { box.innerHTML = '<div class="col-span-2 text-sm text-dash-muted">Disponible en la app (APK) de la radio.</div>'; return; }
+            if (!HAS_APPS) { box.innerHTML = '<div class="text-sm text-dash-muted">Disponible en la app (APK) de la radio.</div>'; return; }
             const l = apps.filter(a => MUSIC_RX.test(a.name) || MUSIC_RX.test(a.pkg))
                 .sort((a, b) => (/spotify/i.test(b.pkg) - /spotify/i.test(a.pkg)) || a.name.localeCompare(b.name));
-            box.innerHTML = l.length ? l.map(a => '<button data-pkg="' + esc(a.pkg) + '" class="mu-src flex items-center gap-3 p-2.5 rounded-lg border border-dash-border hover:border-dash-cyan bg-dash-bg text-left">' +
-                '<img src="' + a.icon + '" class="w-11 h-11 rounded-xl" alt=""><span class="text-sm text-white font-semibold leading-tight">' + esc(a.name) + '</span></button>').join('')
-                : '<div class="col-span-2 text-sm text-dash-muted">No encontré apps de música. Instala Spotify o usa la radio FM de la radio y aparecerán aquí.</div>';
-            box.querySelectorAll('.mu-src').forEach(b => b.onclick = () => GLNative.launchApp(b.dataset.pkg));
+            box.innerHTML = l.length ? l.map(a => '<div class="flex items-center gap-3 p-2 rounded-xl border border-dash-border bg-dash-bg">' +
+                '<img src="' + a.icon + '" class="w-11 h-11 rounded-xl" alt=""><span class="flex-1 text-sm text-white font-semibold leading-tight">' + esc(a.name) + '</span>' +
+                '<button data-pkg="' + esc(a.pkg) + '" class="mu-play w-11 h-11 rounded-full bg-dash-cyan text-black font-bold text-lg" title="Reproducir aquí">▶</button>' +
+                '<button data-pkg="' + esc(a.pkg) + '" class="mu-open w-11 h-11 rounded-full border border-dash-border text-white text-lg" title="Abrir la app">↗</button></div>').join('')
+                : '<div class="text-sm text-dash-muted">No encontré apps de música instaladas.</div>';
+            box.querySelectorAll('.mu-play').forEach(b => b.onclick = () => {
+                radio.pause(); R.active = false;
+                GLNative.mediaPlayApp(b.dataset.pkg);
+                setTimeout(musicPoll, 800); setTimeout(musicPoll, 2500);
+            });
+            box.querySelectorAll('.mu-open').forEach(b => b.onclick = () => GLNative.launchApp(b.dataset.pkg));
         }
-        const mmss = (ms) => { if (!(ms > 0)) return '0:00'; const t = Math.floor(ms / 1000); return Math.floor(t / 60) + ':' + pad(t % 60); };
-        function homeMusic(m) {
-            const playing = m.playing !== undefined ? m.playing : !!m.anyPlaying;
-            setIcon('hm-play', playing ? 'pause' : 'play', 'w-5 h-5');
-            $('hm-app').textContent = m.app || (playing ? 'Reproduciendo' : 'Música');
-            $('hm-title').textContent = m.title || (playing ? 'Música en curso' : 'Sin reproducción');
-            $('hm-artist').textContent = m.title ? [m.artist, m.album].filter(Boolean).join(' · ') : 'Toca la carátula para abrir';
-            const img = $('hm-art');
-            if (m.art) { if (img.src !== m.art) img.src = m.art; img.classList.remove('hidden'); $('hm-art-ph').classList.add('hidden'); }
-            else { img.classList.add('hidden'); $('hm-art-ph').classList.remove('hidden'); }
+
+        // ---- Panel "Ahora suena" (página Música e Inicio) ----
+        function showNow(o) {
+            const playing = !!o.playing;
+            setIcon('mu-play', playing ? 'pause' : 'play', 'w-11 h-11'); setIcon('hm-play', playing ? 'pause' : 'play', 'w-5 h-5');
+            $('mu-app').textContent = o.app; $('hm-app').textContent = o.app;
+            $('mu-title').textContent = o.title; $('hm-title').textContent = o.title;
+            $('mu-artist').textContent = o.artist; $('hm-artist').textContent = o.artist;
+            $('mu-pos').textContent = o.pos; $('mu-dur').textContent = o.dur; $('mu-bar').style.width = o.bar;
+            [['mu-art', 'mu-art-ph'], ['hm-art', 'hm-art-ph']].forEach(([i, ph]) => {
+                const img = $(i);
+                if (o.art) { if (img.src !== o.art) img.src = o.art; img.classList.remove('hidden'); $(ph).classList.add('hidden'); }
+                else { img.classList.add('hidden'); $(ph).classList.remove('hidden'); }
+            });
         }
         function musicPoll() {
-            if (!HAS_APPS) return;
-            let m; try { m = JSON.parse(GLNative.mediaInfo()); } catch (e) { return; }
-            homeMusic(m);
-            $('mu-access').classList.toggle('hidden', !!m.access);
-            $('mu-vol').style.width = (m.volMax ? m.vol / m.volMax * 100 : 0) + '%';
-            $('mu-vol-txt').textContent = 'Volumen ' + (m.volMax ? Math.round(m.vol / m.volMax * 100) : '--') + '%';
-            const playing = m.playing !== undefined ? m.playing : !!m.anyPlaying;
-            setIcon('mu-play', playing ? 'pause' : 'play', 'w-11 h-11');
-            if (m.title !== undefined) {
-                $('mu-app').textContent = m.app || '';
-                $('mu-title').textContent = m.title || 'Sin título';
-                $('mu-artist').textContent = [m.artist, m.album].filter(Boolean).join(' · ');
-                $('mu-pos').textContent = mmss(m.pos); $('mu-dur').textContent = m.dur > 0 ? mmss(m.dur) : '--:--';
-                $('mu-bar').style.width = m.dur > 0 ? Math.min(100, m.pos / m.dur * 100) + '%' : '0%';
-            } else {
-                $('mu-app').textContent = playing ? 'Reproduciendo' : 'Sin reproducción';
-                $('mu-title').textContent = playing ? 'Música en curso' : 'Abre una fuente de música';
-                $('mu-artist').textContent = m.access ? 'Spotify, radio u otra app de la derecha' : 'Permite el acceso a notificaciones para ver la canción';
-                $('mu-bar').style.width = '0%'; $('mu-pos').textContent = '0:00'; $('mu-dur').textContent = '--:--';
+            let m = null;
+            if (HAS_APPS) { try { m = JSON.parse(GLNative.mediaInfo()); } catch (e) {} }
+            if (m) {
+                $('mu-access').classList.toggle('hidden', !!m.access || R.active);
+                $('mu-vol').style.width = (m.volMax ? m.vol / m.volMax * 100 : 0) + '%';
+                $('mu-vol-txt').textContent = 'Volumen ' + (m.volMax ? Math.round(m.vol / m.volMax * 100) : '--') + '%';
+            } else $('mu-access').classList.add('hidden');
+            if (R.active && R.station) {
+                const st = R.state;
+                showNow({ playing: st === 'playing' || st === 'loading', app: 'Radio en línea · ' + (st === 'playing' ? 'EN VIVO' : st === 'loading' ? 'Conectando…' : st === 'error' ? 'Error' : 'En pausa'),
+                    title: R.station.name, artist: st === 'error' ? R.err : ([R.station.city, R.station.tags].filter(Boolean).join(' · ') || 'Radio'),
+                    pos: st === 'playing' ? '● EN VIVO' : '', dur: '', bar: st === 'playing' ? '100%' : '0%', art: R.station.logo || '' });
+                return;
             }
-            const img = $('mu-art');
-            if (m.art) { if (img.src !== m.art) img.src = m.art; img.classList.remove('hidden'); $('mu-art-ph').classList.add('hidden'); }
-            else { img.classList.add('hidden'); $('mu-art-ph').classList.remove('hidden'); }
+            if (m && m.title !== undefined) {
+                const playing = m.playing !== undefined ? m.playing : !!m.anyPlaying;
+                showNow({ playing, app: m.app || '', title: m.title || 'Sin título', artist: [m.artist, m.album].filter(Boolean).join(' · '),
+                    pos: mmss(m.pos), dur: m.dur > 0 ? mmss(m.dur) : '--:--', bar: m.dur > 0 ? Math.min(100, m.pos / m.dur * 100) + '%' : '0%', art: m.art || '' });
+                return;
+            }
+            const playing = !!(m && m.anyPlaying);
+            showNow({ playing, app: playing ? 'Reproduciendo' : 'Sin reproducción', title: playing ? 'Música en curso' : (R.station ? R.station.name : 'Elige una emisora'),
+                artist: R.station && !playing ? 'Toca ▶ para escuchar la última emisora' : 'Radio en línea o tus apps, en el panel derecho', pos: '0:00', dur: '--:--', bar: '0%', art: !playing && R.station ? R.station.logo : '' });
         }
         function startMusic() {
-            if (HAS_APPS) { if (!apps.length) GLNative.listApps(); else renderMusicSources(); }
-            else renderMusicSources();
+            if (HAS_APPS && !apps.length) GLNative.listApps();
+            if (!$('page-musica').classList.contains('hidden')) setMuTab(muTab);
             musicPoll(); clearInterval(musicTimer); musicTimer = setInterval(musicPoll, 1000);
         }
         function stopMusic() { clearInterval(musicTimer); musicTimer = null; }
-        function musicCmd(a) { if (HAS_APPS) { GLNative.mediaControl(a); setTimeout(musicPoll, 400); } }
-        function musicVol(d) { if (HAS_APPS) { GLNative.mediaVolume(d); setTimeout(musicPoll, 200); } }
+        function musicCmd(a) {
+            // La radio en línea se controla aquí mismo; si no, la app que esté sonando
+            const extPlaying = (() => { if (!HAS_APPS) return false; try { const m = JSON.parse(GLNative.mediaInfo()); return m.playing || (!m.title && m.anyPlaying); } catch (e) { return false; } })();
+            if (R.active || (!extPlaying && R.station && (a === 'toggle' || a === 'play'))) {
+                R.active = true;
+                if (a === 'next') radioStep(1);
+                else if (a === 'prev') radioStep(-1);
+                else if (radio.paused || R.state === 'error') playStation(R.station);
+                else radio.pause();
+            } else if (HAS_APPS) GLNative.mediaControl(a);
+            setTimeout(musicPoll, 400);
+        }
+        function musicVol(d) { if (HAS_APPS) { GLNative.mediaVolume(d); setTimeout(musicPoll, 200); } else { radio.volume = Math.max(0, Math.min(1, radio.volume + d * 0.1)); } }
 
         // ==========================================
         // ARRANQUE
@@ -1660,6 +1875,33 @@
         recalcAutonomia();
     </script>
     <script src="bus3d.js"></script>
+
+    <!-- ==================== GRÁFICO EN TIEMPO REAL (Tablero) ==================== -->
+    <div id="chart-modal" class="fixed inset-0 z-50 hidden flex-col p-5" style="background:rgba(4,7,15,.97)">
+        <div class="flex items-center gap-4 mb-3">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center" style="background:rgba(0,229,255,.1)"><span id="ch-icon"></span></div>
+            <div>
+                <div id="ch-label" class="gl-label">--</div>
+                <div class="flex items-baseline gap-2"><span id="ch-now" class="font-orbitron font-black text-white text-5xl leading-none">--</span><span id="ch-unit" class="text-dash-muted text-lg font-bold"></span></div>
+            </div>
+            <div class="flex gap-6 ml-8">
+                <div><div class="gl-label">Mínimo</div><div id="ch-min" class="font-orbitron font-bold text-dash-cyan text-2xl">--</div></div>
+                <div><div class="gl-label">Promedio</div><div id="ch-avg" class="font-orbitron font-bold text-white text-2xl">--</div></div>
+                <div><div class="gl-label">Máximo</div><div id="ch-max" class="font-orbitron font-bold text-2xl" style="color:#f5b700">--</div></div>
+            </div>
+            <div class="ml-auto flex gap-2" id="ch-ranges">
+                <button data-r="60" class="ch-r px-4 py-2.5 rounded-xl border border-dash-border font-bold text-sm">1 min</button>
+                <button data-r="300" class="ch-r px-4 py-2.5 rounded-xl border border-dash-border font-bold text-sm">5 min</button>
+                <button data-r="900" class="ch-r px-4 py-2.5 rounded-xl border border-dash-border font-bold text-sm">15 min</button>
+                <button data-r="0" class="ch-r px-4 py-2.5 rounded-xl border border-dash-border font-bold text-sm">Todo</button>
+            </div>
+            <button onclick="closeChart()" class="text-dash-muted hover:text-white text-5xl leading-none px-3">&times;</button>
+        </div>
+        <div class="cyber-panel flex-1 min-h-0 p-4 flex flex-col">
+            <canvas id="ch-canvas" class="w-full flex-1 min-h-0"></canvas>
+            <div id="ch-foot" class="text-xs text-dash-muted mt-2">--</div>
+        </div>
+    </div>
 
     <!-- ==================== CAJÓN DE APPS ==================== -->
     <div id="apps-modal" class="fixed inset-0 z-50 hidden flex-col p-5" style="background:rgba(1,6,16,.96)">
