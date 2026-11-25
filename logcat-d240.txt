@@ -1,0 +1,41 @@
+--------- beginning of main
+11-25 21:44:28.687  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint (unset) for first_image_paint 0.455 s
+11-25 21:44:28.689  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint (unset) for first_image_paint 0.455 s
+11-25 21:44:28.998  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:34.870  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:35.167  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:35.187  2656  2656 D GoldenLauncher: Warning: meshopt_decoder is using experimental SIMD support @https://appassets.androidplatform.net/assets/www/vendor/meshopt_decoder.js:28
+11-25 21:44:35.953  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:36.352  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:36.521  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:36.523  2656  2656 D GoldenLauncher: [bus3d] modelo GLB cargado · 1.90x0.75x0.75 · escala 3.156 @https://appassets.androidplatform.net/assets/www/bus3d.js:410
+11-25 21:44:36.971  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:39.194  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:41.233  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:42.243  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:42.244  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:46.209  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:47.470  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:50.881  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:51.730  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:52.706  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:52.707  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:52.969  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:53.383  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:53.561  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:55.589  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:55.966  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:56.215  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:56.330  2656  2656 D GoldenLauncher: Mixed Content: The page at 'https://appassets.androidplatform.net/assets/www/index.html' was loaded over HTTPS, but requested an insecure image 'http://machdeportes.com.ec/wp-content/uploads/2014/07/logoMachDeportesini1.png'. This content should also be served over HTTPS. @https://appassets.androidplatform.net/assets/www/index.html:0
+11-25 21:44:56.331  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:56.621  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:57.021  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:57.225  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:57.557  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:57.557  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:57.813  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:57.940  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:44:59.157  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:45:00.973  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:45:02.746  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
+11-25 21:45:04.211  2656  2656 E chromium: [ERROR:page_load_metrics_update_dispatcher.cc(178)] Invalid first_paint 4.359 s for first_image_paint 0.455 s
