@@ -353,7 +353,7 @@
             <div class="cyber-panel p-2 flex flex-col overflow-y-auto min-h-0">
                 <h2 class="font-orbitron font-bold text-white text-sm tracking-wider mb-3 pb-1.5 border-b border-dash-border">HERMES AGENT</h2>
                 <label class="block text-sm text-dash-muted mb-1">URL base
-                    <input id="h-url" placeholder="https://…:8642/v1" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
+                    <input id="h-url" placeholder="IP o dominio del VPS (ej. 203.0.113.5) o URL completa" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
                 </label>
                 <label class="block text-sm text-dash-muted mb-1">Clave API
                     <input id="h-key" type="password" autocomplete="off" placeholder="sk-…" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
@@ -368,7 +368,9 @@
                     <button onclick="saveH()" class="flex-1 py-3 bg-dash-cyan/10 hover:bg-dash-cyan/20 border border-dash-cyan/60 text-dash-cyan font-bold text-sm rounded-lg">GUARDAR</button>
                     <button onclick="testH()" class="flex-1 py-3 bg-dash-panel hover:bg-dash-border border border-dash-border text-white font-bold text-sm rounded-lg">PROBAR</button>
                 </div>
+                <button onclick="findApi()" class="w-full mt-2 py-3 border border-dash-border text-white font-bold text-sm rounded-lg hover:border-dash-cyan">🔍 BUSCAR LA API EN MI SERVIDOR</button>
                 <div id="h-stat" class="text-dash-muted text-sm mt-2">No configurado</div>
+                <div id="h-found" class="space-y-1 mt-1"></div>
             </div>
             <div class="cyber-panel p-2 flex flex-col overflow-y-auto min-h-0">
                 <h2 class="font-orbitron font-bold text-white text-sm tracking-wider mb-3 pb-1.5 border-b border-dash-border">OBD-II (ELM327)</h2>
@@ -602,14 +604,24 @@
     </div>
 
     <!-- ==================== PÁGINA: J.A.R.V.I.S. (consola completa) ==================== -->
-    <div id="page-jarvis" class="hidden absolute inset-0 cyber-panel p-2 h-full">
-        <h2 class="font-orbitron font-black text-dash-cyan text-xs tracking-widest text-glow mb-2 pb-1 border-b border-dash-border">J.A.R.V.I.S.</h2>
-        <div id="jarvis-console" class="bg-dash-bg border border-dash-border rounded p-2 h-[calc(100%-90px)] overflow-y-auto text-sm font-mono text-dash-cyan whitespace-pre-wrap">[SISTEMA] Asistente listo.
-[J.A.R.V.I.S.] Configura Hermes en Ajustes para respuestas reales.</div>
-        <div class="flex gap-1.5 mt-2">
-            <input id="jarvis-input" placeholder="Comando…" class="flex-1 bg-dash-bg border border-dash-border rounded-lg p-3 text-white text-base">
-            <button onclick="sendJarvis()" class="px-3 py-1.5 bg-dash-cyan/10 hover:bg-dash-cyan/20 border border-dash-cyan/60 text-dash-cyan font-bold text-xs rounded">ENVIAR</button>
+    <div id="page-jarvis" class="hidden absolute inset-0 cyber-panel p-4 h-full flex flex-col">
+        <div class="flex items-center gap-4 mb-3">
+            <div class="w-11 h-11 rounded-2xl flex items-center justify-center" style="background:rgba(0,229,255,.1)"><i data-lucide="bot" class="w-6 h-6 text-dash-cyan"></i></div>
+            <div><div class="font-orbitron font-black text-white text-lg tracking-widest">J.A.R.V.I.S.</div><div id="jv-status" class="text-xs text-dash-muted">Listo</div></div>
+            <div class="ml-auto flex items-center gap-2">
+                <span class="gl-label mr-1">Responder por</span>
+                <button data-m="texto" class="jv-mode px-4 py-2.5 rounded-xl border border-dash-border font-bold text-sm">💬 Texto</button>
+                <button data-m="voz" class="jv-mode px-4 py-2.5 rounded-xl border border-dash-border font-bold text-sm">🔊 Voz</button>
+                <button data-m="ambos" class="jv-mode px-4 py-2.5 rounded-xl border border-dash-border font-bold text-sm">💬+🔊 Ambos</button>
+            </div>
         </div>
+        <div id="jarvis-console" class="flex-1 min-h-0 overflow-y-auto space-y-2 pr-1 text-base"></div>
+        <div class="flex items-center gap-3 mt-3">
+            <button id="jv-mic" onclick="toggleMic()" class="w-16 h-16 shrink-0 rounded-full flex items-center justify-center text-black transition" style="background:#00e5ff;box-shadow:0 0 22px rgba(0,229,255,.45)" title="Hablar"><span id="jv-mic-ic"><i data-lucide="mic" class="w-8 h-8"></i></span></button>
+            <input id="jarvis-input" placeholder="Escribe o toca el micrófono y habla…" class="flex-1 bg-dash-bg border border-dash-border rounded-2xl px-4 py-4 text-white text-base outline-none focus:border-dash-cyan">
+            <button onclick="sendJarvis()" class="px-6 py-4 rounded-2xl border border-dash-cyan/60 text-dash-cyan font-bold text-sm">ENVIAR</button>
+        </div>
+    </div>
     </div>
 
     </div>
@@ -1261,43 +1273,173 @@
             if (gpsFresh()) Object.assign(snap, { lat: +S.gps.lat.toFixed(5), lon: +S.gps.lon.toFixed(5), vel_gps_kmh: S.gps.speed });
             return snap;
         }
-        async function callHermes(userMsg) {
+        // Peticiones HTTP: en la app (APK) las hace Android, así el servidor no necesita CORS
+        const httpWait = {};
+        window.onNativeHttp = (id, status, text) => { const f = httpWait[id]; if (f) { delete httpWait[id]; f({ status, text }); } };
+        function httpReq(method, url, headers, body, timeoutMs = 60000) {
+            if (NATIVE && typeof GLNative.http === 'function') {
+                return new Promise(res => {
+                    const id = 'h' + Date.now() + Math.random().toString(36).slice(2);
+                    httpWait[id] = res;
+                    GLNative.http(id, method, url, JSON.stringify(headers || {}), body || '', timeoutMs);
+                    setTimeout(() => { if (httpWait[id]) { delete httpWait[id]; res({ status: 0, text: 'Tiempo de espera agotado' }); } }, timeoutMs + 5000);
+                });
+            }
+            const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), timeoutMs);
+            return fetch(url, { method, headers, body: body || undefined, signal: ctl.signal })
+                .then(async r => ({ status: r.status, text: await r.text() }))
+                .catch(e => ({ status: 0, text: e.message || 'error de red (¿CORS?)' }))
+                .finally(() => clearTimeout(t));
+        }
+        // Normaliza lo que escribe el usuario: "1.2.3.4", "mi.vps.com:8642", "https://x/v1"…
+        function hermesBase(u) {
+            u = (u || '').trim().replace(/\/+$/, '');
+            if (!u) return '';
+            if (!/^https?:\/\//i.test(u)) u = 'http://' + u;
+            if (!/\/v1$/i.test(u)) u += '/v1';
+            return u;
+        }
+        const jvHist = [];   // conversación reciente (para que J.A.R.V.I.S. tenga contexto)
+        async function callHermes(userMsg, voice) {
             const c = rh();
             if (!c.url || !c.key) return 'Configura Hermes en Ajustes (URL + Clave) para respuestas reales.';
-            try {
-                const r = await fetch(c.url.replace(/\/$/, '') + '/chat/completions', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + c.key },
-                    body: JSON.stringify({
-                        model: c.model || 'hermes-agent', messages: [
-                            { role: 'system', content: 'Eres J.A.R.V.I.S., asistente del Golden Dragon XML6609. Español, breve, no inventes telemetría. Telemetría actual del vehículo (JSON): ' + JSON.stringify(telemetrySnapshot()) },
-                            { role: 'user', content: userMsg }]
-                    })
-                });
-                let d = null; try { d = await r.json(); } catch (e) {}
-                if (!r.ok) return 'Error ' + r.status + ': ' + (d?.error?.message || r.statusText || 'respuesta inválida');
-                return d?.choices?.[0]?.message?.content || 'Sin respuesta.';
-            } catch (e) {
-                return 'Error de conexión: no se pudo contactar con Hermes (revisa la URL, la red y que el servidor permita CORS).';
-            }
+            const sys = 'Eres J.A.R.V.I.S., asistente del Golden Dragon XML6609 (transporte escolar). Español, breve, no inventes telemetría.' +
+                (voice ? ' Tu respuesta se leerá en voz alta mientras se conduce: frases cortas, sin listas, sin emojis ni formato.' : '') +
+                ' Telemetría actual del vehículo (JSON): ' + JSON.stringify(telemetrySnapshot());
+            const msgs = [{ role: 'system', content: sys }].concat(jvHist.slice(-6), [{ role: 'user', content: userMsg }]);
+            const r = await httpReq('POST', hermesBase(c.url) + '/chat/completions',
+                { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + c.key },
+                JSON.stringify({ model: c.model || 'hermes-agent', messages: msgs }), 120000);
+            let d = null; try { d = JSON.parse(r.text); } catch (e) {}
+            if (r.status === 0) return 'Error de conexión: no se pudo contactar con Hermes (' + r.text + '). Revisa la URL y el puerto.';
+            if (r.status === 401 || r.status === 403) return 'Error ' + r.status + ': la clave API no es correcta.';
+            if (r.status === 404) return 'Error 404: la URL no es la de la API (prueba «Buscar la API en mi servidor»).';
+            if (r.status >= 400) return 'Error ' + r.status + ': ' + (d?.error?.message || r.text.slice(0, 160));
+            const ans = d?.choices?.[0]?.message?.content || 'Sin respuesta.';
+            jvHist.push({ role: 'user', content: userMsg }, { role: 'assistant', content: ans });
+            if (jvHist.length > 12) jvHist.splice(0, jvHist.length - 12);
+            return ans;
         }
-        function sendJarvis() {
-            const inp = $('jarvis-input'), out = $('jarvis-console');
-            const q = inp.value.trim();
+
+        // Buscar en qué puerto está la API (OpenAI compatible) del servidor
+        async function findApi() {
+            const raw = $('h-url').value.trim(), stat = $('h-stat'), box = $('h-found');
+            const host = raw.replace(/^https?:\/\//i, '').replace(/[\/:].*$/, '');
+            if (!host) { stat.textContent = 'Escribe primero la IP o el dominio de tu VPS en «URL base».'; return; }
+            const key = $('h-key').value.trim() || rh().key || '';
+            const ports = [8642, 8000, 8080, 3000, 5000, 4000, 1234, 11434, 7860, 8888];
+            const cands = [];
+            ports.forEach(p => cands.push('http://' + host + ':' + p + '/v1'));
+            cands.push('https://' + host + '/v1', 'https://' + host + ':8642/v1', 'http://' + host + '/v1');
+            stat.textContent = 'Buscando la API en ' + host + ' (' + cands.length + ' direcciones)…'; box.innerHTML = '';
+            const res = await Promise.all(cands.map(async u => {
+                const r = await httpReq('GET', u + '/models', key ? { Authorization: 'Bearer ' + key } : {}, '', 6000);
+                let models = [];
+                try { const j = JSON.parse(r.text); models = (j.data || []).map(m => m.id).filter(Boolean); } catch (e) {}
+                const isApi = (r.status === 200 && (models.length || /"data"/.test(r.text))) || ((r.status === 401 || r.status === 403) && /key|auth|token|unauthor/i.test(r.text));
+                return { u, status: r.status, models, isApi };
+            }));
+            const ok = res.filter(x => x.isApi);
+            if (!ok.length) {
+                stat.textContent = 'No encontré la API en los puertos comunes. Revisa en el VPS que el servidor de API de Hermes esté activo y el puerto abierto en el firewall.';
+                return;
+            }
+            stat.textContent = '✓ Encontré ' + ok.length + ' API. Toca una para usarla:';
+            box.innerHTML = ok.map((x, i) => '<button data-i="' + i + '" class="api-pick w-full text-left px-3 py-2 rounded-lg border border-dash-cyan/50 text-sm">' +
+                '<b class="text-white">' + esc(x.u) + '</b><br><span class="text-dash-muted">' + (x.status === 200 ? 'Modelos: ' + esc(x.models.slice(0, 3).join(', ') || '—') : 'Requiere clave API (' + x.status + ')') + '</span></button>').join('');
+            box.querySelectorAll('.api-pick').forEach(b => b.onclick = () => {
+                const x = ok[+b.dataset.i];
+                $('h-url').value = x.u;
+                if (x.models.length && !$('h-model').value.trim()) $('h-model').value = x.models[0];
+                saveH(); box.innerHTML = ''; stat.textContent = '✓ API guardada: ' + x.u + '. Pulsa PROBAR.';
+            });
+        }
+
+        // ===== J.A.R.V.I.S.: chat por texto y voz =====
+        let jvMode = lsGet('moJvMode', 'ambos'), micOn = false;
+        function setJvMode(m) {
+            jvMode = m; lsSet('moJvMode', m);
+            document.querySelectorAll('.jv-mode').forEach(b => {
+                const on = b.dataset.m === m;
+                b.classList.toggle('border-dash-cyan', on); b.classList.toggle('bg-dash-cyan/20', on); b.classList.toggle('text-dash-cyan', on);
+            });
+        }
+        document.querySelectorAll('.jv-mode').forEach(b => b.onclick = () => setJvMode(b.dataset.m));
+        const jvFmt = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/(^|\n)#+\s*/g, '$1').replace(/`([^`]+)`/g, '$1');
+        function jvBubble(who, text) {
+            const box = $('jarvis-console'), me = who === 'yo', sys = who === 'sys';
+            const d = document.createElement('div');
+            d.className = 'flex ' + (me ? 'justify-end' : 'justify-start');
+            d.innerHTML = '<div class="max-w-[78%] px-4 py-2.5 rounded-2xl whitespace-pre-wrap ' + (me ? 'bg-dash-cyan/15 border border-dash-cyan/40 text-white'
+                : sys ? 'text-dash-muted text-sm' : 'bg-white/5 border border-dash-border text-white') + '">' + jvFmt(text) + '</div>';
+            box.appendChild(d); box.scrollTop = box.scrollHeight;
+            return d;
+        }
+        const speakable = (t) => String(t).replace(/```[\s\S]*?```/g, ' ').replace(/[*_#`>|~]/g, '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+            .replace(/https?:\/\/\S+/g, 'enlace').replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '').replace(/\s+/g, ' ').trim();
+        function jvSpeak(text) {
+            const t = speakable(text); if (!t) return;
+            if (NATIVE && typeof GLNative.speak === 'function') GLNative.speak(t);
+            else if (window.speechSynthesis) { const u = new SpeechSynthesisUtterance(t); u.lang = 'es-ES'; speechSynthesis.cancel(); speechSynthesis.speak(u); }
+        }
+        function jvStatus(t) { const e = $('jv-status'); if (e) e.textContent = t; }
+        function sendJarvis(fromVoice) {
+            const inp = $('jarvis-input'), q = inp.value.trim();
             if (!q) return;
-            out.textContent += '\n[TÚ] ' + q;
-            inp.value = '';
-            out.scrollTop = out.scrollHeight;
-            callHermes(q).then(resp => {
-                out.textContent += '\n[J.A.R.V.I.S.] ' + resp;
-                out.scrollTop = out.scrollHeight;
+            jvBubble('yo', (fromVoice ? '🎤 ' : '') + q); inp.value = '';
+            const wait = jvBubble('jarvis', '…');
+            const useVoice = jvMode !== 'texto';
+            jvStatus('Pensando…');
+            callHermes(q, useVoice).then(resp => {
+                const isErr = /^Error|^Configura/.test(resp);
+                if (jvMode === 'voz' && !isErr) wait.firstChild.textContent = '🔊 (respuesta por voz)';
+                else wait.firstChild.innerHTML = jvFmt(resp);
+                if (useVoice) jvSpeak(isErr ? resp.split(':')[0] + '. Revisa la configuración de Hermes.' : resp);
+                jvStatus(useVoice && !isErr ? 'Hablando…' : 'Listo');
+                $('jarvis-console').scrollTop = $('jarvis-console').scrollHeight;
             });
         }
         $('jarvis-input').addEventListener('keydown', e => { if (e.key === 'Enter') sendJarvis(); });
 
+        // Micrófono: reconocimiento de voz de Android (o del navegador si existe)
+        let webRec = null;
+        function micUi(on) {
+            micOn = on;
+            setIcon('jv-mic-ic', on ? 'square' : 'mic', 'w-8 h-8');
+            $('jv-mic').style.background = on ? '#ff5470' : '#00e5ff';
+            $('jv-mic').style.boxShadow = on ? '0 0 28px rgba(255,84,112,.6)' : '0 0 22px rgba(0,229,255,.45)';
+        }
+        window.onNativeVoice = (type, text) => {
+            if (type === 'listening') { micUi(true); jvStatus('Escuchando… habla ahora'); }
+            else if (type === 'partial') $('jarvis-input').value = text;
+            else if (type === 'final') { micUi(false); $('jarvis-input').value = text; if (text) sendJarvis(true); else jvStatus('No te escuché'); }
+            else if (type === 'error') { micUi(false); jvStatus(text); }
+            else if (type === 'end') jvStatus('Procesando…');
+            else if (type === 'speak-start') jvStatus('Hablando…');
+            else if (type === 'speak-end') jvStatus('Listo');
+        };
+        function toggleMic() {
+            if (NATIVE && typeof GLNative.listen === 'function') {
+                if (micOn) { GLNative.stopListening(); micUi(false); jvStatus('Listo'); return; }
+                GLNative.stopSpeaking(); GLNative.listen(); return;
+            }
+            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SR) { jvStatus('Este navegador no tiene reconocimiento de voz (usa la app).'); return; }
+            if (micOn && webRec) { webRec.stop(); return; }
+            webRec = new SR(); webRec.lang = 'es-EC'; webRec.interimResults = true;
+            webRec.onstart = () => window.onNativeVoice('listening', '');
+            webRec.onresult = (e) => { const r = e.results[e.results.length - 1]; window.onNativeVoice(r.isFinal ? 'final' : 'partial', r[0].transcript); };
+            webRec.onerror = (e) => window.onNativeVoice('error', 'Error de voz: ' + e.error);
+            webRec.onend = () => { if (micOn) micUi(false); };
+            webRec.start();
+        }
+        setJvMode(jvMode);
+        jvBubble('sys', 'Asistente listo. Escribe o toca 🎤 y habla. Elige arriba si responde por texto, por voz o ambos.');
+
         function saveH() {
             const remember = $('h-remember').checked, key = $('h-key').value.trim();
-            const c = { url: $('h-url').value.trim(), model: $('h-model').value.trim() || 'hermes-agent', remember };
+            const c = { url: hermesBase($('h-url').value), model: $('h-model').value.trim() || 'hermes-agent', remember };
+            $('h-url').value = c.url;
             if (remember) c.key = key;
             lsSet(HS_KEY, c);
             try { if (remember) sessionStorage.removeItem(HS_KEY + '.key'); else sessionStorage.setItem(HS_KEY + '.key', key); } catch (e) {}
