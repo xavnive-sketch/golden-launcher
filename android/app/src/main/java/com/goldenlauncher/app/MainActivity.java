@@ -152,6 +152,13 @@ public class MainActivity extends Activity {
         if (!need.isEmpty()) requestPermissions(need.toArray(new String[0]), REQ_PERMS);
     }
 
+    /** true si ya hay permiso de micrófono; si no, lo pide y devuelve false. */
+    boolean ensureMicPermission() {
+        if (has(Manifest.permission.RECORD_AUDIO)) return true;
+        runOnUiThread(() -> requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, REQ_PERMS + 1));
+        return false;
+    }
+
     /** true si ya hay permisos de Bluetooth; si no, los pide y devuelve false. */
     boolean ensureBluetoothPermissions() {
         if (missing(false).isEmpty()) return true;
