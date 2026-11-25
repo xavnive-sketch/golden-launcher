@@ -405,6 +405,12 @@
                         <input id="o-oil" type="number" min="500" step="500" placeholder="5000" class="w-full bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base mt-1">
                     </label>
                 </div>
+                <label class="block text-sm text-dash-muted mt-1">Kilometraje actual del tablero (km)
+                    <div class="flex gap-2 mt-1">
+                        <input id="o-odo" type="number" min="0" placeholder="Ej. 150300" class="flex-1 min-w-0 bg-dash-bg border border-dash-border rounded-lg p-2.5 text-white text-base">
+                        <button onclick="$('o-stat').textContent = calibrateOdo(num($('o-odo').value)); $('o-odo').value = ''" class="px-4 border border-dash-cyan/60 text-dash-cyan font-bold text-sm rounded-lg">CALIBRAR</button>
+                    </div>
+                </label>
                 <button onclick="saveObd()" class="w-full mt-2 py-3 bg-dash-cyan/10 hover:bg-dash-cyan/20 border border-dash-cyan/60 text-dash-cyan font-bold text-sm rounded-lg">GUARDAR</button>
                 <div id="o-stat" class="text-dash-cyan text-sm mt-2"></div>
                 <div id="o-live" class="text-dash-muted text-sm mt-1"></div>
@@ -538,7 +544,7 @@
         <div class="mt-3 bg-dash-panel border border-dash-border p-2 rounded">
             <div class="flex items-center justify-between mb-1">
                 <div class="text-[11px] text-dash-muted font-bold uppercase">Registro de conexión</div>
-                <button onclick="startObd()" class="px-3 py-1.5 border border-dash-cyan/60 text-dash-cyan font-bold text-xs rounded-lg hover:bg-dash-cyan/10">🔄 REINTENTAR CONEXIÓN</button>
+                <button onclick="startObd(true)" class="px-3 py-1.5 border border-dash-cyan/60 text-dash-cyan font-bold text-xs rounded-lg hover:bg-dash-cyan/10">🔄 REINTENTAR CONEXIÓN</button>
             </div>
             <pre id="d-log" class="text-[11px] leading-snug text-dash-text font-mono whitespace-pre-wrap max-h-56 overflow-y-auto">--</pre>
         </div>
@@ -674,7 +680,20 @@
         // ==========================================
         // NAVEGACIÓN
         // ==========================================
-        function setPage(n) {
+        // Historial de pantallas para el botón Atrás de la radio
+        let curPage = 'inicio';
+        const navStack = [];
+        function goBack() {
+            const open = (id) => { const e = $(id); return e && !e.classList.contains('hidden'); };
+            if (open('chart-modal')) return closeChart();
+            if (open('apps-modal')) return closeApps();
+            if (open('carga-modal')) return closeCargaModal();
+            if (navStack.length) return setPage(navStack.pop(), true);
+            if (curPage !== 'inicio') return setPage('inicio', true);
+        }
+        function setPage(n, fromBack) {
+            if (!fromBack && n !== curPage) { navStack.push(curPage); if (navStack.length > 20) navStack.shift(); }
+            curPage = n;
             document.querySelectorAll('.nav-btn').forEach(b => {
                 const active = b.dataset.page === n;
                 b.classList.toggle('on', active);
@@ -887,6 +906,7 @@
             $('i-volts-bar').style.width = vt === null ? '0%' : Math.max(0, Math.min(100, (vt - 11) / 3.5 * 100)) + '%';
             sparkTick();
             telRecord(data);
+            noteDc(num(data.dist_clr));
             $('tab-gauge-speed').style.strokeDashoffset = 314 * (1 - Math.min(1, (spd || 0) / 120));
             refreshOdo();
             recalcAutonomia();
@@ -906,12 +926,14 @@
         }
 
         let obdTimer = null, obdBusy = false;
-        function startObd() {
+        function startObd(force) {
             clearInterval(obdTimer); obdTimer = null;
             const c = obdCfg();
             S.obd = { mode: c.mode, connected: false, ecu: false, error: null, data: {}, dtc: null, ts: 0, shown: false };
             clearObdFields();
-            if (NATIVE) { try { GLNative.obdStop(); } catch (e) {} }
+            // Bluetooth: obdStart no hace nada si ya está conectando/conectado al mismo adaptador;
+            // solo se detiene si se pide reintentar o se cambia de fuente.
+            if (NATIVE && (force || c.mode !== 'bt')) { try { GLNative.obdStop(); } catch (e) {} }
             if (c.mode === 'bt') {
                 if (!NATIVE) { S.obd.error = 'Bluetooth solo funciona en la app (APK)'; }
                 else if (!c.btAddr) { S.obd.error = 'Elige el adaptador en Ajustes → Buscar adaptadores'; }
@@ -1398,9 +1420,36 @@
             return kms.length ? Math.max(...kms) : null;
         }
         // Odómetro actual: OBD; si no, la última carga con odómetro + km recorridos desde entonces
+        // Odómetro desde la computadora: el vehículo no envía el km total, pero sí "km desde el borrado de
+        // códigos" (PID 31), un contador que sigue sumando aunque la app esté cerrada. Con un punto de
+        // calibración (odómetro real + ese contador) se obtiene el kilometraje exacto.
+        const ODO_CAL = 'moOdoCal', LAST_DC = 'moLastDc';
+        function curDc() { const d = obdFresh() ? num(S.obd.data.dist_clr) : null; return d !== null ? d : num(lsGet(LAST_DC, null)); }
+        function odoFromEcu() {
+            const cal = lsGet(ODO_CAL, null), dc = curDc();
+            if (!cal || dc === null || cal.dc === null || cal.dc === undefined) return null;
+            if (dc < cal.dc) return null; // se borraron los códigos: el contador volvió a 0
+            return cal.odo + (dc - cal.dc);
+        }
+        function noteDc(dc) {
+            if (dc === null) return;
+            const prev = num(lsGet(LAST_DC, null)), cal = lsGet(ODO_CAL, null);
+            // Si el contador se reinició (borrado de códigos), recalibrar con el último kilometraje conocido
+            if (cal && prev !== null && dc < prev && cal.dc !== null && prev >= cal.dc) lsSet(ODO_CAL, { odo: cal.odo + (prev - cal.dc), dc, ts: Date.now() });
+            if (prev !== dc) lsSet(LAST_DC, dc);
+        }
+        function calibrateOdo(odo) {
+            const dc = curDc();
+            if (!(odo > 0)) return 'Escribe el kilometraje del tablero del vehículo.';
+            if (dc === null) return 'Conecta el OBD-II (motor encendido) para calibrar con la computadora.';
+            lsSet(ODO_CAL, { odo, dc, ts: Date.now() }); refreshOdo();
+            return '✓ Kilometraje calibrado: ' + fmtKm(odo) + ' km. Desde ahora se toma de la computadora del vehículo.';
+        }
         function estOdo() {
             const o = obdFresh() ? num(S.obd.data.odo) : null;
-            if (o !== null) return { v: o, est: false };
+            if (o !== null) return { v: o, est: false, src: 'obd' };
+            const e = odoFromEcu();
+            if (e !== null) return { v: e, est: false, src: 'ecu' };
             const cg = lsGet('cargas', []), last = cg.length ? cg[cg.length - 1] : null;
             const known = lastKnownOdo();
             if (last && last.odo > 0 && last.odo >= (known || 0)) return { v: last.odo + kmSinceFill, est: true };
@@ -1409,7 +1458,8 @@
         function refreshOdo() {
             const { v, est } = estOdo();
             setText('val-odo', fmtKm(v), ' km');
-            $('val-odo-lbl').textContent = v !== null && est ? 'Km (estimado)' : 'Kilometraje';
+            const src = estOdo().src;
+            $('val-odo-lbl').textContent = v === null ? 'Kilometraje' : src === 'ecu' ? 'Km (computadora)' : est ? 'Km (estimado)' : 'Kilometraje';
             refreshMaint();
         }
         // Próximo cambio de aceite: último registro "Cambio de aceite" + intervalo de Ajustes
@@ -1458,6 +1508,8 @@
         function kmSinceLastFill(last) {
             const odo = obdFresh() ? num(S.obd.data.odo) : null;
             if (odo !== null && last && last.odo > 0 && odo >= last.odo) return odo - last.odo;
+            const dc = curDc(); // contador de la computadora: cuenta aunque la app haya estado cerrada
+            if (last && last.dc !== null && last.dc !== undefined && dc !== null && dc >= last.dc) return dc - last.dc;
             return kmSinceFill;
         }
         // Historial del tanque desde la última carga: puntos [km recorridos, litros], uno cada 0,5 km
@@ -1576,7 +1628,8 @@
             if (tank) litrosTras = Math.min(tank, litrosTras);
             const cargas = readCargas();
             cargas.push({ fecha, cantidad, unidad, cantUnidad, precio, total, odo, tipo: $('c-tipo').value || 'DIESEL',
-                estacion: $('c-est').value.trim(), lleno, litrosTras, ts: Date.now() });
+                estacion: $('c-est').value.trim(), lleno, litrosTras, dc: curDc(), ts: Date.now() });
+            if (odo > 0 && curDc() !== null) lsSet(ODO_CAL, { odo, dc: curDc(), ts: Date.now() }); // recalibrar con el odómetro de la carga
             lsSet('cargas', cargas);
             kmSinceFill = 0; lsSet(KMF_KEY, 0);
             fuelHist = { fill: null, pts: [] }; lsSet('moFuelHist', fuelHist);

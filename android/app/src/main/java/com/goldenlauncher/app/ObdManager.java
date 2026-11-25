@@ -65,7 +65,7 @@ class ObdManager {
     private final Context ctx;
     private final Object lock = new Object();
     private JSONObject state = new JSONObject();
-    private Thread worker;
+    private volatile Thread worker;
     private volatile boolean running = false;
     private volatile Link link;
     private String target = null;
@@ -122,9 +122,10 @@ class ObdManager {
         }
         target = key;
         running = true;
-        worker = new Thread(() -> loop(address, kind), "obd-worker");
-        worker.setDaemon(true);
-        worker.start();
+        Thread t = new Thread(() -> loop(address, kind), "obd-worker");
+        t.setDaemon(true);
+        worker = t;
+        t.start();
     }
 
     synchronized void stop() {
@@ -132,8 +133,9 @@ class ObdManager {
         target = null;
         Link l = link;
         if (l != null) l.close();
-        if (worker != null) worker.interrupt();
-        worker = null;
+        Thread w = worker;
+        worker = null;               // el hilo anterior ve que ya no es el actual y termina
+        if (w != null) w.interrupt();
     }
 
     private Link makeLink(String address, String kind) throws IOException {
@@ -162,7 +164,7 @@ class ObdManager {
         boolean tryBleNext = false;
         int fails = 0;
         final long[] BACKOFF = {2000, 3000, 5000, 8000, 12000, 15000};
-        while (running) {
+        while (alive()) {
             Link l = null;
             try {
                 setState(false, false, "Conectando con el adaptador…", null, null);
@@ -188,6 +190,7 @@ class ObdManager {
                 setState(false, false, "Falta el permiso de Bluetooth (dalo en los ajustes de la app)", null, null);
                 sleep(5000);
             } catch (Exception e) {
+                if (!alive()) break;   // se reinició la conexión desde la app: este hilo ya no cuenta
                 // En modo automático: si el clásico falla, probar BLE en el siguiente intento
                 if ("auto".equals(kind)) tryBleNext = !tryBleNext;
                 String m = e.getMessage();
@@ -200,7 +203,7 @@ class ObdManager {
                 sleep(wait);
             } finally {
                 if (l != null) l.close();
-                link = null;
+                if (link == l) link = null;
             }
         }
     }
@@ -236,7 +239,7 @@ class ObdManager {
         boolean noThrottle = sup == null ? true : !sup.contains("11");
         double pedalMin = 100, pedalMax = 0;
         if (adapterVolts) nd = remove(nd, "volts");
-        while (running) {
+        while (alive()) {
             n++;
             for (int i = 0; i < PIDS.length; i++) {
                 String pid = PIDS[i];
@@ -320,6 +323,11 @@ class ObdManager {
         JSONArray r = new JSONArray();
         for (int i = 0; i < a.length(); i++) if (!v.equals(a.optString(i))) r.put(a.opt(i));
         return r;
+    }
+
+    /** true solo para el hilo de conexión vigente. */
+    private boolean alive() {
+        return Thread.currentThread() == worker && !Thread.currentThread().isInterrupted();
     }
 
     private static void sleep(long ms) {

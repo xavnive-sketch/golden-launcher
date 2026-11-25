@@ -117,6 +117,12 @@ public class MainActivity extends Activity {
         bridge = new NativeBridge(this, web, obd);
         web.addJavascriptInterface(bridge, "GLNative");
 
+        // Android 13+: registrar el gesto/botón Atrás (también llega por onBackPressed en versiones anteriores)
+        if (Build.VERSION.SDK_INT >= 33) {
+            getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+                    android.window.OnBackInvokedDispatcher.PRIORITY_DEFAULT, this::goBack);
+        }
+
         locationAtStart = has(Manifest.permission.ACCESS_FINE_LOCATION);
         requestMissing(true);
         web.loadUrl(START_URL);
@@ -183,8 +189,12 @@ public class MainActivity extends Activity {
     @SuppressWarnings("deprecation")
     @Override
     public void onBackPressed() {
-        // Atrás = volver a Inicio (no cerrar la app)
-        if (web != null) web.evaluateJavascript("typeof setPage==='function'&&setPage('inicio')", null);
+        goBack();
+    }
+
+    /** Botón Atrás de la radio: cierra la ventana abierta o vuelve a la pantalla anterior (nunca cierra la app). */
+    private void goBack() {
+        if (web != null) web.evaluateJavascript("typeof goBack==='function'?goBack():(typeof setPage==='function'&&setPage('inicio'))", null);
     }
 
     @Override
