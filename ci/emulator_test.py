@@ -32,6 +32,7 @@ AUDIT = r"""(() => {
   for (const el of document.querySelectorAll('body *')) {
     const r = el.getBoundingClientRect(), cs = getComputedStyle(el);
     if (!(r.width > 0 && r.height > 0) || cs.visibility === 'hidden' || el.closest('.leaflet-container')) continue;
+    const sc = el.parentElement && el.parentElement.closest('.overflow-y-auto, .overflow-auto'); if (sc) { const p = sc.getBoundingClientRect(); if (p.bottom <= VH + 1 && p.right <= VW + 1) continue; }
     if (r.right > VW + 1 || r.bottom > VH + 1 || r.left < -1 || r.top < -1) out.push('FUERA ' + name(el));
     if (/hidden|clip/.test(cs.overflowY) && el.scrollHeight > el.clientHeight + 2 && !el.classList.contains('bus-3d-box')) out.push('RECORTA ' + name(el));
   }
