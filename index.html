@@ -2,6 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <!-- Seguridad: solo se ejecuta código del propio APK (nada de scripts externos ni iframes).
+         'wasm-unsafe-eval' es necesario para el decodificador del modelo 3D (WebAssembly). -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src * data: blob:; media-src * blob:; connect-src * data: blob:; font-src 'self' data:; worker-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Golden Dragon XML6609 Dashboard</title>
     <!-- Librerías locales (vendor/) — funcionan sin internet -->
@@ -654,7 +657,7 @@
         const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
         const num = (v) => (v === null || v === undefined || v === '' || isNaN(+v)) ? null : +v;
         function lsGet(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }
-        function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+        function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { console.warn('No se pudo guardar ' + k + ':', e && e.message); } }
         function setText(id, v, suf) { const el = $(id); if (el) el.textContent = (v === null || v === undefined || v === '') ? '--' + (suf || '') : v + (suf || ''); }
         function setIcon(id, name, cls) { const el = $(id); if (!el || el.dataset.icon === name) return; el.dataset.icon = name; el.innerHTML = '<i data-lucide="' + name + '" class="' + cls + '"></i>'; lucide.createIcons(); }
         function setTone(el, tone) { // tone: green | amber | muted | cyan
