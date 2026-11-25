@@ -30,15 +30,23 @@ class NativeBridge {
     // ---- HTTP nativo (Hermes): sin restricciones CORS del navegador ----
     @JavascriptInterface
     public void http(String id, String method, String url, String headersJson, String body, int timeoutMs) {
+        // Solo direcciones web: nunca file:, content: ni otros esquemas internos de Android
+        String u = url == null ? "" : url.trim().toLowerCase(java.util.Locale.ROOT);
+        String m = method == null ? "GET" : method.toUpperCase(java.util.Locale.ROOT);
+        if (!(u.startsWith("http://") || u.startsWith("https://")) || !java.util.Arrays.asList("GET", "POST", "PUT", "DELETE").contains(m)) {
+            push("window.onNativeHttp && window.onNativeHttp(" + org.json.JSONObject.quote(id == null ? "" : id) + ",0,'URL no permitida')");
+            return;
+        }
+        final int tmo = Math.max(1000, Math.min(timeoutMs, 180000));
         new Thread(() -> {
             int status = 0;
             String text;
             java.net.HttpURLConnection c = null;
             try {
                 c = (java.net.HttpURLConnection) new java.net.URL(url).openConnection();
-                c.setRequestMethod(method == null || method.isEmpty() ? "GET" : method);
-                c.setConnectTimeout(Math.min(timeoutMs, 10000));
-                c.setReadTimeout(timeoutMs);
+                c.setRequestMethod(m);
+                c.setConnectTimeout(Math.min(tmo, 10000));
+                c.setReadTimeout(tmo);
                 if (headersJson != null && !headersJson.isEmpty()) {
                     org.json.JSONObject h = new org.json.JSONObject(headersJson);
                     java.util.Iterator<String> it = h.keys();
@@ -113,6 +121,7 @@ class NativeBridge {
 
     @JavascriptInterface
     public boolean launchApp(String pkg) {
+        if (pkg == null || !pkg.matches("[A-Za-z0-9_.]{1,200}")) return false;
         try {
             return media.launch(pkg);
         } catch (Exception e) {
@@ -133,6 +142,7 @@ class NativeBridge {
 
     @JavascriptInterface
     public String mediaPlayApp(String pkg) {
+        if (pkg == null || !pkg.matches("[A-Za-z0-9_.]{1,200}")) return "error";
         try {
             return media.playApp(pkg);
         } catch (Exception e) {
